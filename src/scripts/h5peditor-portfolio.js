@@ -22,7 +22,7 @@ export default class Portfolio {
 
     // DOM
     this.$container = H5P.jQuery('<div>', {
-      class: 'h5peditor-boilerplate'
+      class: 'h5peditor-portfolio'
     });
 
     // Instantiate original field (or create your own and call setValue)
