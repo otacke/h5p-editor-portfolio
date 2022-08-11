@@ -1,4 +1,4 @@
-import "../styles/h5peditor-portfolio.css";
+import "../styles/h5peditor-portfolio.scss";
 import Portfolio from "../scripts/h5peditor-portfolio";
 
 // Load library

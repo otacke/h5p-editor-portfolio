@@ -1,0 +1,55 @@
+.h5peditor-portfolio {
+  .field-name-portfolio {
+    > .title {
+      display: none;
+    }
+
+    > .content {
+      background: transparent;
+      border: 0;
+      padding: 0;
+
+      > .field.list {
+        > label {
+          display: none;
+        }
+
+        > .h5peditor-widget-wrapper {
+          > .h5p-ul > .h5p-li {
+            margin: 0;
+
+            > .list-item-title-bar {
+              display: none;
+            }
+
+            > .field-name-chapter > .content {
+              background: transparent;
+              border: none;
+              padding-top: 0;
+
+              &:not(.active) {
+                display: none;
+              }
+            }
+          }
+
+          > .h5peditor-button {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+
+  .h5peditor-portfolio-main {
+    background: #fefefe;
+    background: #fff;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+
+    .h5peditor-portfolio-chapters {
+      width: 100%;
+    }
+  }
+}
