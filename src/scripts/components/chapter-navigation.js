@@ -1,7 +1,7 @@
 import './chapter-navigation.scss';
 import Util from './../h5peditor-portfolio-util';
 
-export default class LayoutButton {
+export default class ChapterNavigation {
   constructor(params = {}, callbacks = {}) {
     this.params = Util.extend({
       title: '',
