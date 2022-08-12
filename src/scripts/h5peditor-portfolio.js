@@ -79,6 +79,9 @@ export default class Portfolio {
     // Use H5PEditor.t('H5PEditor.Boilerplate', 'foo'); to output translatable strings
 
     this.handleShowChapter(this.params.chapters[0]?.chapterHierarchy || '0');
+
+    // Store values that may have been created as default
+    this.setValue(this.field, this.params);
   }
 
   /**
