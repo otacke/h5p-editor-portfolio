@@ -2,8 +2,9 @@
 export default class Util {
   /**
    * Extend an array just like JQuery's extend.
+   *
    * @param {object} arguments Objects to be merged.
-   * @return {object} Merged objects.
+   * @returns {object} Merged objects.
    */
   static extend() {
     for (let i = 1; i < arguments.length; i++) {
@@ -22,5 +23,28 @@ export default class Util {
       }
     }
     return arguments[0];
+  }
+
+  /**
+   * Swap two DOM elements.
+   *
+   * @param {HTMLElement} element1 Element 1.
+   * @param {HTMLElement} element2 Element 2.
+   */
+  static swapDOMElements(element1, element2) {
+    const parent1 = element1.parentNode;
+    const parent2 = element2.parentNode;
+
+    if (!parent1 || !parent2) {
+      return;
+    }
+
+    const replacement1 = document.createElement('div');
+    const replacement2 = document.createElement('div');
+
+    parent1.replaceChild(replacement1, element1);
+    parent2.replaceChild(replacement2, element2);
+    parent1.replaceChild(element2, replacement1);
+    parent2.replaceChild(element1, replacement2);
   }
 }

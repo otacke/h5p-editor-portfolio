@@ -19,5 +19,12 @@
     {
       "path": "dist/h5peditor-portfolio.css"
     }
+  ],
+  "preloadedDependencies": [
+    {
+      "machineName": "H5P.MaterialDesignIcons",
+      "majorVersion": 1,
+      "minorVersion": 0
+    }
   ]
 }

@@ -1,0 +1,53 @@
+.submenu-popup {
+  color: black;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  font-size: 0.75rem;
+  position: absolute;
+  z-index: 2;
+
+  &.display-none {
+    display: none;
+  }
+
+  .submenu-popup-title {
+    background-color: rgba(23, 104, 196, 0.1);
+    border-bottom: solid 0.042rem #F1F3F6;
+    font-weight: bold;
+    line-height: 0.708rem;
+    overflow: hidden;
+    padding: 0.5rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .submenu-popup-options {
+    list-style: none;
+    margin: 0;
+    padding: 0.25rem;
+
+    .submenu-popup-option {
+      color: #363b42;
+      cursor: pointer;
+      line-height: 0.708rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 0.5rem;
+    }
+
+    .submenu-popup-option:hover {
+      background-color: rgba(23, 104, 196, 0.1);
+    }
+
+    .submenu-popup-option:before {
+      font-family: "Material Icons";
+      margin-right: 0.3em;
+      line-height: 1;
+      vertical-align: bottom;
+    }
+  }
+}

@@ -1,5 +1,8 @@
 {
   "libraryStrings": {
-    "foo": "bar"
+    "options": "Options",
+    "delete": "Delete",
+    "moveUp": "Move up",
+    "moveDown": "Move down"
   }
 }

@@ -1,28 +1,24 @@
 import './chapter-navigation.scss';
 import Util from './../h5peditor-portfolio-util';
+import ChapterNavigationButton from './chapter-navigation-button.js';
+import SubMenu from './sub-menu.js';
+import Dictionary from './../services/dictionary';
 
 export default class ChapterNavigation {
   constructor(params = {}, callbacks = {}) {
     this.params = Util.extend({
-      title: '',
-      chapterHierarchies: []
+      title: ''
     }, params);
 
     this.callbacks = Util.extend({
+      onGetTitle: (() => {}),
       onAddChapter: (() => {}),
-      onShowChapter: (() => {})
+      onShowChapter: (() => {}),
+      onSubMenuMoved: (() => {}),
+      onSubMenuDeleted: (() => {})
     }, callbacks);
 
-    this.buttons = {};
-
-    // TODO: popup menu as in Branching Scenario Editor
-    //       - edit title
-    //       - move up
-    //       - move down
-    //       - make top chapter (if sub chapter)
-    //       - make sub chapter
-    //       - make sub sub chapter (if sub chapter)
-    //       - delete (including dialog)
+    this.buttons = [];
 
     this.dom = document.createElement('div');
     this.dom.classList.add('h5peditor-portfolio-chapter-navigation');
@@ -43,13 +39,42 @@ export default class ChapterNavigation {
     this.buttonAdd.classList.add('h5peditor-portfolio-chapter-button-add');
     this.buttonAdd.innerText = '+';
     this.buttonAdd.addEventListener('click', () => {
-      this.callbacks.onAddChapter();
+      this.handleAddChapter();
     });
     this.dom.appendChild(this.buttonAdd);
 
-    this.params.chapterHierarchies.forEach(hierarchy => {
-      this.addButton(hierarchy);
-    });
+    for (let id = 0; id < this.params.chapterList.getValue().length; id++) {
+      this.addButton(id);
+    }
+
+    this.subMenu = new SubMenu(
+      {
+        options: [
+          {
+            id: 'move-up',
+            label: Dictionary.get('l10n.moveUp'),
+            onClick: (target => {
+              this.callbacks.onSubMenuMoved(this.getButtonId(target), -1);
+            })
+          },
+          {
+            id: 'move-down',
+            label: Dictionary.get('l10n.moveDown'),
+            onClick: (target => {
+              this.callbacks.onSubMenuMoved(this.getButtonId(target), +1);
+            })
+          },
+          {
+            id: 'delete',
+            label: Dictionary.get('l10n.delete'),
+            onClick: (target => {
+              this.callbacks.onSubMenuDeleted(this.getButtonId(target));
+            })
+          }
+        ]
+      }
+    );
+    this.dom.appendChild(this.subMenu.getDOM());
   }
 
   /**
@@ -61,32 +86,123 @@ export default class ChapterNavigation {
     return this.dom;
   }
 
+  getButtonId(target) {
+    return this.buttons.findIndex(button => button === target);
+  }
+
+  getChapterGroup(id) {
+    let result = null;
+
+    this.params.chapterList.forEachChild((child, index) => {
+      if (index === id) {
+        result = child;
+      }
+    });
+
+    return result;
+  }
+
   /**
    * Add button.
    *
-   * @param {string} hierarchy Hierarchy of button to add.
+   * @param {number} id Id of button to add.
    */
-  addButton(hierarchy) {
-    const button = document.createElement('button');
-    button.classList.add('h5peditor-portfolio-chapter-button');
-    button.innerText = hierarchy; // TODO: Sync with chapter title field, then hide title field?
-    button.addEventListener('click', () => {
-      this.callbacks.onShowChapter(hierarchy);
-    });
+  addButton(id) {
+    this.buttons[id] = new ChapterNavigationButton(
+      {
+        chapterGroup: this.getChapterGroup(id)
+      },
+      {
+        onGetTitle: ((target) => {
+          const buttonId = this.getButtonId(target);
+          return this.callbacks.onGetTitle((buttonId === -1) ? id : buttonId);
+        }),
+        onShowChapter: ((target) => {
+          this.callbacks.onShowChapter(this.getButtonId(target));
+        }),
+        onShowMenu: ((target) => {
+          this.handleShowMenu(target);
+        })
+      }
+    );
 
-    this.dom.insertBefore(button, this.buttonSeparator);
-
-    this.buttons[hierarchy] = button;
+    this.dom.insertBefore(
+      this.buttons[id].getDOM(),
+      this.buttonSeparator
+    );
   }
+
+  /**
+   * Remove button.
+   *
+   * @param {number} id Id of button to remove.
+   */
+  removeButton(id) {
+    if (!this.buttons[id]) {
+      return;
+    }
+
+    this.buttons[id].remove();
+
+    this.buttons.splice(id, 1);
+  }
+
+  updateButtons() {
+    this.buttons.forEach(button => {
+      button.update();
+    });
+  }
+
+  /**
+   * Swap button hierarchies.
+   *
+   * @param {string} hierarchySource Hierarchy of button #1 to swap.
+   * @param {string} hierarchyTarget Hierarchy of button #2 to swap.
+   */
+  // swapButtonHierarchies(hierarchySource, hierarchyTarget) {
+  //   const button1 = this.buttons[hierarchySource];
+  //   const button2 = this.buttons[hierarchyTarget];
+  //
+  //   if (!button1 || !button2) {
+  //     return;
+  //   }
+  //
+  //   const tmp = this.buttons[hierarchyTarget].getHierarchy();
+  //   this.buttons[hierarchyTarget].setHierachy(this.buttons[hierarchySource].getHierarchy());
+  //   this.buttons[hierarchySource].setHierachy(tmp);
+  // }
 
   /**
    * Set current button.
    *
-   * @param {string} targetHierarchy Hierarchy of button to set active.
+   * @param {number} targetId Id of button to set active.
    */
-  setCurrentButton(targetHierarchy) {
-    for (const hierarchy in this.buttons) {
-      this.buttons[hierarchy].classList.toggle('current', hierarchy === targetHierarchy);
+  setCurrentButton(targetId) {
+    this.buttons.forEach((button, id) => {
+      button.setActive(id === targetId);
+    });
+  }
+
+  /**
+   * Handle show sub menu.
+   *
+   * @param {ChapterNavigationButton} target Calling button.
+   */
+  handleShowMenu(target) {
+    const button = this.buttons.find(button => button === target);
+    if (!button) {
+      return;
+    }
+
+    button.attachMenu(this.subMenu);
+  }
+
+  handleAddChapter() {
+    if (this.params.chapterList.addItem()) {
+      const idAdded = this.buttons.length;
+      this.addButton(idAdded);
+
+      this.callbacks.onAddChapter(idAdded);
     }
   }
 }

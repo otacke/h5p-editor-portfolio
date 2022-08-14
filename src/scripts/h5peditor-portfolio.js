@@ -1,5 +1,6 @@
 import ChapterNavigation from './components/chapter-navigation';
 import Util from './h5peditor-portfolio-util';
+import Dictionary from './services/dictionary';
 
 /** Class for Portfolio H5P widget */
 export default class Portfolio {
@@ -19,7 +20,19 @@ export default class Portfolio {
     }, params);
     this.setValue = setValue;
 
+    // Fill dictionary
+    Dictionary.fill({
+      l10n: {
+        options: H5PEditor.t('H5PEditor.Portfolio', 'options'),
+        moveUp: H5PEditor.t('H5PEditor.Portfolio', 'moveUp'),
+        moveDown: H5PEditor.t('H5PEditor.Portfolio', 'moveDown'),
+        delete: H5PEditor.t('H5PEditor.Portfolio', 'delete'),
+      }
+    });
+
     this.params.chapters = this.sanitize(this.params.chapters || []);
+
+    this.chapterDOMsOrder = [... Array(this.params.chapters.length).keys()];
 
     // Callbacks to call when parameters change
     this.changes = [];
@@ -49,15 +62,28 @@ export default class Portfolio {
     this.chapterNavigation = new ChapterNavigation(
       {
         title: this.parent?.metadata?.title || 'Portfolio',
-        chapterHierarchies: this.params.chapters
-          .map(chapter => chapter.chapterHierarchy)
+        chapterList: this.chapterList
       },
       {
-        onAddChapter: () => {
-          this.handleAddChapter();
+        onGetTitle: (id) => {
+          let title = this.params.chapters[id]?.content?.metadata?.title;
+          if (!title) {
+            title = `Chapter ${id}`;
+          }
+
+          return title; // TODO Get title from chapter
         },
-        onShowChapter: (hierarchy) => {
-          this.handleShowChapter(hierarchy);
+        onAddChapter: (id) => {
+          this.handleAddChapter(id);
+        },
+        onShowChapter: (id) => {
+          this.handleShowChapter(id);
+        },
+        onSubMenuMoved: (hierarchy, offset) => {
+          this.handleMoveChapter(hierarchy, offset);
+        },
+        onSubMenuDeleted: (id) => {
+          this.handleDeleteChapter(id);
         }
       }
     );
@@ -78,7 +104,7 @@ export default class Portfolio {
 
     // Use H5PEditor.t('H5PEditor.Boilerplate', 'foo'); to output translatable strings
 
-    this.handleShowChapter(this.params.chapters[0]?.chapterHierarchy || '0');
+    this.handleShowChapter(0);
 
     // Store values that may have been created as default
     this.setValue(this.field, this.params);
@@ -109,76 +135,12 @@ export default class Portfolio {
 
   /**
    * Get chapter DOMs.
+   *
    * @returns {HTMLElement[]} DOMs of chapters in list widget.
    */
   getChapterDOMs() {
     return this.fieldInstance.$content.get(0)
       .querySelectorAll('.h5p-li > .field-name-chapter > .content') || [];
-  }
-
-  /**
-   * Handle change of field.
-   */
-  handleFieldChange() {
-    this.params = this.fieldInstance.params;
-    this.changes.forEach(change => {
-      change(this.params);
-    });
-  }
-
-  /**
-   * Handle adding new chapter.
-   */
-  handleAddChapter() {
-    const newHierarchy = this.getNewHierarchy();
-    if (!newHierarchy) {
-      return; // TODO: This should be handled with a warning?
-    }
-
-    if (this.chapterList.addItem()) {
-      this.params.chapters.slice(-1)[0].chapterHierarchy = newHierarchy;
-      this.chapterNavigation.addButton(newHierarchy);
-      this.chapterNavigation.setCurrentButton(newHierarchy);
-
-      // Store values
-      this.setValue(this.field, this.params);
-    }
-  }
-
-  /**
-   * Handle request to show particular chapter.
-   * @param {string} hierarchy Hierarchy of chapter to show.
-   */
-  handleShowChapter(hierarchy) {
-    const chapterParams = this.chapterList.getValue();
-
-    const index = chapterParams
-      .reduce((result, current, index) => {
-        if (result !== null) {
-          return result;
-        }
-
-        if (current.chapterHierarchy === hierarchy) {
-          return index;
-        }
-
-        return null;
-      }, null);
-
-    if (index === null) {
-      return;
-    }
-
-    const chapterDOMs = this.getChapterDOMs();
-    if (!chapterDOMs) {
-      return;
-    }
-
-    for (let i = 0; i < chapterDOMs.length; i++) {
-      chapterDOMs[i].classList.toggle('active', i === index);
-    }
-
-    this.chapterNavigation.setCurrentButton(hierarchy);
   }
 
   /**
@@ -193,6 +155,149 @@ export default class Portfolio {
     }, 0);
 
     return newHierarchy ? (newHierarchy + 1).toString() : null;
+  }
+
+  /**
+   * Handle change of field.
+   */
+  handleFieldChange() {
+    this.params = this.fieldInstance.params;
+    this.changes.forEach(change => {
+      change(this.params);
+    });
+  }
+
+  /**
+   * Handle adding new chapter.
+   *
+   * @param {number} id Id of item that was added.
+   */
+  handleAddChapter(id) {
+    const hierarchy = this.getNewHierarchy();
+    if (!hierarchy) {
+      return; // TODO: This should be handled with a warning?
+    }
+
+    this.params.chapters[id].chapterHierarchy = hierarchy;
+    this.chapterDOMsOrder.push(id);
+
+    this.handleShowChapter(id);
+
+    // Store values
+    this.setValue(this.field, this.params);
+  }
+
+  /**
+   * Handle adding new chapter.
+   */
+  handleDeleteChapter(id) {
+    if (typeof id !== 'number' || this.params.chapters.length === 1) {
+      return;
+    }
+
+    this.chapterDOMsOrder.splice(id, 1);
+    this.chapterDOMsOrder = this.chapterDOMsOrder.map(index => {
+      return (index < id) ? index : index - 1;
+    });
+
+    // Show previous chapter
+    const nextIndex = (id === 0) ? 1 : id - 1;
+
+    this.handleShowChapter(nextIndex);
+
+    // Remove item from list
+    this.chapterList.removeItem(id);
+
+    // Handle buttons in navigation
+    this.chapterNavigation.removeButton(id);
+
+    // Store values
+    this.setValue(this.field, this.params);
+  }
+
+  /**
+   * Handler for moving a chapter.
+   *
+   * @param {string} indexSource Button id of button to be moved.
+   * @param {number} offset Offset of where to move chapter to.
+   */
+  handleMoveChapter(indexSource, offset) {
+    if (
+      typeof indexSource !== 'number' ||
+      indexSource < 0 || indexSource > this.params.chapters.length - 1 ||
+      typeof offset !== 'number'
+    ) {
+      return; // No valid input
+    }
+
+    const indexTarget = indexSource + offset;
+    if (indexTarget < 0 || indexTarget > this.params.chapters.length - 1) {
+      return; // Out of bounds
+    }
+
+    // Move item parameters in list widget
+    this.chapterList.moveItem(indexSource, indexTarget);
+
+    // List widget doesn't resort DOM elemens, need to swap in tracking array
+    [this.chapterDOMsOrder[indexSource], this.chapterDOMsOrder[indexTarget]] =
+      [this.chapterDOMsOrder[indexTarget], this.chapterDOMsOrder[indexSource]];
+
+    // Rebuild hierarchies
+    this.updateHierarchies();
+
+    this.chapterNavigation.updateButtons();
+
+    this.handleShowChapter(indexTarget);
+
+    // Store values
+    this.setValue(this.field, this.params);
+  }
+
+  /**
+   * Handle request to show particular chapter.
+   *
+   * @param {number} id Id of chapter to show.
+   */
+  handleShowChapter(id) {
+    const chapterDOMs = this.getChapterDOMs();
+
+    for (let i = 0; i < chapterDOMs.length; i++) {
+      chapterDOMs[i].classList.toggle(
+        'active', i === this.chapterDOMsOrder[id]
+      );
+    }
+
+    this.chapterNavigation.setCurrentButton(id);
+  }
+
+  /**
+   * Update hierarchies.
+   */
+  updateHierarchies() {
+    // Determine hierarchy depth
+    const hierarchyDepth = this.params.chapters.reduce((length, chapter) => {
+      return Math.max(length, chapter.chapterHierarchy.split('-').length);
+    }, 1);
+
+    const counter = new Array(hierarchyDepth).fill(1);
+    let lastDepth = 0;
+
+    this.params.chapters.forEach(chapter => {
+      const depth = chapter.chapterHierarchy.split('-').length;
+      if (depth === lastDepth) {
+        counter[depth - 1]++;
+      }
+      else if (depth < lastDepth) {
+        counter[depth - 1]++;
+        for (let i = depth; i < counter.length; i++) {
+          counter[i] = 1;
+        }
+      }
+
+      lastDepth = depth;
+
+      chapter.chapterHierarchy = counter.slice(0, depth).join('-');
+    });
   }
 
   /**
@@ -233,11 +338,11 @@ export default class Portfolio {
       // Compare level by level
       let result = 0;
       for (let i = 0; i < levelsA.length; i++) {
-        if (levelsA[i] < levelsB[i]) {
+        if (parseInt(levelsA[i]) < parseInt(levelsB[i])) {
           result = -1;
           break;
         }
-        else if (levelsA[i] > levelsB[i]) {
+        else if (parseInt(levelsA[i]) > parseInt(levelsB[i])) {
           result = 1;
           break;
         }
