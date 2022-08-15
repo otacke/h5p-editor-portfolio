@@ -30,6 +30,14 @@
     }
   }
 
+  &:focus {
+    background-color: rgba(23, 104, 196, 0.05);
+
+    .h5peditor-portfolio-chapter-button-menu {
+      visibility: visible;
+    }
+  }
+
   &:active {
     background-color: rgba(23, 104, 196, 0.1);
   }
@@ -39,12 +47,13 @@
     padding-right: .25rem;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 100%;
+    width: 10rem;
   }
 
   .h5peditor-portfolio-chapter-button-menu {
     color: rgba(255, 255, 255, 0.1);
     background-color: rgba(23, 104, 196, .8);
+    border: 0;
     border-radius: 3px;
     box-sizing: border-box;
     cursor: pointer;
@@ -58,6 +67,10 @@
     top: 0;
     transition: visibility 0s linear 0.1s, opacity 0.1s linear;
     width: 1.9rem;
+
+    &.focus {
+      visibility: visible;
+    }
 
     &.active {
       visibility: visible;

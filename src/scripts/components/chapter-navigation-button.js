@@ -23,7 +23,7 @@ export default class ChapterNavigationButton {
     this.label.innerText = this.callbacks.onGetTitle(this);
     this.dom.appendChild(this.label);
 
-    this.menu = document.createElement('div');
+    this.menu = document.createElement('button');
     this.menu.classList.add('h5peditor-portfolio-chapter-button-menu');
     this.menu.addEventListener('click', () => {
       this.handleClickMenu();
