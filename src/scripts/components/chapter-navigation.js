@@ -15,6 +15,7 @@ export default class ChapterNavigation {
       onAddChapter: (() => {}),
       onShowChapter: (() => {}),
       onSubMenuMoved: (() => {}),
+      onSubMenuHierarchyChanged: (() => {}),
       onSubMenuDeleted: (() => {})
     }, callbacks);
 
@@ -65,6 +66,20 @@ export default class ChapterNavigation {
             })
           },
           {
+            id: 'hierarchy-up',
+            label: Dictionary.get('l10n.hierarchyUp'),
+            onClick: (target => {
+              this.callbacks.onSubMenuHierarchyChanged(this.getButtonId(target), -1);
+            })
+          },
+          {
+            id: 'hierarchy-down',
+            label: Dictionary.get('l10n.hierarchyDown'),
+            onClick: (target => {
+              this.callbacks.onSubMenuHierarchyChanged(this.getButtonId(target), 1);
+            })
+          },
+          {
             id: 'delete',
             label: Dictionary.get('l10n.delete'),
             onClick: (target => {
@@ -110,13 +125,10 @@ export default class ChapterNavigation {
   addButton(id) {
     this.buttons[id] = new ChapterNavigationButton(
       {
+        title: this.callbacks.onGetTitle(id),
         chapterGroup: this.getChapterGroup(id)
       },
       {
-        onGetTitle: ((target) => {
-          const buttonId = this.getButtonId(target);
-          return this.callbacks.onGetTitle((buttonId === -1) ? id : buttonId);
-        }),
         onShowChapter: ((target) => {
           this.callbacks.onShowChapter(this.getButtonId(target));
         }),
@@ -147,30 +159,18 @@ export default class ChapterNavigation {
     this.buttons.splice(id, 1);
   }
 
+  /**
+   * Update buttons.
+   */
   updateButtons() {
-    this.buttons.forEach(button => {
-      button.update();
+    this.buttons.forEach((button, index) => {
+      button.update({
+        title: this.callbacks.onGetTitle(index),
+        hierarchyLevel: (this.params.chapterList.getValue())[index]
+          .chapterHierarchy.split('-').length
+      });
     });
   }
-
-  /**
-   * Swap button hierarchies.
-   *
-   * @param {string} hierarchySource Hierarchy of button #1 to swap.
-   * @param {string} hierarchyTarget Hierarchy of button #2 to swap.
-   */
-  // swapButtonHierarchies(hierarchySource, hierarchyTarget) {
-  //   const button1 = this.buttons[hierarchySource];
-  //   const button2 = this.buttons[hierarchyTarget];
-  //
-  //   if (!button1 || !button2) {
-  //     return;
-  //   }
-  //
-  //   const tmp = this.buttons[hierarchyTarget].getHierarchy();
-  //   this.buttons[hierarchyTarget].setHierachy(this.buttons[hierarchySource].getHierarchy());
-  //   this.buttons[hierarchySource].setHierachy(tmp);
-  // }
 
   /**
    * Set current button.

@@ -8,19 +8,19 @@ export default class ChapterNavigationButton {
 
     this.callbacks = Util.extend({
       onShowChapter: (() => {}),
-      onShowMenu: (() => {}),
-      onGetTitle: (() => {}),
+      onShowMenu: (() => {})
     }, callbacks);
 
     this.dom = document.createElement('button');
     this.dom.classList.add('h5peditor-portfolio-chapter-button');
+    this.dom.classList.add('h5peditor-portfolio-chapter-button-level-1');
     this.dom.addEventListener('click', () => {
       this.callbacks.onShowChapter(this);
     });
 
     this.label = document.createElement('div');
     this.label.classList.add('h5peditor-portfolio-chapter-button-label');
-    this.label.innerText = this.callbacks.onGetTitle(this);
+    this.label.innerText = this.params.title;
     this.dom.appendChild(this.label);
 
     this.menu = document.createElement('button');
@@ -45,8 +45,24 @@ export default class ChapterNavigationButton {
     this.dom.classList.toggle('current', state);
   }
 
-  update() {
-    this.label.innerText = this.callbacks.onGetTitle(this);
+  /**
+   * Update button values.
+   *
+   * @param {object} params Parameters.
+   * @param {string} [params.title] Button label.
+   * @param {number} [params.hierarchyLevel] Hierarchy level.
+   */
+  update(params = {}) {
+    if (typeof params.title === 'string') {
+      this.label.innerText = params.title;
+    }
+
+    if (typeof params.hierarchyLevel === 'number') {
+      for (let i = 1; i <= 3; i++) { // Support for hierarchy levels 1-3
+        const levelClass = `h5peditor-portfolio-chapter-button-level-${i}`;
+        this.dom.classList.toggle(levelClass, i === params.hierarchyLevel);
+      }
+    }
   }
 
   remove() {

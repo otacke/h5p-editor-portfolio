@@ -24,6 +24,8 @@ export default class Portfolio {
     Dictionary.fill({
       l10n: {
         options: H5PEditor.t('H5PEditor.Portfolio', 'options'),
+        hierarchyUp: H5PEditor.t('H5PEditor.Portfolio', 'hierarchyUp'),
+        hierarchyDown: H5PEditor.t('H5PEditor.Portfolio', 'hierarchyDown'),
         moveUp: H5PEditor.t('H5PEditor.Portfolio', 'moveUp'),
         moveDown: H5PEditor.t('H5PEditor.Portfolio', 'moveDown'),
         delete: H5PEditor.t('H5PEditor.Portfolio', 'delete'),
@@ -79,8 +81,11 @@ export default class Portfolio {
         onShowChapter: (id) => {
           this.handleShowChapter(id);
         },
-        onSubMenuMoved: (hierarchy, offset) => {
-          this.handleMoveChapter(hierarchy, offset);
+        onSubMenuMoved: (id, offset) => {
+          this.handleMoveChapter(id, offset);
+        },
+        onSubMenuHierarchyChanged: (id, offset) => {
+          this.handleHierarchyChanged(id, offset);
         },
         onSubMenuDeleted: (id) => {
           this.handleDeleteChapter(id);
@@ -105,6 +110,8 @@ export default class Portfolio {
     // Use H5PEditor.t('H5PEditor.Boilerplate', 'foo'); to output translatable strings
 
     this.handleShowChapter(0);
+
+    this.chapterNavigation.updateButtons();
 
     // Store values that may have been created as default
     this.setValue(this.field, this.params);
@@ -235,6 +242,20 @@ export default class Portfolio {
       return; // Out of bounds
     }
 
+    if (
+      indexSource === 0 &&
+      this.params.chapters[indexTarget].chapterHierarchy.split('-').length !== 1
+    ) {
+      return; // Position 0 must keep hierarchy 1
+    }
+
+    if (
+      indexTarget === 0 &&
+      this.params.chapters[indexSource].chapterHierarchy.split('-').length !== 1
+    ) {
+      return; // Position 0 must keep hierarchy 1
+    }
+
     // Move item parameters in list widget
     this.chapterList.moveItem(indexSource, indexTarget);
 
@@ -248,6 +269,49 @@ export default class Portfolio {
     this.chapterNavigation.updateButtons();
 
     this.handleShowChapter(indexTarget);
+
+    // Store values
+    this.setValue(this.field, this.params);
+  }
+
+  /**
+   * Handle hierarchy changed.
+   *
+   * @param {number} index Index of item that was changed.
+   * @param {number} offset Diff in hierarchy.
+   */
+  handleHierarchyChanged(index, offset) {
+    if (index === 0) {
+      return; // Position 0 must keep hierarchy 1
+    }
+
+    const oldLength = this.params.chapters[index].chapterHierarchy.split('-')
+      .length;
+
+    const newLength = Math.min(Math.max(1, oldLength + offset), 3);
+
+    if (oldLength === newLength) {
+      return;
+    }
+
+    // Compute placeholder with 0s. Turned into hierarchy by updateHierarchies()
+    let hierachyPlaceholder;
+    if (oldLength < newLength) {
+      hierachyPlaceholder = [
+        ...this.params.chapters[index].chapterHierarchy.split('-'),
+        Array(newLength - oldLength).fill('0')
+      ];
+    }
+    else {
+      hierachyPlaceholder = Array(newLength).fill('0');
+    }
+    hierachyPlaceholder = hierachyPlaceholder.join('-');
+
+    this.params.chapters[index].chapterHierarchy = hierachyPlaceholder;
+
+    this.updateHierarchies();
+
+    this.chapterNavigation.updateButtons();
 
     // Store values
     this.setValue(this.field, this.params);
@@ -274,29 +338,32 @@ export default class Portfolio {
    * Update hierarchies.
    */
   updateHierarchies() {
-    // Determine hierarchy depth
+    /*
+     * Computes hierarchy based on position and hierarchy which is used as a
+     * placeholder only, so only its length is relevant.
+     */
     const hierarchyDepth = this.params.chapters.reduce((length, chapter) => {
       return Math.max(length, chapter.chapterHierarchy.split('-').length);
     }, 1);
 
-    const counter = new Array(hierarchyDepth).fill(1);
-    let lastDepth = 0;
+    const currentHierarchy = new Array(hierarchyDepth).fill(1);
+    let previousDepth = 0;
 
     this.params.chapters.forEach(chapter => {
       const depth = chapter.chapterHierarchy.split('-').length;
-      if (depth === lastDepth) {
-        counter[depth - 1]++;
+      if (depth === previousDepth) {
+        currentHierarchy[depth - 1]++;
       }
-      else if (depth < lastDepth) {
-        counter[depth - 1]++;
-        for (let i = depth; i < counter.length; i++) {
-          counter[i] = 1;
+      else if (depth < previousDepth) {
+        currentHierarchy[depth - 1]++;
+        for (let i = depth; i < currentHierarchy.length; i++) {
+          currentHierarchy[i] = 1;
         }
       }
 
-      lastDepth = depth;
+      previousDepth = depth;
 
-      chapter.chapterHierarchy = counter.slice(0, depth).join('-');
+      chapter.chapterHierarchy = currentHierarchy.slice(0, depth).join('-');
     });
   }
 

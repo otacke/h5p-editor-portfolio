@@ -2,6 +2,8 @@
   "libraryStrings": {
     "options": "Options",
     "delete": "Delete",
+    "hierarchyUp": "Move up in hierachy",
+    "hierarchyDown": "Move down in hierachy",
     "moveUp": "Move up",
     "moveDown": "Move down"
   }
