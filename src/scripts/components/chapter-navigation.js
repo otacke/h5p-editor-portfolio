@@ -90,13 +90,21 @@ export default class ChapterNavigation {
             id: 'delete',
             label: Dictionary.get('l10n.delete'),
             onClick: (target => {
-              this.callbacks.onSubMenuDeleted(this.getButtonId(target));
+              this.handleSubMenuDeleted(target);
             })
           }
         ]
       }
     );
     this.dom.appendChild(this.subMenu.getDOM());
+
+    this.deleteDialog = new H5P.ConfirmationDialog({
+      headerText: Dictionary.get('l10n.deleteDialogHeader'),
+      dialogText: Dictionary.get('l10n.deleteDialogText'),
+      cancelText: Dictionary.get('l10n.deleteDialogCancel'),
+      confirmText: Dictionary.get('l10n.deleteDialogConfirm')
+    });
+    this.deleteDialog.appendTo(document.body);
   }
 
   /**
@@ -195,6 +203,24 @@ export default class ChapterNavigation {
     this.buttons.forEach((button, id) => {
       button.setActive(id === targetId);
     });
+  }
+
+  /**
+   * Handle label deleted.
+   *
+   * @param {ChapterNavigationButton} target Calling button.
+   */
+  handleSubMenuDeleted(target) {
+    this.deleteDialog.once('confirmed', () => {
+      this.deleteDialog.off('canceled');
+      this.callbacks.onSubMenuDeleted(this.getButtonId(target));
+    });
+
+    this.deleteDialog.once('canceled', () => {
+      this.deleteDialog.off('confirmed');
+    });
+
+    this.deleteDialog.show();
   }
 
   /**

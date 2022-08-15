@@ -6,6 +6,10 @@
     "hierarchyUp": "Move up in hierachy",
     "hierarchyDown": "Move down in hierachy",
     "moveUp": "Move up",
-    "moveDown": "Move down"
+    "moveDown": "Move down",
+    "deleteDialogHeader": "Delete page",
+    "deleteDialogText": "You are about to delete the page and all its contents. Are you sure you want to proceed?",
+    "deleteDialogCancel": "No, abort.",
+    "deleteDialogConfirm": "Yes, delete!"
   }
 }
