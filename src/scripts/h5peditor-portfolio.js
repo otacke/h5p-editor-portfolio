@@ -34,7 +34,8 @@ export default class Portfolio {
         deleteDialogText: H5PEditor.t('H5PEditor.Portfolio', 'deleteDialogText'),
         deleteDialogCancel: H5PEditor.t('H5PEditor.Portfolio', 'deleteDialogCancel'),
         deleteDialogConfirm: H5PEditor.t('H5PEditor.Portfolio', 'deleteDialogConfirm'),
-        chapter: H5PEditor.t('H5PEditor.Portfolio', 'chapter')
+        chapter: H5PEditor.t('H5PEditor.Portfolio', 'chapter'),
+        addChapter: H5PEditor.t('H5PEditor.Portfolio', 'addChapter')
       }
     });
 

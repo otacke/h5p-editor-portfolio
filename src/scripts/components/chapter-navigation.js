@@ -39,10 +39,12 @@ export default class ChapterNavigation {
 
     this.buttonAdd = document.createElement('button');
     this.buttonAdd.classList.add('h5peditor-portfolio-chapter-button-add');
+    this.buttonAdd.setAttribute('aria-label', Dictionary.get('l10n.addChapter'));
     this.buttonAdd.innerText = '+';
     this.buttonAdd.addEventListener('click', () => {
       this.handleAddChapter();
     });
+
     this.dom.appendChild(this.buttonAdd);
 
     for (let id = 0; id < this.params.chapterList.getValue().length; id++) {
