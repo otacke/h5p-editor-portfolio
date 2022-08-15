@@ -12,6 +12,7 @@ export default class ChapterNavigation {
 
     this.callbacks = Util.extend({
       onGetTitle: (() => {}),
+      onGetButtonCapabilities: (() => {}),
       onAddChapter: (() => {}),
       onShowChapter: (() => {}),
       onSubMenuMoved: (() => {}),
@@ -257,12 +258,15 @@ export default class ChapterNavigation {
    * @param {ChapterNavigationButton} target Calling button.
    */
   handleShowMenu(target) {
-    const button = this.buttons.find(button => button === target);
-    if (!button) {
+    const id = this.buttons.findIndex(button => button === target);
+    if (id === -1) {
       return;
     }
 
-    button.attachMenu(this.subMenu);
+    // Show/hide submenu items based on capability of button
+    this.subMenu.toggleOptions(this.callbacks.onGetButtonCapabilities(id));
+
+    this.buttons[id].showSubMenu(this.subMenu);
   }
 
   handleAddChapter() {

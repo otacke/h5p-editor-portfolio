@@ -33,7 +33,8 @@ export default class Portfolio {
         deleteDialogHeader: H5PEditor.t('H5PEditor.Portfolio', 'deleteDialogHeader'),
         deleteDialogText: H5PEditor.t('H5PEditor.Portfolio', 'deleteDialogText'),
         deleteDialogCancel: H5PEditor.t('H5PEditor.Portfolio', 'deleteDialogCancel'),
-        deleteDialogConfirm: H5PEditor.t('H5PEditor.Portfolio', 'deleteDialogConfirm')
+        deleteDialogConfirm: H5PEditor.t('H5PEditor.Portfolio', 'deleteDialogConfirm'),
+        chapter: H5PEditor.t('H5PEditor.Portfolio', 'chapter')
       }
     });
 
@@ -73,13 +74,11 @@ export default class Portfolio {
       },
       {
         onGetTitle: (id) => {
-          let title = this.params.chapters[id]?.content?.metadata?.title;
-          if (!title) {
-            title = `Chapter ${id}`;
-          }
-
-          return title; // TODO Get title from chapter
+          return this.getChapterTitle(id);
         },
+        onGetButtonCapabilities: (id => {
+          return this.getButtonCapabilities(id);
+        }),
         onAddChapter: (id) => {
           this.handleAddChapter(id);
         },
@@ -340,6 +339,55 @@ export default class Portfolio {
     }
 
     this.chapterNavigation.setCurrentButton(id);
+  }
+
+  getChapterTitle(id) {
+    let title = this.params.chapters[id]?.content?.metadata?.title;
+    if (!title) {
+      title = `${Dictionary.get('l10n.chapter')} ${id}`; // Fallback
+    }
+
+    return title;
+  }
+
+  /**
+   * Get button capabilities in submenu.
+   *
+   * @param {number} id Id of button.
+   * @return {object} Key and boolean indicating capabilities.
+   */
+  getButtonCapabilities(id) {
+    const capabilities = {};
+
+    capabilities['edit-label'] = true;
+
+    capabilities['move-up'] = (
+      id !== 0 &&
+      (
+        id !== 1 ||
+        this.params.chapters[1].chapterHierarchy.split('-').length === 1
+      )
+    );
+
+    capabilities['move-down'] = (
+      id !== this.params.chapters.length - 1
+    );
+
+    capabilities['hierarchy-up'] = (
+      id !== 0 &&
+      this.params.chapters[id].chapterHierarchy.split('-').length > 1
+    );
+
+    capabilities['hierarchy-down'] = (
+      this.params.chapters[id].chapterHierarchy.split('-').length < 3
+    );
+
+    capabilities['delete'] = (
+      id !== 0 ||
+      this.params.chapters[1].chapterHierarchy.split('-').length === 1
+    );
+
+    return capabilities;
   }
 
   /**

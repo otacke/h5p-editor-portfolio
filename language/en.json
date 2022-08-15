@@ -10,6 +10,7 @@
     "deleteDialogHeader": "Delete page",
     "deleteDialogText": "You are about to delete the page and all its contents. Are you sure you want to proceed?",
     "deleteDialogCancel": "No, abort.",
-    "deleteDialogConfirm": "Yes, delete!"
+    "deleteDialogConfirm": "Yes, delete!",
+    "chapter": "Chapter"
   }
 }

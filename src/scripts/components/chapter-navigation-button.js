@@ -115,7 +115,7 @@ export default class ChapterNavigationButton {
     this.callbacks.onLabelEdited(this, this.label.innerText);
   }
 
-  attachMenu(subMenu) {
+  showSubMenu(subMenu) {
     // Register button with subMenu
     subMenu.setParent(this);
 

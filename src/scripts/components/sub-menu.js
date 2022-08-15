@@ -16,6 +16,8 @@ export default class SubMenu extends H5P.EventDispatcher {
     this.options = {};
     this.parent = null;
 
+    this.options = {};
+
     this.baseClass = 'submenu-popup';
 
     this.handleClosed = this.handleClosed.bind(this);
@@ -42,6 +44,7 @@ export default class SubMenu extends H5P.EventDispatcher {
         this.hide();
       });
       optionsWrapper.appendChild(subMenuOption);
+      this.options[option.id] = (subMenuOption);
     });
 
     this.dom.appendChild(optionsWrapper);
@@ -56,10 +59,46 @@ export default class SubMenu extends H5P.EventDispatcher {
     return this.dom;
   }
 
+  /**
+   * Set parent.
+   *
+   * @param {HTMLElement} parent Parent element.
+   */
   setParent(parent) {
     this.parent = parent;
   }
 
+  /**
+   * Toggle options.
+   *
+   * @param {object} [capabilities = {}] Capabilities.
+   */
+  toggleOptions(capabilities = {}) {
+    for (const capability in capabilities) {
+      this.toggleOption(capability, capabilities[capability]);
+    }
+  }
+
+  /**
+   * Toggle option.
+   *
+   * @param {string} id Option id.
+   * @param {boolean} state State. False to show.
+   */
+  toggleOption(id, state) {
+    if (!this.options[id] || typeof state !== 'boolean') {
+      return;
+    }
+
+    this.options[id].classList.toggle('display-none', !state);
+  }
+
+  /**
+   * Show.
+   *
+   * @param {object} [params = {}] Parameters.
+   * @param {object} [params.css] CSS parameters.
+   */
   show(params = {}) {
     for (const attribute in (params.css || {})) {
       this.dom.style[attribute] = params.css[attribute];
@@ -71,6 +110,9 @@ export default class SubMenu extends H5P.EventDispatcher {
     this.trigger('shown');
   }
 
+  /**
+   * Hide.
+   */
   hide() {
     this.dom.classList.add('display-none');
     document.body.removeEventListener('click', this.handleClosed);
@@ -78,6 +120,9 @@ export default class SubMenu extends H5P.EventDispatcher {
     this.trigger('hidden');
   }
 
+  /**
+   * Handle closed.
+   */
   handleClosed() {
     this.hide();
   }
