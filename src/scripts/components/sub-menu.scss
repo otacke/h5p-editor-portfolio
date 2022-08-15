@@ -41,17 +41,41 @@
       &.display-none {
         display: none;
       }
+
+      &::before {
+        font-family: "Material Icons";
+        margin-right: 0.3em;
+        line-height: 1;
+        vertical-align: bottom;
+      }
+
+      &.submenu-popup-option-edit-label::before {
+        content: "\e3c9";
+      }
+
+      &.submenu-popup-option-move-up::before {
+        content: "\e5d8";
+      }
+
+      &.submenu-popup-option-move-down::before {
+        content: "\e5db";
+      }
+
+      &.submenu-popup-option-hierarchy-up::before {
+        content: "\e5c4";
+      }
+
+      &.submenu-popup-option-hierarchy-down::before {
+        content: "\e5c8";
+      }
+
+      &.submenu-popup-option-delete::before {
+        content: "\e872";
+      }
     }
 
     .submenu-popup-option:hover {
       background-color: rgba(23, 104, 196, 0.1);
-    }
-
-    .submenu-popup-option:before {
-      font-family: "Material Icons";
-      margin-right: 0.3em;
-      line-height: 1;
-      vertical-align: bottom;
     }
   }
 }
