@@ -29,6 +29,7 @@ export default class Portfolio {
         moveUp: H5PEditor.t('H5PEditor.Portfolio', 'moveUp'),
         moveDown: H5PEditor.t('H5PEditor.Portfolio', 'moveDown'),
         delete: H5PEditor.t('H5PEditor.Portfolio', 'delete'),
+        editLabel: H5PEditor.t('H5PEditor.Portfolio', 'editLabel'),
       }
     });
 
@@ -81,11 +82,14 @@ export default class Portfolio {
         onShowChapter: (id) => {
           this.handleShowChapter(id);
         },
+        onSubMenuEditLabel: (id) => {
+          this.handleEditLabel(id);
+        },
         onSubMenuMoved: (id, offset) => {
           this.handleMoveChapter(id, offset);
         },
         onSubMenuHierarchyChanged: (id, offset) => {
-          this.handleHierarchyChanged(id, offset);
+          this.handleChangeHierarchy(id, offset);
         },
         onSubMenuDeleted: (id) => {
           this.handleDeleteChapter(id);
@@ -280,7 +284,7 @@ export default class Portfolio {
    * @param {number} index Index of item that was changed.
    * @param {number} offset Diff in hierarchy.
    */
-  handleHierarchyChanged(index, offset) {
+  handleChangeHierarchy(index, offset) {
     if (index === 0) {
       return; // Position 0 must keep hierarchy 1
     }

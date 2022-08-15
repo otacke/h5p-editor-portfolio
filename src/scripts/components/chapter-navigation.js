@@ -52,6 +52,13 @@ export default class ChapterNavigation {
       {
         options: [
           {
+            id: 'edit-label',
+            label: Dictionary.get('l10n.editLabel'),
+            onClick: (target => {
+              this.editButtonLabel(this.getButtonId(target));
+            })
+          },
+          {
             id: 'move-up',
             label: Dictionary.get('l10n.moveUp'),
             onClick: (target => {
@@ -134,6 +141,9 @@ export default class ChapterNavigation {
         }),
         onShowMenu: ((target) => {
           this.handleShowMenu(target);
+        }),
+        onLabelEdited: ((target, label) => {
+          this.handleLabelEdited(target, label);
         })
       }
     );
@@ -159,6 +169,10 @@ export default class ChapterNavigation {
     this.buttons.splice(id, 1);
   }
 
+  editButtonLabel(id) {
+    this.buttons[id].editLabel();
+  }
+
   /**
    * Update buttons.
    */
@@ -181,6 +195,34 @@ export default class ChapterNavigation {
     this.buttons.forEach((button, id) => {
       button.setActive(id === targetId);
     });
+  }
+
+  /**
+   * Handle label edited.
+   *
+   * @param {ChapterNavigationButton} target Calling button.
+   * @param {string} label Label text.
+   */
+  handleLabelEdited(target, label) {
+    const id = this.buttons.findIndex(button => button === target);
+    if (id === -1) {
+      return;
+    }
+
+    let listFoo;
+
+    this.params.chapterList.forEachChild((child, index) => {
+      if (index === id) {
+        listFoo = child;
+      }
+    });
+
+    // TODO: Find better way to detect field
+    const inputField = listFoo.$content.get(0).querySelectorAll('input.h5peditor-text')[1];
+
+    // Will update title field and metadata title and store value
+    inputField.value = label;
+    inputField.dispatchEvent(new InputEvent('change', { data: label }));
   }
 
   /**

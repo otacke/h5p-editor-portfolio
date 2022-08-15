@@ -1,6 +1,7 @@
 {
   "libraryStrings": {
     "options": "Options",
+    "editLabel": "Edit label",
     "delete": "Delete",
     "hierarchyUp": "Move up in hierachy",
     "hierarchyDown": "Move down in hierachy",

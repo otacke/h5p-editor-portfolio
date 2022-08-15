@@ -8,8 +8,11 @@ export default class ChapterNavigationButton {
 
     this.callbacks = Util.extend({
       onShowChapter: (() => {}),
-      onShowMenu: (() => {})
+      onShowMenu: (() => {}),
+      onLabelEdited: (() => {}),
     }, callbacks);
+
+    this.handleLabelEdited = this.handleLabelEdited.bind(this);
 
     this.dom = document.createElement('button');
     this.dom.classList.add('h5peditor-portfolio-chapter-button');
@@ -67,6 +70,49 @@ export default class ChapterNavigationButton {
 
   remove() {
     this.dom.remove();
+  }
+
+  /**
+   * Edit label.
+   */
+  editLabel() {
+    this.label.setAttribute('contentEditable', true);
+
+    const range = document.createRange();
+    range.selectNodeContents(this.label);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    this.label.focus();
+
+    this.label.addEventListener('focusout', this.handleLabelEdited);
+    this.label.addEventListener('keydown', this.handleLabelEdited);
+  }
+
+  /**
+   * Handle label was edited.
+   *
+   * @param {KeyboardEvent|FocusEvent} event Event.
+   */
+  handleLabelEdited(event) {
+    if (event instanceof KeyboardEvent) {
+      if (event.key !== 'Enter') {
+        return;
+      }
+    }
+
+    event.preventDefault();
+
+    this.label.removeEventListener('focusout', this.handleLabelEdited);
+    this.label.removeEventListener('keyup', this.handleLabelEdited);
+
+    this.label.setAttribute('contentEditable', false);
+    this.label.scrollLeft = 0;
+
+    this.dom.focus();
+
+    this.callbacks.onLabelEdited(this, this.label.innerText);
   }
 
   attachMenu(subMenu) {
