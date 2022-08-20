@@ -4,6 +4,7 @@
   background-size: cover;
   border: 0;
   border-bottom: solid 1px #e9e4ed;
+  box-sizing: border-box;
   color: #4c4452;
   cursor: pointer;
   display: flex;
@@ -24,25 +25,25 @@
   &.h5peditor-portfolio-chapter-button-level-2 {
     .h5peditor-portfolio-chapter-button-label {
       margin-left: calc(2rem + .5rem);
-      width: calc(10rem - 1rem);
+      width: calc(100% - 1rem);
     }
   }
 
   &.h5peditor-portfolio-chapter-button-level-3 {
     .h5peditor-portfolio-chapter-button-label {
       margin-left: calc(3rem + .5rem);
-      width: calc(10rem - 2rem);
+      width: calc(100% - 2rem);
     }
   }
 
-  &.current {
+  &:not(.is-dragging).current {
     background-color: rgba(23, 104, 196, 0.1);
     color: #1768C4;
     font-weight: 700;
     text-decoration: none solid #1768C4;
   }
 
-  &:hover {
+  &:not(.is-dragging):hover {
     background-color: rgba(23, 104, 196, 0.05);
 
     .h5peditor-portfolio-chapter-button-menu {
@@ -62,12 +63,20 @@
     background-color: rgba(23, 104, 196, 0.1);
   }
 
+  &.no-display {
+    display: none;
+  }
+
+  &.over {
+    border: .25em solid rgba(#1768C4, .9);
+  }
+
   .h5peditor-portfolio-chapter-button-label {
     overflow: hidden;
     margin-right: .25rem;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 10rem;
+    width: 100%;
   }
 
   .h5peditor-portfolio-chapter-button-menu {
@@ -103,4 +112,10 @@
       font-size: 1.1rem;
     }
   }
+}
+
+.h5peditor-portfolio-chapter-button-placeholder {
+  background-color: rgba(#1768C4, .4);
+  border: .25em dashed rgba(#1768C4, .9);
+  border-radius: .3em;
 }

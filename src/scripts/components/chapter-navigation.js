@@ -17,7 +17,8 @@ export default class ChapterNavigation {
       onShowChapter: (() => {}),
       onSubMenuMoved: (() => {}),
       onSubMenuHierarchyChanged: (() => {}),
-      onSubMenuDeleted: (() => {})
+      onSubMenuDeleted: (() => {}),
+      onChaptersReordered: (() => {})
     }, callbacks);
 
     this.buttons = [];
@@ -119,8 +120,14 @@ export default class ChapterNavigation {
     return this.dom;
   }
 
-  getButtonId(target) {
-    return this.buttons.findIndex(button => button === target);
+  /**
+   * Get id of button.
+   *
+   * @param {HTMLElement} button Button to get id for.
+   * @return {number} Id of button or -1 if not found.
+   */
+  getButtonId(button) {
+    return this.buttons.findIndex(but => but === button);
   }
 
   getChapterGroup(id) {
@@ -133,6 +140,21 @@ export default class ChapterNavigation {
     });
 
     return result;
+  }
+
+  /**
+   * Toggle dragging state.
+   *
+   * @param {boolean} state If true/false, set dragging state to true/false.
+   */
+  toggleDragging(state) {
+    if (typeof state !== 'boolean') {
+      return;
+    }
+
+    this.buttons.forEach(button => {
+      button.toggleDragging(state);
+    });
   }
 
   /**
@@ -155,6 +177,48 @@ export default class ChapterNavigation {
         }),
         onLabelEdited: ((target, label) => {
           this.handleLabelEdited(target, label);
+        }),
+        onMouseUp: (() => {
+          this.handleMouseUp();
+        }),
+        onMouseDown: (() => {
+          this.handleMouseDown();
+        }),
+        onDragStart: ((button) => {
+          this.handleDragStart(button);
+        }),
+        onDragEnter: ((button) => {
+          this.handleDragEnter(button);
+        }),
+        onDragLeave: (() => {
+          this.handleDragLeave();
+        }),
+        onDragEnd: ((button) => {
+          this.handleDragEnd(button);
+        }),
+        onMovedUp: ((button) => {
+          this.callbacks.onSubMenuMoved(this.getButtonId(button), -1);
+        }),
+        onMovedDown: ((button) => {
+          this.callbacks.onSubMenuMoved(this.getButtonId(button), 1);
+        }),
+        onMovedLeft: ((button) => {
+          this.callbacks.onSubMenuHierarchyChanged(this.getButtonId(button), -1);
+        }),
+        onMovedRight: ((button) => {
+          this.callbacks.onSubMenuHierarchyChanged(this.getButtonId(button), 1);
+        }),
+        onDelete: ((button) => {
+          this.handleSubMenuDeleted(button);
+        }),
+        onEdit: ((button) => {
+          this.editButtonLabel(this.getButtonId(button));
+        }),
+        onTabNext: ((button) => {
+          this.tabTo(button, 1);
+        }),
+        onTabPrevious: ((button) => {
+          this.tabTo(button, -1);
         })
       }
     );
@@ -188,10 +252,11 @@ export default class ChapterNavigation {
    * Update buttons.
    */
   updateButtons() {
+    const chapters = this.params.chapterList.getValue();
     this.buttons.forEach((button, index) => {
       button.update({
         title: this.callbacks.onGetTitle(index),
-        hierarchyLevel: (this.params.chapterList.getValue())[index]
+        hierarchyLevel: chapters[index]
           .chapterHierarchy.split('-').length
       });
     });
@@ -205,6 +270,9 @@ export default class ChapterNavigation {
   setCurrentButton(targetId) {
     this.buttons.forEach((button, id) => {
       button.setActive(id === targetId);
+      if (id === targetId) {
+        button.focus();
+      }
     });
   }
 
@@ -233,21 +301,23 @@ export default class ChapterNavigation {
    * @param {string} label Label text.
    */
   handleLabelEdited(target, label) {
-    const id = this.buttons.findIndex(button => button === target);
+    const id = this.getButtonId(target);
     if (id === -1) {
       return;
     }
 
-    let listFoo;
-
+    let list;
     this.params.chapterList.forEachChild((child, index) => {
       if (index === id) {
-        listFoo = child;
+        list = child;
       }
     });
+    if (!list) {
+      return;
+    }
 
     // TODO: Find better way to detect field
-    const inputField = listFoo.$content.get(0).querySelectorAll('input.h5peditor-text')[1];
+    const inputField = list.$content.get(0).querySelectorAll('input.h5peditor-text')[1];
 
     // Will update title field and metadata title and store value
     inputField.value = label;
@@ -260,7 +330,7 @@ export default class ChapterNavigation {
    * @param {ChapterNavigationButton} target Calling button.
    */
   handleShowMenu(target) {
-    const id = this.buttons.findIndex(button => button === target);
+    const id = this.getButtonId(target);
     if (id === -1) {
       return;
     }
@@ -278,5 +348,142 @@ export default class ChapterNavigation {
 
       this.callbacks.onAddChapter(idAdded);
     }
+  }
+
+  /**
+   * Handle mouse down.
+   */
+  handleMouseDown() {
+    this.isMouseDownOnDraggable = true;
+  }
+
+  /**
+   * Handle mouse up.
+   */
+  handleMouseUp() {
+    this.isMouseDownOnDraggable = false;
+  }
+
+  /**
+   * Handle drag start.
+   * @param {LayoutButton} button Button dragged.
+   */
+  handleDragStart(button) {
+    this.draggedElement = button;
+    this.dragIndexSource = this.getButtonId(this.draggedElement);
+    this.toggleDragging(true);
+  }
+
+  /**
+   * Handle drag enter.
+   * @param {LayoutButton} button Button dragged on.
+   */
+  handleDragEnter(button) {
+    if (this.dropzoneElement && this.dropzoneElement === button) {
+      return; // Prevent jumping when paragraph is smaller than others
+    }
+
+    this.dropzoneElement = button;
+    this.dragIndexTarget = this.getButtonId(button);
+
+    if (this.draggedElement && this.dropzoneElement && this.draggedElement !== this.dropzoneElement) {
+      const id1 = this.getButtonId(this.draggedElement);
+      const id2 = this.getButtonId(this.dropzoneElement);
+      if (id1 < 0 || id2 < 0) {
+        return;
+      }
+
+      // Swap dragged draggable and draggable that's dragged to if not identical
+      if (this.dropzoneElement && this.draggedElement && this.draggedElement !== this.dropzoneElement) {
+        this.swapButtons({
+          button1: this.draggedElement,
+          button2: this.dropzoneElement,
+          type: 'mouse'
+        });
+      }
+    }
+  }
+
+  /**
+   * Swap buttons.
+   * @param {object} params Parameters.
+   * @param {HTMLElement} button1 Button #1.
+   * @param {HTMLElement} button2 Button #2.
+   */
+  swapButtons(params = {}) {
+    // Swap visuals
+    Util.swapDOMElements(
+      params.button1.getDOM(),
+      params.button2.getDOM()
+    );
+
+    if (params.type === 'mouse') {
+      const id1 = this.getButtonId(params.button1);
+      const id2 = this.getButtonId(params.button2);
+
+      [this.buttons[id1], this.buttons[id2]] =
+        [this.buttons[id2], this.buttons[id1]];
+
+      params.button1.attachDragPlaceholder();
+    }
+  }
+
+  /**
+   * Handle drag leave.
+   */
+  handleDragLeave() {
+    this.dropzoneElement = null;
+  }
+
+  /**
+   * Handle drag end.
+   */
+  handleDragEnd() {
+    this.toggleDragging(false);
+
+    if (
+      typeof this.dragIndexTarget === 'number' &&
+      this.dragIndexTarget !== -1 &&
+      this.dragIndexTarget !== this.dragIndexSource
+    ) {
+      const wasMoved = this.callbacks.onSubMenuMoved (
+        this.dragIndexSource,
+        this.dragIndexTarget - this.dragIndexSource
+      );
+
+      if (!wasMoved) {
+        // Revert changes
+        const button1 = this.buttons[this.dragIndexSource].getDOM();
+        const button2 = this.buttons[this.dragIndexTarget].getDOM();
+
+        if (this.dragIndexSource < this.dragIndexTarget) {
+          button1.parentNode.insertBefore(button2, button1);
+        }
+        else {
+          button1.parentNode.insertBefore(button2, button1.nextSibling);
+        }
+
+        const button = this.buttons.splice(this.dragIndexTarget, 1)[0];
+        this.buttons.splice(this.dragIndexSource, 0, button);
+      }
+    }
+
+    this.draggedElement.focus();
+    this.draggedElement = null;
+    this.dropzoneElement = null;
+    this.dragIndexSource = null;
+    this.dragIndexTarget = null;
+  }
+
+  /**
+   * Tab to previous/next button.
+   */
+  tabTo(button, offset) {
+    const target = this.getButtonId(button) + offset;
+    if (target < 0 || target > this.buttons.length - 1) {
+      return;
+    }
+
+    this.buttons[target].focus();
   }
 }

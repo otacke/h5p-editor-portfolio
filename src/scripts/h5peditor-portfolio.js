@@ -90,13 +90,16 @@ export default class Portfolio {
           this.handleEditLabel(id);
         },
         onSubMenuMoved: (id, offset) => {
-          this.handleMoveChapter(id, offset);
+          return this.moveChapter(id, offset);
         },
         onSubMenuHierarchyChanged: (id, offset) => {
           this.handleChangeHierarchy(id, offset);
         },
         onSubMenuDeleted: (id) => {
           this.handleDeleteChapter(id);
+        },
+        onChaptersReordered: (newOrder) => {
+          this.handleChaptersReordered(newOrder);
         }
       }
     );
@@ -235,51 +238,55 @@ export default class Portfolio {
    *
    * @param {string} indexSource Button id of button to be moved.
    * @param {number} offset Offset of where to move chapter to.
+   * @return {boolean} True if could be moved, else false.
    */
-  handleMoveChapter(indexSource, offset) {
+  moveChapter(indexSource, offset) {
     if (
       typeof indexSource !== 'number' ||
       indexSource < 0 || indexSource > this.params.chapters.length - 1 ||
       typeof offset !== 'number'
     ) {
-      return; // No valid input
+      return false; // No valid input
     }
 
     const indexTarget = indexSource + offset;
     if (indexTarget < 0 || indexTarget > this.params.chapters.length - 1) {
-      return; // Out of bounds
+      return false; // Out of bounds
     }
 
     if (
       indexSource === 0 &&
-      this.params.chapters[indexTarget].chapterHierarchy.split('-').length !== 1
+      this.params.chapters[1].chapterHierarchy.split('-').length !== 1
     ) {
-      return; // Position 0 must keep hierarchy 1
+      return false; // Position 0 must keep hierarchy 1
     }
 
     if (
       indexTarget === 0 &&
       this.params.chapters[indexSource].chapterHierarchy.split('-').length !== 1
     ) {
-      return; // Position 0 must keep hierarchy 1
+      return false; // Position 0 must keep hierarchy 1
     }
 
     // Move item parameters in list widget
     this.chapterList.moveItem(indexSource, indexTarget);
 
-    // List widget doesn't resort DOM elemens, need to swap in tracking array
-    [this.chapterDOMsOrder[indexSource], this.chapterDOMsOrder[indexTarget]] =
-      [this.chapterDOMsOrder[indexTarget], this.chapterDOMsOrder[indexSource]];
+    // List widget doesn't resort DOM elemens, need to move in tracking array
+    const item = this.chapterDOMsOrder.splice(indexSource, 1);
+    this.chapterDOMsOrder.splice(indexTarget, 0, item[0]);
 
     // Rebuild hierarchies
     this.updateHierarchies();
 
+    // Update button titles and hierarchies
     this.chapterNavigation.updateButtons();
 
     this.handleShowChapter(indexTarget);
 
     // Store values
     this.setValue(this.field, this.params);
+
+    return true;
   }
 
   /**
