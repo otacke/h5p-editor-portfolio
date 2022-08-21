@@ -1,17 +1,21 @@
 {
   "libraryStrings": {
-    "options": "Options",
-    "editLabel": "Edit label",
-    "delete": "Delete",
-    "hierarchyUp": "Move up in hierachy",
-    "hierarchyDown": "Move down in hierachy",
-    "moveUp": "Move up",
-    "moveDown": "Move down",
-    "deleteDialogHeader": "Delete page",
-    "deleteDialogText": "You are about to delete the page and all its contents. Are you sure you want to proceed?",
-    "deleteDialogCancel": "No, abort.",
-    "deleteDialogConfirm": "Yes, delete!",
-    "chapter": "Chapter",
-    "addChapter": "Add chapter"
+    "l10n.options": "Options",
+    "l10n.editLabel": "Edit label",
+    "l10n.delete": "Delete",
+    "l10n.hierarchyUp": "Move up in hierachy",
+    "l10n.hierarchyDown": "Move down in hierachy",
+    "l10n.moveUp": "Move up",
+    "l10n.moveDown": "Move down",
+    "l10n.deleteDialogHeader": "Delete page",
+    "l10n.deleteDialogText": "You are about to delete the page and all its contents. Are you sure you want to proceed?",
+    "l10n.deleteDialogCancel": "No, abort.",
+    "l10n.deleteDialogConfirm": "Yes, delete!",
+    "l10n.chapter": "Chapter",
+    "l10n.addChapter": "Add chapter",
+    "a11y.openSubmenu": "Open sub menu",
+    "a11y.closeSubmenu": "Close sub menu",
+    "a11y.selected": "Selected",
+    "a11y.notSelected": "Not selected"
   }
 }

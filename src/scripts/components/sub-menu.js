@@ -193,6 +193,7 @@ export default class SubMenu extends H5P.EventDispatcher {
     }
     else if (event.key === 'Tab') {
       event.preventDefault();
+      this.hide();
     }
   }
 

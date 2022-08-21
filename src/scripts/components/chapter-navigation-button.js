@@ -1,5 +1,6 @@
 import './chapter-navigation-button.scss';
 import Util from './../h5peditor-portfolio-util';
+import Dictionary from './../services/dictionary';
 
 export default class ChapterNavigationButton {
   constructor(params = {}, callbacks = {}) {
@@ -52,6 +53,7 @@ export default class ChapterNavigationButton {
 
     this.menu = document.createElement('button');
     this.menu.classList.add('h5peditor-portfolio-chapter-button-menu');
+    this.menu.setAttribute('aria-label', Dictionary.get('a11y.openSubmenu'));
     this.menu.addEventListener('click', (event) => {
       this.handleClickMenu(event);
     });
@@ -80,10 +82,25 @@ export default class ChapterNavigationButton {
         this.label.innerText = event.data;
       });
     }
+
+    this.updateARIA();
   }
 
   getDOM() {
     return this.dom;
+  }
+
+  /**
+   * Update ARIA.
+   */
+  updateARIA() {
+    const selectedText = this.isSelected() ?
+      Dictionary.get('a11y.selected') :
+      Dictionary.get('a11y.notSelected');
+
+    this.dom.setAttribute(
+      'aria-label', `${this.label.innerText}. ${selectedText}`
+    );
   }
 
   /**
@@ -103,6 +120,7 @@ export default class ChapterNavigationButton {
   setSelected(state) {
     this.selected = state;
     this.dom.classList.toggle('selected', state);
+    this.updateARIA();
   }
 
   /**
@@ -236,6 +254,7 @@ export default class ChapterNavigationButton {
     setTimeout(() => {
       const rect = this.dom.getBoundingClientRect();
 
+      this.menu.setAttribute('aria-label', Dictionary.get('a11y.closeSubmenu'));
       this.menu.classList.add('active');
       subMenu.show({
         keyboardUsed: keyboardUsed,
@@ -248,6 +267,7 @@ export default class ChapterNavigationButton {
 
       subMenu.once('hidden', (event) => {
         this.menu.classList.remove('active');
+        this.menu.setAttribute('aria-label', Dictionary.get('a11y.openSubmenu'));
         if (!event?.data?.keepFocus) {
           this.dom.focus();
         }

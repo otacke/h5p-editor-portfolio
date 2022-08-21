@@ -20,24 +20,32 @@ export default class Portfolio {
     }, params);
     this.setValue = setValue;
 
-    // Fill dictionary
-    Dictionary.fill({
-      l10n: {
-        options: H5PEditor.t('H5PEditor.Portfolio', 'options'),
-        hierarchyUp: H5PEditor.t('H5PEditor.Portfolio', 'hierarchyUp'),
-        hierarchyDown: H5PEditor.t('H5PEditor.Portfolio', 'hierarchyDown'),
-        moveUp: H5PEditor.t('H5PEditor.Portfolio', 'moveUp'),
-        moveDown: H5PEditor.t('H5PEditor.Portfolio', 'moveDown'),
-        delete: H5PEditor.t('H5PEditor.Portfolio', 'delete'),
-        editLabel: H5PEditor.t('H5PEditor.Portfolio', 'editLabel'),
-        deleteDialogHeader: H5PEditor.t('H5PEditor.Portfolio', 'deleteDialogHeader'),
-        deleteDialogText: H5PEditor.t('H5PEditor.Portfolio', 'deleteDialogText'),
-        deleteDialogCancel: H5PEditor.t('H5PEditor.Portfolio', 'deleteDialogCancel'),
-        deleteDialogConfirm: H5PEditor.t('H5PEditor.Portfolio', 'deleteDialogConfirm'),
-        chapter: H5PEditor.t('H5PEditor.Portfolio', 'chapter'),
-        addChapter: H5PEditor.t('H5PEditor.Portfolio', 'addChapter')
-      }
-    });
+    this.fillDictionary();
+
+    // // Fill dictionary
+    // Dictionary.fill({
+    //   l10n: {
+    //     options: H5PEditor.t('H5PEditor.Portfolio', 'options'),
+    //     hierarchyUp: H5PEditor.t('H5PEditor.Portfolio', 'hierarchyUp'),
+    //     hierarchyDown: H5PEditor.t('H5PEditor.Portfolio', 'hierarchyDown'),
+    //     moveUp: H5PEditor.t('H5PEditor.Portfolio', 'moveUp'),
+    //     moveDown: H5PEditor.t('H5PEditor.Portfolio', 'moveDown'),
+    //     delete: H5PEditor.t('H5PEditor.Portfolio', 'delete'),
+    //     editLabel: H5PEditor.t('H5PEditor.Portfolio', 'editLabel'),
+    //     deleteDialogHeader: H5PEditor.t('H5PEditor.Portfolio', 'deleteDialogHeader'),
+    //     deleteDialogText: H5PEditor.t('H5PEditor.Portfolio', 'deleteDialogText'),
+    //     deleteDialogCancel: H5PEditor.t('H5PEditor.Portfolio', 'deleteDialogCancel'),
+    //     deleteDialogConfirm: H5PEditor.t('H5PEditor.Portfolio', 'deleteDialogConfirm'),
+    //     chapter: H5PEditor.t('H5PEditor.Portfolio', 'chapter'),
+    //     addChapter: H5PEditor.t('H5PEditor.Portfolio', 'addChapter')
+    //   },
+    //   a11y: {
+    //     openSubmenu: H5PEditor.t('H5PEditor.Portfolio', 'openSubmenu'),
+    //     closeSubmenu: H5PEditor.t('H5PEditor.Portfolio', 'closeSubmenu'),
+    //     selected: H5PEditor.t('H5PEditor.Portfolio', 'selected'),
+    //     notSelected: H5PEditor.t('H5PEditor.Portfolio', 'notSelected')
+    //   }
+    // });
 
     this.params.chapters = this.sanitize(this.params.chapters || []);
 
@@ -495,5 +503,34 @@ export default class Portfolio {
     }
 
     return params;
+  }
+
+  /**
+   * Fill Dictionary.
+   */
+  fillDictionary() {
+    // Convert H5PEditor language strings into object.
+    const plainTranslations = H5PEditor.language['H5PEditor.Portfolio'].libraryStrings || {};
+    const translations = {};
+
+    for (const key in plainTranslations) {
+      let current = translations;
+      // Assume string keys separated by . or / for defining path
+      const splits = key.split(/[./]+/);
+      const lastSplit = splits.pop();
+
+      // Create nested object structure if necessary
+      splits.forEach(split => {
+        if (!current[split]) {
+          current[split] = {};
+        }
+        current = current[split];
+      });
+
+      // Add translation string
+      current[lastSplit] = plainTranslations[key];
+    }
+
+    Dictionary.fill(translations);
   }
 }
