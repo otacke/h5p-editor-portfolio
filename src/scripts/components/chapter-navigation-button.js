@@ -34,6 +34,8 @@ export default class ChapterNavigationButton {
     this.dom.classList.add('h5peditor-portfolio-chapter-button');
     this.dom.classList.add('h5peditor-portfolio-chapter-button-level-1');
     this.dom.setAttribute('draggable', true);
+    this.dom.setAttribute('role', 'menuitem');
+    this.dom.setAttribute('tabindex', '-1');
     this.dom.addEventListener('click', (event) => {
       if (event.target !== this.dom) {
         return; // Is sub menu button
@@ -110,6 +112,7 @@ export default class ChapterNavigationButton {
    */
   setActive(state) {
     this.dom.classList.toggle('current', state);
+    this.dom.setAttribute('tabindex', state ? '0' : '-1');
   }
 
   /**

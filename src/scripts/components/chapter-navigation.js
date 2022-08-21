@@ -23,8 +23,10 @@ export default class ChapterNavigation {
 
     this.buttons = [];
 
-    this.dom = document.createElement('div');
+    this.dom = document.createElement('ol');
     this.dom.classList.add('h5peditor-portfolio-chapter-navigation');
+    this.dom.setAttribute('role', 'menu');
+    this.dom.setAttribute('tabindex', '-1');
 
     const title = document.createElement('div');
     title.classList.add('h5peditor-portfolio-chapter-navigation-maintitle');
@@ -219,16 +221,20 @@ export default class ChapterNavigation {
           this.editButtonLabel(this.getButtonId(button));
         }),
         onTabNext: ((button) => {
-          this.tabTo(button, 1);
+          this.tabTo(button, 1, { loop: true });
         }),
         onTabPrevious: ((button) => {
-          this.tabTo(button, -1);
+          this.tabTo(button, -1, { loop: true });
         })
       }
     );
 
+    const buttonWrapper = document.createElement('li');
+    buttonWrapper.classList.add('h5peditor-portfolio-chapter-button-wrapper');
+    buttonWrapper.appendChild(this.buttons[id].getDOM());
+
     this.dom.insertBefore(
-      this.buttons[id].getDOM(),
+      buttonWrapper,
       this.buttonSeparator
     );
   }
@@ -482,6 +488,9 @@ export default class ChapterNavigation {
         const button = this.buttons.splice(this.dragIndexTarget, 1)[0];
         this.buttons.splice(this.dragIndexSource, 0, button);
       }
+      else {
+        this.buttons[this.dragIndexSource].setActive(false);
+      }
     }
 
     this.draggedElement.focus();
@@ -493,13 +502,27 @@ export default class ChapterNavigation {
 
   /**
    * Tab to previous/next button.
+   *
+   * @param {HTMLElement} button Button.
+   * @param {number} offset Offset for tabbing.
+   * @param {object} [options] Options.
+   * @param {boolean} [options.loop=false] If true, will jump when reaching last.
    */
-  tabTo(button, offset) {
-    const target = this.getButtonId(button) + offset;
-    if (target < 0 || target > this.buttons.length - 1) {
+  tabTo(button, offset, options = {}) {
+    let target = this.getButtonId(button) + offset;
+
+    if (!options.loop && (target < 0 || target > this.buttons.length - 1)) {
       return;
     }
+    else {
+      target = target % this.buttons.length;
+      if (target < 0) {
+        target += this.buttons.length;
+      }
+    }
 
+    button.setActive(false);
+    this.buttons[target].setActive(true);
     this.buttons[target].focus();
   }
 }

@@ -3,8 +3,10 @@
   box-shadow: 0.625em 0.625em 1.875em rgb(166 166 166 / 20%);
   display: flex;
   flex-direction: column;
+  margin: 0;
   max-width: 15rem;
   min-width: 15rem;
+  padding: 0;
 
   .h5peditor-portfolio-chapter-navigation-maintitle {
     background-color: #1768C4;
@@ -48,5 +50,10 @@
     &:focus {
       box-shadow: 0 0 16px 0 rgb(133 188 255 / 84%);
     }
+  }
+
+  .h5peditor-portfolio-chapter-button-wrapper {
+    list-style-type: none;
+    width: 100%;
   }
 }
