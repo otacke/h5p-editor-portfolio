@@ -36,30 +36,35 @@
     }
   }
 
-  &:not(.is-dragging).current {
-    background-color: rgba(23, 104, 196, 0.1);
-    color: #1768C4;
-    font-weight: 700;
-    text-decoration: none solid #1768C4;
-  }
+  &:not(.is-dragging) {
+    &.current {
+      background-color: rgba(23, 104, 196, 0.1);
+      color: #1768C4;
+      text-decoration: none solid #1768C4;
 
-  &:not(.is-dragging):hover {
-    background-color: rgba(23, 104, 196, 0.05);
+      &.selected {
+        font-weight: 700;
 
-    .h5peditor-portfolio-chapter-button-menu {
-      visibility: visible;
+        .h5peditor-portfolio-chapter-button-menu {
+          visibility: visible;
+        }
+      }
+    }
+
+    &:hover {
+      background-color: rgba(23, 104, 196, 0.05);
+
+      .h5peditor-portfolio-chapter-button-menu {
+        visibility: visible;
+      }
     }
   }
 
   &:focus {
     background-color: rgba(23, 104, 196, 0.05);
-
-    .h5peditor-portfolio-chapter-button-menu {
-      visibility: visible;
-    }
   }
 
-  &:active {
+  &:focus &:active {
     background-color: rgba(23, 104, 196, 0.1);
   }
 

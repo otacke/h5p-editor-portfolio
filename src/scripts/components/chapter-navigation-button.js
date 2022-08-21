@@ -33,13 +33,16 @@ export default class ChapterNavigationButton {
     this.dom.classList.add('h5peditor-portfolio-chapter-button');
     this.dom.classList.add('h5peditor-portfolio-chapter-button-level-1');
     this.dom.setAttribute('draggable', true);
-    this.dom.addEventListener('click', () => {
+    this.dom.addEventListener('click', (event) => {
+      if (event.target !== this.dom) {
+        return; // Is sub menu button
+      }
+
       if (!this.isSelected()) {
         this.callbacks.onShowChapter(this);
       }
-      else {
-        this.selected = false;
-      }
+
+      this.setSelected(!this.isSelected());
     });
 
     this.label = document.createElement('div');
@@ -49,8 +52,8 @@ export default class ChapterNavigationButton {
 
     this.menu = document.createElement('button');
     this.menu.classList.add('h5peditor-portfolio-chapter-button-menu');
-    this.menu.addEventListener('click', () => {
-      this.handleClickMenu();
+    this.menu.addEventListener('click', (event) => {
+      this.handleClickMenu(event);
     });
     this.dom.appendChild(this.menu);
 
@@ -83,9 +86,23 @@ export default class ChapterNavigationButton {
     return this.dom;
   }
 
+  /**
+   * Set active.
+   *
+   * @param {boolean} state If true, set active.
+   */
   setActive(state) {
-    this.selected = state;
     this.dom.classList.toggle('current', state);
+  }
+
+  /**
+   * Set selected.
+   *
+   * @param {boolean} state If true, set selected.
+   */
+  setSelected(state) {
+    this.selected = state;
+    this.dom.classList.toggle('selected', state);
   }
 
   /**
@@ -203,7 +220,13 @@ export default class ChapterNavigationButton {
     this.callbacks.onLabelEdited(this, this.label.innerText);
   }
 
-  showSubMenu(subMenu) {
+  /**
+   * Show sub menu.
+   *
+   * @param {SubMenu} subMenu Sub menu.
+   * @param {boolean} keyboardUsed True, if was called using keyboard.
+   */
+  showSubMenu(subMenu, keyboardUsed = false) {
     // Register button with subMenu
     subMenu.setParent(this);
 
@@ -215,6 +238,7 @@ export default class ChapterNavigationButton {
 
       this.menu.classList.add('active');
       subMenu.show({
+        keyboardUsed: keyboardUsed,
         css: {
           width: `${rect.width}px`,
           left: `calc(${rect.left}px + ${rect.width}px - 1.5rem)`,
@@ -222,18 +246,21 @@ export default class ChapterNavigationButton {
         }
       });
 
-      subMenu.once('hidden', () => {
+      subMenu.once('hidden', (event) => {
         this.menu.classList.remove('active');
+        if (!event?.data?.keepFocus) {
+          this.dom.focus();
+        }
       });
     }, 0);
   }
 
-  handleClickMenu() {
+  handleClickMenu(event) {
     if (this.menu.classList.contains('active')) {
       return;
     }
 
-    this.callbacks.onShowMenu(this);
+    this.callbacks.onShowMenu(this, event.pointerType === '');
   }
 
   /**
@@ -375,7 +402,6 @@ export default class ChapterNavigationButton {
    * @param {Event} event Event.
    */
   handleFocusOut() {
-    this.selected = false;
     this.callbacks.onFocusOut(this);
   }
 

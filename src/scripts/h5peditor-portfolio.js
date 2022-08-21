@@ -90,7 +90,11 @@ export default class Portfolio {
           this.handleEditLabel(id);
         },
         onSubMenuMoved: (id, offset) => {
-          return this.moveChapter(id, offset);
+          const success = this.moveChapter(id, offset);
+          if (success) {
+            this.chapterNavigation.setSelectedButton(id + offset);
+          }
+          return success;
         },
         onSubMenuHierarchyChanged: (id, offset) => {
           this.handleChangeHierarchy(id, offset);

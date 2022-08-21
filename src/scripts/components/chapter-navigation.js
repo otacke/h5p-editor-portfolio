@@ -60,21 +60,24 @@ export default class ChapterNavigation {
             label: Dictionary.get('l10n.editLabel'),
             onClick: (target => {
               this.editButtonLabel(this.getButtonId(target));
-            })
+            }),
+            keepFocus: true
           },
           {
             id: 'move-up',
             label: Dictionary.get('l10n.moveUp'),
             onClick: (target => {
               this.callbacks.onSubMenuMoved(this.getButtonId(target), -1);
-            })
+            }),
+            keepFocus: true
           },
           {
             id: 'move-down',
             label: Dictionary.get('l10n.moveDown'),
             onClick: (target => {
               this.callbacks.onSubMenuMoved(this.getButtonId(target), +1);
-            })
+            }),
+            keepFocus: true
           },
           {
             id: 'hierarchy-up',
@@ -95,7 +98,8 @@ export default class ChapterNavigation {
             label: Dictionary.get('l10n.delete'),
             onClick: (target => {
               this.handleSubMenuDeleted(target);
-            })
+            }),
+            keepFocus: true
           }
         ]
       }
@@ -172,8 +176,8 @@ export default class ChapterNavigation {
         onShowChapter: ((target) => {
           this.callbacks.onShowChapter(this.getButtonId(target));
         }),
-        onShowMenu: ((target) => {
-          this.handleShowMenu(target);
+        onShowMenu: ((target, keyboardUsed) => {
+          this.handleShowMenu(target, keyboardUsed);
         }),
         onLabelEdited: ((target, label) => {
           this.handleLabelEdited(target, label);
@@ -277,6 +281,17 @@ export default class ChapterNavigation {
   }
 
   /**
+   * Set button selected.
+   *
+   * @param {number} targetId Id of button to set selected.
+   */
+  setSelectedButton(targetId) {
+    this.buttons.forEach((button, id) => {
+      button.setSelected(id === targetId);
+    });
+  }
+
+  /**
    * Handle label deleted.
    *
    * @param {ChapterNavigationButton} target Calling button.
@@ -328,8 +343,9 @@ export default class ChapterNavigation {
    * Handle show sub menu.
    *
    * @param {ChapterNavigationButton} target Calling button.
+   * @param {boolean} keyboardUsed True, if non-pointer device used.
    */
-  handleShowMenu(target) {
+  handleShowMenu(target, keyboardUsed) {
     const id = this.getButtonId(target);
     if (id === -1) {
       return;
@@ -338,7 +354,7 @@ export default class ChapterNavigation {
     // Show/hide submenu items based on capability of button
     this.subMenu.toggleOptions(this.callbacks.onGetButtonCapabilities(id));
 
-    this.buttons[id].showSubMenu(this.subMenu);
+    this.buttons[id].showSubMenu(this.subMenu, keyboardUsed);
   }
 
   handleAddChapter() {

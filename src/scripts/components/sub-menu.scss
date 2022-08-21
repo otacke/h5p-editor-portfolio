@@ -30,13 +30,17 @@
     padding: 0.25rem;
 
     .submenu-popup-option {
+      background: transparent;
+      border: 0;
       color: #363b42;
       cursor: pointer;
       line-height: 0.708rem;
       overflow: hidden;
+      padding: 0.5rem;
+      text-align: left;
       text-overflow: ellipsis;
       white-space: nowrap;
-      padding: 0.5rem;
+      width: 100%;
 
       &.display-none {
         display: none;
@@ -75,6 +79,12 @@
     }
 
     .submenu-popup-option:hover {
+      background-color: rgba(23, 104, 196, 0.1);
+    }
+  }
+
+  &.keyboard {
+    .submenu-popup-option:focus {
       background-color: rgba(23, 104, 196, 0.1);
     }
   }
