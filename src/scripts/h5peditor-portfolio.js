@@ -361,7 +361,7 @@ export default class Portfolio {
       id !== 0 &&
       (
         id !== 1 ||
-        this.params.chapters[1].chapterHierarchy.split('-').length === 1
+        this.params.chapters[1]?.chapterHierarchy?.split('-')?.length === 1
       )
     );
 
@@ -370,26 +370,26 @@ export default class Portfolio {
       (id !== this.params.chapters.length - 1) &&
       (
         id !== 0 ||
-        this.params.chapters[1].chapterHierarchy.split('-').length === 1
+        this.params.chapters[1]?.chapterHierarchy?.split('-')?.length === 1
       )
     );
 
     // Can't move up in hierarchy if already on top level or first item
     capabilities['hierarchy-up'] = (
       id !== 0 &&
-      this.params.chapters[id].chapterHierarchy.split('-').length > 1
+      this.params.chapters[id]?.chapterHierarchy?.split('-')?.length > 1
     );
 
     // Can't move down in hierarchy if already on lowest level or first item
     capabilities['hierarchy-down'] = (
-      this.params.chapters[id].chapterHierarchy.split('-').length < Portfolio.MAX_LEVEL &&
+      this.params.chapters[id]?.chapterHierarchy?.split('-')?.length < Portfolio.MAX_LEVEL &&
       id !== 0
     );
 
     // Can only delete if the (new) first item remains on top level
     capabilities['delete'] = (
       id !== 0 ||
-      this.params.chapters[1].chapterHierarchy.split('-').length === 1
+      this.params.chapters[1]?.chapterHierarchy?.split('-')?.length === 1
     );
 
     return capabilities;
