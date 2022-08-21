@@ -22,31 +22,6 @@ export default class Portfolio {
 
     this.fillDictionary();
 
-    // // Fill dictionary
-    // Dictionary.fill({
-    //   l10n: {
-    //     options: H5PEditor.t('H5PEditor.Portfolio', 'options'),
-    //     hierarchyUp: H5PEditor.t('H5PEditor.Portfolio', 'hierarchyUp'),
-    //     hierarchyDown: H5PEditor.t('H5PEditor.Portfolio', 'hierarchyDown'),
-    //     moveUp: H5PEditor.t('H5PEditor.Portfolio', 'moveUp'),
-    //     moveDown: H5PEditor.t('H5PEditor.Portfolio', 'moveDown'),
-    //     delete: H5PEditor.t('H5PEditor.Portfolio', 'delete'),
-    //     editLabel: H5PEditor.t('H5PEditor.Portfolio', 'editLabel'),
-    //     deleteDialogHeader: H5PEditor.t('H5PEditor.Portfolio', 'deleteDialogHeader'),
-    //     deleteDialogText: H5PEditor.t('H5PEditor.Portfolio', 'deleteDialogText'),
-    //     deleteDialogCancel: H5PEditor.t('H5PEditor.Portfolio', 'deleteDialogCancel'),
-    //     deleteDialogConfirm: H5PEditor.t('H5PEditor.Portfolio', 'deleteDialogConfirm'),
-    //     chapter: H5PEditor.t('H5PEditor.Portfolio', 'chapter'),
-    //     addChapter: H5PEditor.t('H5PEditor.Portfolio', 'addChapter')
-    //   },
-    //   a11y: {
-    //     openSubmenu: H5PEditor.t('H5PEditor.Portfolio', 'openSubmenu'),
-    //     closeSubmenu: H5PEditor.t('H5PEditor.Portfolio', 'closeSubmenu'),
-    //     selected: H5PEditor.t('H5PEditor.Portfolio', 'selected'),
-    //     notSelected: H5PEditor.t('H5PEditor.Portfolio', 'notSelected')
-    //   }
-    // });
-
     this.params.chapters = this.sanitize(this.params.chapters || []);
 
     this.chapterDOMsOrder = [... Array(this.params.chapters.length).keys()];
@@ -315,7 +290,7 @@ export default class Portfolio {
     const oldLength = this.params.chapters[index].chapterHierarchy.split('-')
       .length;
 
-    const newLength = Math.min(Math.max(1, oldLength + offset), 3);
+    const newLength = Math.min(Math.max(1, oldLength + offset), Portfolio.MAX_LEVEL);
 
     if (oldLength === newLength) {
       return;
@@ -381,6 +356,7 @@ export default class Portfolio {
 
     capabilities['edit-label'] = true;
 
+    // Can't move up if first item or the new first one isn't on top level
     capabilities['move-up'] = (
       id !== 0 &&
       (
@@ -389,19 +365,28 @@ export default class Portfolio {
       )
     );
 
+    // Can't move down if last item or the new first one isn't on top level
     capabilities['move-down'] = (
-      id !== this.params.chapters.length - 1
+      (id !== this.params.chapters.length - 1) &&
+      (
+        id !== 0 ||
+        this.params.chapters[1].chapterHierarchy.split('-').length === 1
+      )
     );
 
+    // Can't move up in hierarchy if already on top level or first item
     capabilities['hierarchy-up'] = (
       id !== 0 &&
       this.params.chapters[id].chapterHierarchy.split('-').length > 1
     );
 
+    // Can't move down in hierarchy if already on lowest level or first item
     capabilities['hierarchy-down'] = (
-      this.params.chapters[id].chapterHierarchy.split('-').length < 3
+      this.params.chapters[id].chapterHierarchy.split('-').length < Portfolio.MAX_LEVEL &&
+      id !== 0
     );
 
+    // Can only delete if the (new) first item remains on top level
     capabilities['delete'] = (
       id !== 0 ||
       this.params.chapters[1].chapterHierarchy.split('-').length === 1
@@ -534,3 +519,6 @@ export default class Portfolio {
     Dictionary.fill(translations);
   }
 }
+
+/** @constant {number} Maximum depth of chapters */
+Portfolio.MAX_LEVEL = 3;
