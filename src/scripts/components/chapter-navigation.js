@@ -3,6 +3,7 @@ import Util from './../h5peditor-portfolio-util';
 import ChapterNavigationButton from './chapter-navigation-button.js';
 import SubMenu from './sub-menu.js';
 import Dictionary from './../services/dictionary';
+import Readspeaker from './../services/readspeaker';
 
 export default class ChapterNavigation {
   constructor(params = {}, callbacks = {}) {
@@ -169,10 +170,13 @@ export default class ChapterNavigation {
    * @param {number} id Id of button to add.
    */
   addButton(id) {
+    const chapters = this.params.chapterList.getValue();
+
     this.buttons[id] = new ChapterNavigationButton(
       {
         title: this.callbacks.onGetTitle(id),
-        chapterGroup: this.getChapterGroup(id)
+        chapterGroup: this.getChapterGroup(id),
+        hierarchyLevel: chapters[id]?.chapterHierarchy?.split('-').length || 1
       },
       {
         onShowChapter: ((target) => {
@@ -303,6 +307,23 @@ export default class ChapterNavigation {
    * @param {ChapterNavigationButton} target Calling button.
    */
   handleSubMenuDeleted(target) {
+    const delimiter = Dictionary.get('a11y.notPossible')
+      .substr(-1, 1) === '.' ? ' ' : '. ';
+
+    if (this.buttons.length === 1) {
+      const ariaMessage = `${Dictionary.get('a11y.notPossible')}${delimiter}${Dictionary.get('a11y.cannotDeleteOnlyItem')}`;
+      Readspeaker.read(ariaMessage);
+      return;
+    }
+    else if (
+      this.getButtonId(target) === 0 &&
+      this.params.chapterList.getValue()[1].chapterHierarchy.split('-').length !== 1
+    ) {
+      const ariaMessage = `${Dictionary.get('a11y.notPossible')}${delimiter}${Dictionary.get('a11y.firstChapterHierarchyFixed')}`;
+      Readspeaker.read(ariaMessage);
+      return; // Position 0 must keep hierarchy 1
+    }
+
     this.deleteDialog.once('confirmed', () => {
       this.deleteDialog.off('canceled');
       this.callbacks.onSubMenuDeleted(this.getButtonId(target));
@@ -343,6 +364,9 @@ export default class ChapterNavigation {
     // Will update title field and metadata title and store value
     inputField.value = label;
     inputField.dispatchEvent(new InputEvent('change', { data: label }));
+
+    // Make new label known to ARIA
+    target.updateARIA();
   }
 
   /**

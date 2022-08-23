@@ -1,6 +1,7 @@
 import ChapterNavigation from './components/chapter-navigation';
 import Util from './h5peditor-portfolio-util';
 import Dictionary from './services/dictionary';
+import Readspeaker from './services/readspeaker';
 
 /** Class for Portfolio H5P widget */
 export default class Portfolio {
@@ -111,6 +112,8 @@ export default class Portfolio {
 
     this.chapterNavigation.updateButtons();
 
+    Readspeaker.init(mainDOM);
+
     // Store values that may have been created as default
     this.setValue(this.field, this.params);
   }
@@ -196,8 +199,24 @@ export default class Portfolio {
    * Handle adding new chapter.
    */
   handleDeleteChapter(id) {
-    if (typeof id !== 'number' || this.params.chapters.length === 1) {
+    const delimiter = Dictionary.get('a11y.notPossible')
+      .substr(-1, 1) === '.' ? ' ' : '. ';
+
+    if (typeof id !== 'number') {
       return;
+    }
+    else if (this.params.chapters.length === 1) {
+      const ariaMessage = `${Dictionary.get('a11y.notPossible')}${delimiter}${Dictionary.get('a11y.cannotDeleteOnlyItem')}`;
+      Readspeaker.read(ariaMessage);
+      return;
+    }
+    else if (
+      id === 0 &&
+      this.params.chapters[1].chapterHierarchy.split('-').length !== 1
+    ) {
+      const ariaMessage = `${Dictionary.get('a11y.notPossible')}${delimiter}${Dictionary.get('a11y.firstChapterHierarchyFixed')}`;
+      Readspeaker.read(ariaMessage);
+      return; // Position 0 must keep hierarchy 1
     }
 
     this.chapterDOMsOrder.splice(id, 1);
@@ -237,7 +256,19 @@ export default class Portfolio {
     }
 
     const indexTarget = indexSource + offset;
-    if (indexTarget < 0 || indexTarget > this.params.chapters.length - 1) {
+
+    const delimiter = Dictionary.get('a11y.notPossible')
+      .substr(-1, 1) === '.' ? ' ' : '. ';
+
+    if (indexTarget < 0) {
+      const ariaMessage = `${Dictionary.get('a11y.notPossible')}${delimiter}${Dictionary.get('a11y.positionMinReached')}`;
+      Readspeaker.read(ariaMessage);
+      return false; // Out of bounds
+    }
+
+    if (indexTarget > this.params.chapters.length - 1) {
+      const ariaMessage = `${Dictionary.get('a11y.notPossible')}${delimiter}${Dictionary.get('a11y.positionMaxReached')}`;
+      Readspeaker.read(ariaMessage);
       return false; // Out of bounds
     }
 
@@ -245,6 +276,8 @@ export default class Portfolio {
       indexSource === 0 &&
       this.params.chapters[1].chapterHierarchy.split('-').length !== 1
     ) {
+      const ariaMessage = `${Dictionary.get('a11y.notPossible')}${delimiter}${Dictionary.get('a11y.firstChapterHierarchyFixed')}`;
+      Readspeaker.read(ariaMessage);
       return false; // Position 0 must keep hierarchy 1
     }
 
@@ -252,6 +285,8 @@ export default class Portfolio {
       indexTarget === 0 &&
       this.params.chapters[indexSource].chapterHierarchy.split('-').length !== 1
     ) {
+      const ariaMessage = `${Dictionary.get('a11y.notPossible')}${delimiter}${Dictionary.get('a11y.firstChapterHierarchyFixed')}`;
+      Readspeaker.read(ariaMessage);
       return false; // Position 0 must keep hierarchy 1
     }
 
@@ -284,36 +319,54 @@ export default class Portfolio {
    */
   handleChangeHierarchy(index, offset) {
     if (index === 0) {
+      Readspeaker.read(Dictionary.get('a11y.firstChapterHierarchyFixed'));
       return; // Position 0 must keep hierarchy 1
     }
 
     const oldLength = this.params.chapters[index].chapterHierarchy.split('-')
       .length;
 
-    const newLength = Math.min(Math.max(1, oldLength + offset), Portfolio.MAX_LEVEL);
-
-    if (oldLength === newLength) {
+    if (oldLength + offset < 1) {
+      const ariaMessage = Dictionary.get('a11y.hierarchyMinReached')
+        .replace(/@level/g, 1);
+      Readspeaker.read(ariaMessage);
+      return;
+    }
+    else if (oldLength + offset > Portfolio.MAX_LEVEL) {
+      const ariaMessage = Dictionary.get('a11y.hierarchyMaxReached')
+        .replace(/@level/g, Portfolio.MAX_LEVEL);
+      Readspeaker.read(ariaMessage);
       return;
     }
 
+    const newLength = Math.min(Math.max(1, oldLength + offset), Portfolio.MAX_LEVEL);
+
+    if (oldLength === newLength) {
+      return; // Just to be sure ...
+    }
+
     // Compute placeholder with 0s. Turned into hierarchy by updateHierarchies()
-    let hierachyPlaceholder;
+    let hierarchyPlaceholder;
     if (oldLength < newLength) {
-      hierachyPlaceholder = [
+      hierarchyPlaceholder = [
         ...this.params.chapters[index].chapterHierarchy.split('-'),
         Array(newLength - oldLength).fill('0')
       ];
     }
     else {
-      hierachyPlaceholder = Array(newLength).fill('0');
+      hierarchyPlaceholder = Array(newLength).fill('0');
     }
-    hierachyPlaceholder = hierachyPlaceholder.join('-');
+    hierarchyPlaceholder = hierarchyPlaceholder.join('-');
 
-    this.params.chapters[index].chapterHierarchy = hierachyPlaceholder;
+    this.params.chapters[index].chapterHierarchy = hierarchyPlaceholder;
 
     this.updateHierarchies();
 
     this.chapterNavigation.updateButtons();
+
+    const ariaMessage = Dictionary.get('a11y.hierarchyChangedTo')
+      .replace(/@level/g, newLength);
+    Readspeaker.read(ariaMessage);
 
     // Store values
     this.setValue(this.field, this.params);

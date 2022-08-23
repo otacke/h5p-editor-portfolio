@@ -3,8 +3,8 @@
     "l10n.options": "Options",
     "l10n.editLabel": "Edit label",
     "l10n.delete": "Delete",
-    "l10n.hierarchyUp": "Move up in hierachy",
-    "l10n.hierarchyDown": "Move down in hierachy",
+    "l10n.hierarchyUp": "Move up in hierarchy",
+    "l10n.hierarchyDown": "Move down in hierarchy",
     "l10n.moveUp": "Move up",
     "l10n.moveDown": "Move down",
     "l10n.deleteDialogHeader": "Delete page",
@@ -16,6 +16,15 @@
     "a11y.openSubmenu": "Open sub menu",
     "a11y.closeSubmenu": "Close sub menu",
     "a11y.selected": "Selected",
-    "a11y.notSelected": "Not selected"
+    "a11y.notSelected": "Not selected",
+    "a11y.firstChapterHierarchyFixed": "The hierarchy of the first chapter needs to remain 1.",
+    "a11y.positionMinReached": "The chapter is at the top of the list.",
+    "a11y.positionMaxReached": "The chapter is at the bottom of the list.",
+    "a11y.hierarchyMinReached": "The minimum hierarchy level of @level has been reached.",
+    "a11y.hierarchyMaxReached": "The maximum hierarchy level of @level has been reached.",
+    "a11y.hierarchyChangedTo": "The hierarchy level was changed to @level",
+    "a11y.hierarchyLevel": "hierarchy level @level",
+    "a11y.cannotDeleteOnlyItem": "You cannot delete the only item",
+    "a11y.notPossible": "Not possible"
   }
 }

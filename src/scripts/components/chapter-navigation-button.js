@@ -5,6 +5,7 @@ import Dictionary from './../services/dictionary';
 export default class ChapterNavigationButton {
   constructor(params = {}, callbacks = {}) {
     this.params = Util.extend({
+      hierarchyLevel: 1
     }, params);
 
     this.callbacks = Util.extend({
@@ -32,7 +33,7 @@ export default class ChapterNavigationButton {
 
     this.dom = document.createElement('button');
     this.dom.classList.add('h5peditor-portfolio-chapter-button');
-    this.dom.classList.add('h5peditor-portfolio-chapter-button-level-1');
+    this.dom.classList.add(`h5peditor-portfolio-chapter-button-level-${this.params.hierarchyLevel}`);
     this.dom.setAttribute('draggable', true);
     this.dom.setAttribute('role', 'menuitem');
     this.dom.setAttribute('tabindex', '-1');
@@ -100,9 +101,15 @@ export default class ChapterNavigationButton {
       Dictionary.get('a11y.selected') :
       Dictionary.get('a11y.notSelected');
 
-    this.dom.setAttribute(
-      'aria-label', `${this.label.innerText}. ${selectedText}`
-    );
+    let hierarchyText = '';
+    hierarchyText = Dictionary.get('a11y.hierarchyLevel')
+      .replace(/@level/g, parseInt(this.params.hierarchyLevel));
+
+    const label = [this.label.innerText, hierarchyText, selectedText]
+      .filter(label => label.trim() !== '')
+      .join('. ');
+
+    this.dom.setAttribute('aria-label', label);
   }
 
   /**
@@ -143,7 +150,10 @@ export default class ChapterNavigationButton {
         const levelClass = `h5peditor-portfolio-chapter-button-level-${i}`;
         this.dom.classList.toggle(levelClass, i === params.hierarchyLevel);
       }
+      this.params.hierarchyLevel = params.hierarchyLevel;
     }
+
+    this.updateARIA();
   }
 
   /**
