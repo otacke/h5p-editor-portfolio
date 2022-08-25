@@ -1,6 +1,7 @@
 import './chapter-navigation-button.scss';
 import Util from './../h5peditor-portfolio-util';
 import Dictionary from './../services/dictionary';
+import SubMenu from './sub-menu.js';
 
 export default class ChapterNavigationButton {
   constructor(params = {}, callbacks = {}) {
@@ -351,6 +352,10 @@ export default class ChapterNavigationButton {
 
   /**
    * Update drag placeholder size.
+   *
+   * @param {object} [params={}] Parameters.
+   * @param {number} [params.width] Optional explicit width.
+   * @param {number} [params.height] Optional explicit height.
    */
   updateDragPlaceholderSize(params = {}) {
     this.buttonStyle = this.buttonStyle || window.getComputedStyle(this.dom);
@@ -386,6 +391,7 @@ export default class ChapterNavigationButton {
 
   /**
    * Add drag handlers to button.
+   *
    * @param {HTMLElement} button Button.
    */
   addMoveHandlers(button) {
@@ -438,6 +444,7 @@ export default class ChapterNavigationButton {
 
   /**
    * Handle mouse button up or down.
+   *
    * @param {Event} event Mouse event.
    * @param {string} callbackName Callback name.
    */
@@ -455,7 +462,6 @@ export default class ChapterNavigationButton {
 
   /**
    * Handle focus out.
-   * @param {Event} event Event.
    */
   handleFocusOut() {
     this.callbacks.onFocusOut(this);
@@ -463,6 +469,7 @@ export default class ChapterNavigationButton {
 
   /**
    * Handle drag start.
+   *
    * @param {Event} event Event.
    */
   handleDragStart(event) {
@@ -488,6 +495,7 @@ export default class ChapterNavigationButton {
 
   /**
    * Handle drag over.
+   *
    * @param {Event} event Event.
    */
   handleDragOver(event) {
@@ -496,7 +504,6 @@ export default class ChapterNavigationButton {
 
   /**
    * Handle drag enter.
-   * @param {Event} event Event.
    */
   handleDragEnter() {
     this.callbacks.onDragEnter(this);
@@ -504,6 +511,7 @@ export default class ChapterNavigationButton {
 
   /**
    * Handle drag leave.
+   *
    * @param {Event} event Event.
    */
   handleDragLeave(event) {
@@ -516,7 +524,6 @@ export default class ChapterNavigationButton {
 
   /**
    * Handle drag end.
-   * @param {Event} event Event.
    */
   handleDragEnd() {
     clearTimeout(this.placeholderTimeout);
@@ -529,6 +536,7 @@ export default class ChapterNavigationButton {
 
   /**
    * Handle keydown.
+   *
    * @param {Event} event Event.
    */
   handleKeyDown(event) {

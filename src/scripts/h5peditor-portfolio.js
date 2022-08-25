@@ -8,7 +8,6 @@ export default class Portfolio {
 
   /**
    * @class
-   *
    * @param {object} parent Parent element in semantics.
    * @param {object} field Semantics field properties.
    * @param {object} params Parameters entered in editor form.
@@ -197,6 +196,8 @@ export default class Portfolio {
 
   /**
    * Handle adding new chapter.
+   *
+   * @param {number} id Id of chater to delete.
    */
   deleteChapter(id) {
     if (typeof id !== 'number') {
@@ -412,7 +413,7 @@ export default class Portfolio {
    * Get button capabilities in submenu.
    *
    * @param {number} id Id of button.
-   * @return {object} Key and boolean indicating capabilities.
+   * @returns {object} Key and boolean indicating capabilities.
    */
   getButtonCapabilities(id) {
     const capabilities = {};
