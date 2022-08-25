@@ -42,6 +42,10 @@ export default class ChapterNavigationButton {
         return; // Is sub menu button
       }
 
+      if (this.editingLabel && event.pointerType === '') {
+        return; // Editing label, ignore 'space'
+      }
+
       if (!this.isSelected()) {
         this.callbacks.onShowChapter(this);
       }
@@ -212,6 +216,7 @@ export default class ChapterNavigationButton {
    */
   editLabel() {
     this.label.setAttribute('contentEditable', true);
+    this.editingLabel = true;
 
     const range = document.createRange();
     range.selectNodeContents(this.label);
@@ -236,6 +241,8 @@ export default class ChapterNavigationButton {
         return;
       }
     }
+
+    this.editingLabel = false;
 
     event.preventDefault();
 
@@ -509,6 +516,10 @@ export default class ChapterNavigationButton {
    * @param {Event} event Event.
    */
   handleKeyDown(event) {
+    if (this.editingLabel) {
+      return;
+    }
+
     if (event.code === 'ArrowUp') {
       event.preventDefault();
       if (this.isSelected()) {
