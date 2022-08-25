@@ -5,7 +5,8 @@ import Dictionary from './../services/dictionary';
 export default class ChapterNavigationButton {
   constructor(params = {}, callbacks = {}) {
     this.params = Util.extend({
-      hierarchyLevel: 1
+      hierarchyLevel: 1,
+      hierarchyLevelMax: 3
     }, params);
 
     this.callbacks = Util.extend({
@@ -31,6 +32,10 @@ export default class ChapterNavigationButton {
 
     this.handleLabelEdited = this.handleLabelEdited.bind(this);
 
+    // Shown state
+    this.shown = true;
+
+    // Build DOM
     this.dom = document.createElement('button');
     this.dom.classList.add('h5peditor-portfolio-chapter-button');
     this.dom.classList.add(`h5peditor-portfolio-chapter-button-level-${this.params.hierarchyLevel}`);
@@ -53,21 +58,21 @@ export default class ChapterNavigationButton {
       this.setSelected(!this.isSelected());
     });
 
+    // Label
     this.label = document.createElement('div');
     this.label.classList.add('h5peditor-portfolio-chapter-button-label');
     this.label.innerText = this.params.title;
     this.dom.appendChild(this.label);
 
+    // Menu
     this.menu = document.createElement('button');
     this.menu.classList.add('h5peditor-portfolio-chapter-button-menu');
     this.menu.setAttribute('aria-label', Dictionary.get('a11y.openSubmenu'));
     this.menu.addEventListener('click', (event) => {
       this.handleClickMenu(event);
     });
-    this.dom.appendChild(this.menu);
 
-    // Shown state
-    this.shown = true;
+    this.dom.appendChild(this.menu);
 
     // Placeholder to show when dragging
     this.dragPlaceholder = document.createElement('div');
@@ -93,6 +98,11 @@ export default class ChapterNavigationButton {
     this.updateARIA();
   }
 
+  /**
+   * Get DOM.
+   *
+   * @returns {HTMLElement} The DOM.
+   */
   getDOM() {
     return this.dom;
   }
@@ -150,7 +160,7 @@ export default class ChapterNavigationButton {
     }
 
     if (typeof params.hierarchyLevel === 'number') {
-      for (let i = 1; i <= 3; i++) { // Support for hierarchy levels 1-3
+      for (let i = 1; i <= this.params.hierarchyLevelMax; i++) {
         const levelClass = `h5peditor-portfolio-chapter-button-level-${i}`;
         this.dom.classList.toggle(levelClass, i === params.hierarchyLevel);
       }
@@ -162,7 +172,8 @@ export default class ChapterNavigationButton {
 
   /**
    * Determine whether paragraph is shown.
-   * @return {boolean} True, if paragraph is shown.
+   *
+   * @returns {boolean} True, if paragraph is shown.
    */
   isShown() {
     return this.shown;
@@ -192,7 +203,7 @@ export default class ChapterNavigationButton {
   }
 
   /**
-   * Remove dom.
+   * Remove DOM.
    */
   remove() {
     this.dom.remove();
@@ -295,6 +306,11 @@ export default class ChapterNavigationButton {
     }, 0);
   }
 
+  /**
+   * Handle click on menu button.
+   *
+   * @param {PointerEvent} event Event.
+   */
   handleClickMenu(event) {
     if (this.menu.classList.contains('active')) {
       return;
@@ -561,7 +577,8 @@ export default class ChapterNavigationButton {
 
   /**
    * Determine whether button is selected.
-   * @return {boolean} True, if button is selected.
+   *
+   * @returns {boolean} True, if button is selected.
    */
   isSelected() {
     return this.selected;

@@ -3,26 +3,21 @@ import Util from './../h5peditor-portfolio-util';
 import Dictionary from './../services/dictionary';
 
 export default class SubMenu extends H5P.EventDispatcher {
-  constructor(params = {}, callbacks = {}) {
+  constructor(params = {}) {
     super();
 
     this.params = Util.extend({
       options: []
     }, params);
 
-    this.callbacks = Util.extend({
-    }, callbacks);
-
     this.options = {};
     this.parent = null;
-
-    this.options = {};
-
     this.baseClass = 'submenu-popup';
 
     this.handleClosed = this.handleClosed.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
 
+    // Build DOM
     this.dom = document.createElement('div');
     this.dom.classList.add(this.baseClass);
     this.dom.classList.add('display-none');
@@ -43,10 +38,12 @@ export default class SubMenu extends H5P.EventDispatcher {
       subMenuOption.setAttribute('role', 'menuitem');
       subMenuOption.setAttribute('tabindex', '-1');
       subMenuOption.innerText = option.label;
+
       subMenuOption.addEventListener('click', () => {
         option.onClick(this.parent);
         this.hide(option.keepFocus);
       });
+
       optionsWrapper.appendChild(subMenuOption);
       this.options[option.id] = (subMenuOption);
     });
@@ -159,13 +156,20 @@ export default class SubMenu extends H5P.EventDispatcher {
 
   /**
    * Focus option.
+   *
+   * @param {number} [offset=0] Offset.
    */
   focusOption(offset = 0) {
+    if (typeof offset !== 'number') {
+      return;
+    }
+
+    offset = offset % this.visibleOptions.length;
+
     if (this.focusId === null) {
       this.focusId = 0;
     }
     else {
-      // adding this.visibleOptions.length will ensure value > 0
       this.focusId = (this.focusId + this.visibleOptions.length + offset) %
         this.visibleOptions.length;
     }

@@ -8,22 +8,23 @@ import Readspeaker from './../services/readspeaker';
 export default class ChapterNavigation {
   constructor(params = {}, callbacks = {}) {
     this.params = Util.extend({
-      title: ''
+      title: '',
+      hierarchyLevelMax: 3
     }, params);
 
     this.callbacks = Util.extend({
-      onGetTitle: (() => {}),
+      onGetChapterTitle: (() => {}),
       onGetButtonCapabilities: (() => {}),
       onAddChapter: (() => {}),
       onShowChapter: (() => {}),
-      onSubMenuMoved: (() => {}),
-      onSubMenuHierarchyChanged: (() => {}),
-      onSubMenuDeleted: (() => {}),
-      onChaptersReordered: (() => {})
+      onMoveChapter: (() => {}),
+      onChangeHierarchy: (() => {}),
+      onDeleteChapter: (() => {})
     }, callbacks);
 
     this.buttons = [];
 
+    // Build DOM
     this.dom = document.createElement('ol');
     this.dom.classList.add('h5peditor-portfolio-chapter-navigation');
     this.dom.setAttribute('role', 'menu');
@@ -33,17 +34,20 @@ export default class ChapterNavigation {
     title.classList.add('h5peditor-portfolio-chapter-navigation-maintitle');
     const titleText = document.createElement('h2');
     titleText.classList.add('navigation-title');
-    titleText.innerHTML = this.params.title; // TODO: Sync with title field
+    titleText.innerHTML = this.params.title;
     title.appendChild(titleText);
     this.dom.appendChild(title);
 
     this.buttonSeparator = document.createElement('div');
-    this.buttonSeparator.classList.add('h5peditor-portfolio-chapter-button-separator');
+    this.buttonSeparator.classList
+      .add('h5peditor-portfolio-chapter-button-separator');
     this.dom.appendChild(this.buttonSeparator);
 
     this.buttonAdd = document.createElement('button');
     this.buttonAdd.classList.add('h5peditor-portfolio-chapter-button-add');
-    this.buttonAdd.setAttribute('aria-label', Dictionary.get('l10n.addChapter'));
+    this.buttonAdd.setAttribute(
+      'aria-label', Dictionary.get('l10n.addChapter')
+    );
     this.buttonAdd.innerText = '+';
     this.buttonAdd.addEventListener('click', () => {
       this.handleAddChapter();
@@ -70,7 +74,7 @@ export default class ChapterNavigation {
             id: 'move-up',
             label: Dictionary.get('l10n.moveUp'),
             onClick: (target => {
-              this.callbacks.onSubMenuMoved(this.getButtonId(target), -1);
+              this.callbacks.onMoveChapter(this.getButtonId(target), -1);
             }),
             keepFocus: true
           },
@@ -78,7 +82,7 @@ export default class ChapterNavigation {
             id: 'move-down',
             label: Dictionary.get('l10n.moveDown'),
             onClick: (target => {
-              this.callbacks.onSubMenuMoved(this.getButtonId(target), +1);
+              this.callbacks.onMoveChapter(this.getButtonId(target), +1);
             }),
             keepFocus: true
           },
@@ -86,14 +90,14 @@ export default class ChapterNavigation {
             id: 'hierarchy-up',
             label: Dictionary.get('l10n.hierarchyUp'),
             onClick: (target => {
-              this.callbacks.onSubMenuHierarchyChanged(this.getButtonId(target), -1);
+              this.callbacks.onChangeHierarchy(this.getButtonId(target), -1);
             })
           },
           {
             id: 'hierarchy-down',
             label: Dictionary.get('l10n.hierarchyDown'),
             onClick: (target => {
-              this.callbacks.onSubMenuHierarchyChanged(this.getButtonId(target), 1);
+              this.callbacks.onChangeHierarchy(this.getButtonId(target), 1);
             })
           },
           {
@@ -137,6 +141,12 @@ export default class ChapterNavigation {
     return this.buttons.findIndex(but => but === button);
   }
 
+  /**
+   * Get chapter group from list widget.
+   *
+   * @param {number} id Id of chapter.
+   * @returns {object} Chapter group object.
+   */
   getChapterGroup(id) {
     let result = null;
 
@@ -174,9 +184,10 @@ export default class ChapterNavigation {
 
     this.buttons[id] = new ChapterNavigationButton(
       {
-        title: this.callbacks.onGetTitle(id),
+        title: this.callbacks.onGetChapterTitle(id),
         chapterGroup: this.getChapterGroup(id),
-        hierarchyLevel: chapters[id]?.chapterHierarchy?.split('-').length || 1
+        hierarchyLevel: chapters[id]?.chapterHierarchy?.split('-').length || 1,
+        hierarchyLevelMax: this.params.hierarchyLevelMax
       },
       {
         onShowChapter: ((target) => {
@@ -207,16 +218,16 @@ export default class ChapterNavigation {
           this.handleDragEnd(button);
         }),
         onMovedUp: ((button) => {
-          this.callbacks.onSubMenuMoved(this.getButtonId(button), -1);
+          this.callbacks.onMoveChapter(this.getButtonId(button), -1);
         }),
         onMovedDown: ((button) => {
-          this.callbacks.onSubMenuMoved(this.getButtonId(button), 1);
+          this.callbacks.onMoveChapter(this.getButtonId(button), 1);
         }),
         onMovedLeft: ((button) => {
-          this.callbacks.onSubMenuHierarchyChanged(this.getButtonId(button), -1);
+          this.callbacks.onChangeHierarchy(this.getButtonId(button), -1);
         }),
         onMovedRight: ((button) => {
-          this.callbacks.onSubMenuHierarchyChanged(this.getButtonId(button), 1);
+          this.callbacks.onChangeHierarchy(this.getButtonId(button), 1);
         }),
         onDelete: ((button) => {
           this.handleSubMenuDeleted(button);
@@ -258,6 +269,11 @@ export default class ChapterNavigation {
     this.buttons.splice(id, 1);
   }
 
+  /**
+   * Edit button label.
+   *
+   * @param {number} id Id of button to re-label.
+   */
   editButtonLabel(id) {
     this.buttons[id].editLabel();
   }
@@ -269,7 +285,7 @@ export default class ChapterNavigation {
     const chapters = this.params.chapterList.getValue();
     this.buttons.forEach((button, index) => {
       button.update({
-        title: this.callbacks.onGetTitle(index),
+        title: this.callbacks.onGetChapterTitle(index),
         hierarchyLevel: chapters[index]
           .chapterHierarchy.split('-').length
       });
@@ -307,26 +323,28 @@ export default class ChapterNavigation {
    * @param {ChapterNavigationButton} target Calling button.
    */
   handleSubMenuDeleted(target) {
-    const delimiter = Dictionary.get('a11y.notPossible')
-      .substr(-1, 1) === '.' ? ' ' : '. ';
-
     if (this.buttons.length === 1) {
-      const ariaMessage = `${Dictionary.get('a11y.notPossible')}${delimiter}${Dictionary.get('a11y.cannotDeleteOnlyItem')}`;
-      Readspeaker.read(ariaMessage);
+      Readspeaker.read([
+        Dictionary.get('a11y.notPossible'),
+        Dictionary.get('a11y.cannotDeleteOnlyItem')
+      ]);
       return;
     }
     else if (
       this.getButtonId(target) === 0 &&
-      this.params.chapterList.getValue()[1].chapterHierarchy.split('-').length !== 1
+      this.params.chapterList.getValue()[1]
+        .chapterHierarchy.split('-').length !== 1
     ) {
-      const ariaMessage = `${Dictionary.get('a11y.notPossible')}${delimiter}${Dictionary.get('a11y.firstChapterHierarchyFixed')}`;
-      Readspeaker.read(ariaMessage);
+      Readspeaker.read([
+        Dictionary.get('a11y.notPossible'),
+        Dictionary.get('a11y.firstChapterHierarchyFixed')
+      ]);
       return; // Position 0 must keep hierarchy 1
     }
 
     this.deleteDialog.once('confirmed', () => {
       this.deleteDialog.off('canceled');
-      this.callbacks.onSubMenuDeleted(this.getButtonId(target));
+      this.callbacks.onDeleteChapter(this.getButtonId(target));
     });
 
     this.deleteDialog.once('canceled', () => {
@@ -348,18 +366,14 @@ export default class ChapterNavigation {
       return;
     }
 
-    let list;
-    this.params.chapterList.forEachChild((child, index) => {
-      if (index === id) {
-        list = child;
-      }
-    });
+    const list = this.getChapterGroup(id);
     if (!list) {
       return;
     }
 
     // TODO: Find better way to detect field
-    const inputField = list.$content.get(0).querySelectorAll('input.h5peditor-text')[1];
+    const inputField = list.$content.get(0)
+      .querySelectorAll('input.h5peditor-text')[1];
 
     // Will update title field and metadata title and store value
     inputField.value = label;
@@ -387,6 +401,9 @@ export default class ChapterNavigation {
     this.buttons[id].showSubMenu(this.subMenu, keyboardUsed);
   }
 
+  /**
+   * Handle chapter added.
+   */
   handleAddChapter() {
     if (this.params.chapterList.addItem()) {
       const idAdded = this.buttons.length;
@@ -412,6 +429,7 @@ export default class ChapterNavigation {
 
   /**
    * Handle drag start.
+   *
    * @param {LayoutButton} button Button dragged.
    */
   handleDragStart(button) {
@@ -422,6 +440,7 @@ export default class ChapterNavigation {
 
   /**
    * Handle drag enter.
+   *
    * @param {LayoutButton} button Button dragged on.
    */
   handleDragEnter(button) {
@@ -443,8 +462,7 @@ export default class ChapterNavigation {
       if (this.dropzoneElement && this.draggedElement && this.draggedElement !== this.dropzoneElement) {
         this.swapButtons({
           button1: this.draggedElement,
-          button2: this.dropzoneElement,
-          type: 'mouse'
+          button2: this.dropzoneElement
         });
       }
     }
@@ -452,6 +470,7 @@ export default class ChapterNavigation {
 
   /**
    * Swap buttons.
+   *
    * @param {object} params Parameters.
    * @param {HTMLElement} button1 Button #1.
    * @param {HTMLElement} button2 Button #2.
@@ -463,15 +482,13 @@ export default class ChapterNavigation {
       params.button2.getDOM()
     );
 
-    if (params.type === 'mouse') {
-      const id1 = this.getButtonId(params.button1);
-      const id2 = this.getButtonId(params.button2);
+    const id1 = this.getButtonId(params.button1);
+    const id2 = this.getButtonId(params.button2);
 
-      [this.buttons[id1], this.buttons[id2]] =
-        [this.buttons[id2], this.buttons[id1]];
+    [this.buttons[id1], this.buttons[id2]] =
+      [this.buttons[id2], this.buttons[id1]];
 
-      params.button1.attachDragPlaceholder();
-    }
+    params.button1.attachDragPlaceholder();
   }
 
   /**
@@ -492,7 +509,7 @@ export default class ChapterNavigation {
       this.dragIndexTarget !== -1 &&
       this.dragIndexTarget !== this.dragIndexSource
     ) {
-      const wasMoved = this.callbacks.onSubMenuMoved (
+      const wasMoved = this.callbacks.onMoveChapter (
         this.dragIndexSource,
         this.dragIndexTarget - this.dragIndexSource
       );
@@ -530,7 +547,7 @@ export default class ChapterNavigation {
    * @param {HTMLElement} button Button.
    * @param {number} offset Offset for tabbing.
    * @param {object} [options] Options.
-   * @param {boolean} [options.loop=false] If true, will jump when reaching last.
+   * @param {boolean} [options.loop=false] If true, will loop back.
    */
   tabTo(button, offset, options = {}) {
     let target = this.getButtonId(button) + offset;

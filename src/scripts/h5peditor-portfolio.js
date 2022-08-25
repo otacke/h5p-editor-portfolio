@@ -7,7 +7,8 @@ import Readspeaker from './services/readspeaker';
 export default class Portfolio {
 
   /**
-   * @constructor
+   * @class
+   *
    * @param {object} parent Parent element in semantics.
    * @param {object} field Semantics field properties.
    * @param {object} params Parameters entered in editor form.
@@ -25,6 +26,7 @@ export default class Portfolio {
 
     this.params.chapters = this.sanitize(this.params.chapters || []);
 
+    // Keeps track of chapter DOMs of H5P core list widget
     this.chapterDOMsOrder = [... Array(this.params.chapters.length).keys()];
 
     // Callbacks to call when parameters change
@@ -33,18 +35,20 @@ export default class Portfolio {
     // Let parent handle ready callbacks of children
     this.passReadies = true;
 
-    // DOM
-    this.$container = H5P.jQuery('<div>', {
-      class: 'h5peditor-portfolio'
-    });
+    // jQuery and $container required by H5P
+    this.$container = H5P.jQuery('<div>', { class: 'h5peditor-portfolio' });
 
+    // Build DOM
     const chaptersDOM = document.createElement('div');
     chaptersDOM.classList.add('h5peditor-portfolio-chapters');
 
     // Instantiate original field (or create your own and call setValue)
-    this.fieldInstance = new H5PEditor.widgets[this.field.type](this.parent, this.field, this.params, this.setValue);
+    this.fieldInstance = new H5PEditor.widgets[this.field.type](
+      this.parent, this.field, this.params, this.setValue
+    );
     this.fieldInstance.appendTo(H5P.jQuery(chaptersDOM));
 
+    // List widget holding the chapters
     this.chapterList = this.fieldInstance.children.find(child => {
       return child?.getName() === 'chapters';
     });
@@ -55,44 +59,41 @@ export default class Portfolio {
     this.chapterNavigation = new ChapterNavigation(
       {
         title: this.parent?.metadata?.title || 'Portfolio',
-        chapterList: this.chapterList
+        chapterList: this.chapterList,
+        hierarchyLevelMax: Portfolio.MAX_LEVEL
       },
       {
-        onGetTitle: (id) => {
+        onGetChapterTitle: (id) => {
           return this.getChapterTitle(id);
         },
         onGetButtonCapabilities: (id => {
           return this.getButtonCapabilities(id);
         }),
         onAddChapter: (id) => {
-          this.handleAddChapter(id);
+          this.addChapter(id);
         },
         onShowChapter: (id) => {
-          this.handleShowChapter(id);
+          this.showChapter(id);
         },
-        onSubMenuEditLabel: (id) => {
-          this.handleEditLabel(id);
-        },
-        onSubMenuMoved: (id, offset) => {
+        onMoveChapter: (id, offset) => {
           const success = this.moveChapter(id, offset);
           if (success) {
             this.chapterNavigation.setSelectedButton(id + offset);
           }
           return success;
         },
-        onSubMenuHierarchyChanged: (id, offset) => {
-          this.handleChangeHierarchy(id, offset);
+        onChangeHierarchy: (id, offset) => {
+          this.changeHierarchy(id, offset);
         },
-        onSubMenuDeleted: (id) => {
-          this.handleDeleteChapter(id);
-        },
-        onChaptersReordered: (newOrder) => {
-          this.handleChaptersReordered(newOrder);
+        onDeleteChapter: (id) => {
+          this.deleteChapter(id);
         }
       }
     );
     mainDOM.appendChild(this.chapterNavigation.getDOM());
     mainDOM.appendChild(chaptersDOM);
+
+    Readspeaker.init(mainDOM);
 
     this.$container.get(0).appendChild(mainDOM);
 
@@ -106,13 +107,9 @@ export default class Portfolio {
     // Errors (or add your own)
     this.$errors = this.$container.find('.h5p-errors');
 
-    // Use H5PEditor.t('H5PEditor.Boilerplate', 'foo'); to output translatable strings
-
-    this.handleShowChapter(0);
-
+    // Show first chapter
+    this.showChapter(0);
     this.chapterNavigation.updateButtons();
-
-    Readspeaker.init(mainDOM);
 
     // Store values that may have been created as default
     this.setValue(this.field, this.params);
@@ -120,6 +117,7 @@ export default class Portfolio {
 
   /**
    * Append field to wrapper. Invoked by H5P core.
+   *
    * @param {H5P.jQuery} $wrapper Wrapper.
    */
   appendTo($wrapper) {
@@ -128,7 +126,8 @@ export default class Portfolio {
 
   /**
    * Validate current values. Invoked by H5P core.
-   * @return {boolean} True, if current value is valid, else false.
+   *
+   * @returns {boolean} True, if current value is valid, else false.
    */
   validate() {
     return this.fieldInstance.validate();
@@ -157,10 +156,11 @@ export default class Portfolio {
    * @returns {string|null} New hierarchy level.
    */
   getNewHierarchy() {
-    const newHierarchy = this.params.chapters.reduce((newHierarchy, chapter) => {
-      const topLevel = (chapter.chapterHierarchy || '0').split('-')[0];
-      return Math.max(parseInt(topLevel), newHierarchy);
-    }, 0);
+    const newHierarchy = this.params.chapters
+      .reduce((newHierarchy, chapter) => {
+        const topLevel = (chapter.chapterHierarchy || '0').split('-')[0];
+        return Math.max(parseInt(topLevel), newHierarchy);
+      }, 0);
 
     return newHierarchy ? (newHierarchy + 1).toString() : null;
   }
@@ -180,7 +180,7 @@ export default class Portfolio {
    *
    * @param {number} id Id of item that was added.
    */
-  handleAddChapter(id) {
+  addChapter(id) {
     const hierarchy = this.getNewHierarchy();
     if (!hierarchy) {
       return; // TODO: This should be handled with a warning?
@@ -189,7 +189,7 @@ export default class Portfolio {
     this.params.chapters[id].chapterHierarchy = hierarchy;
     this.chapterDOMsOrder.push(id);
 
-    this.handleShowChapter(id);
+    this.showChapter(id);
 
     // Store values
     this.setValue(this.field, this.params);
@@ -198,24 +198,25 @@ export default class Portfolio {
   /**
    * Handle adding new chapter.
    */
-  handleDeleteChapter(id) {
-    const delimiter = Dictionary.get('a11y.notPossible')
-      .substr(-1, 1) === '.' ? ' ' : '. ';
-
+  deleteChapter(id) {
     if (typeof id !== 'number') {
       return;
     }
     else if (this.params.chapters.length === 1) {
-      const ariaMessage = `${Dictionary.get('a11y.notPossible')}${delimiter}${Dictionary.get('a11y.cannotDeleteOnlyItem')}`;
-      Readspeaker.read(ariaMessage);
-      return;
+      Readspeaker.read([
+        Dictionary.get('a11y.notPossible'),
+        Dictionary.get('a11y.cannotDeleteOnlyItem')
+      ]);
+      return; // Can't delete the one and only chapter
     }
     else if (
       id === 0 &&
       this.params.chapters[1].chapterHierarchy.split('-').length !== 1
     ) {
-      const ariaMessage = `${Dictionary.get('a11y.notPossible')}${delimiter}${Dictionary.get('a11y.firstChapterHierarchyFixed')}`;
-      Readspeaker.read(ariaMessage);
+      Readspeaker.read([
+        Dictionary.get('a11y.notPossible'),
+        Dictionary.get('a11y.firstChapterHierarchyFixed')
+      ]);
       return; // Position 0 must keep hierarchy 1
     }
 
@@ -226,8 +227,7 @@ export default class Portfolio {
 
     // Show previous chapter
     const nextIndex = (id === 0) ? 1 : id - 1;
-
-    this.handleShowChapter(nextIndex);
+    this.showChapter(nextIndex);
 
     // Remove item from list
     this.chapterList.removeItem(id);
@@ -244,7 +244,7 @@ export default class Portfolio {
    *
    * @param {string} indexSource Button id of button to be moved.
    * @param {number} offset Offset of where to move chapter to.
-   * @return {boolean} True if could be moved, else false.
+   * @returns {boolean} True if could be moved, else false.
    */
   moveChapter(indexSource, offset) {
     if (
@@ -257,18 +257,19 @@ export default class Portfolio {
 
     const indexTarget = indexSource + offset;
 
-    const delimiter = Dictionary.get('a11y.notPossible')
-      .substr(-1, 1) === '.' ? ' ' : '. ';
-
     if (indexTarget < 0) {
-      const ariaMessage = `${Dictionary.get('a11y.notPossible')}${delimiter}${Dictionary.get('a11y.positionMinReached')}`;
-      Readspeaker.read(ariaMessage);
+      Readspeaker.read([
+        Dictionary.get('a11y.notPossible'),
+        Dictionary.get('a11y.positionMinReached')
+      ]);
       return false; // Out of bounds
     }
 
     if (indexTarget > this.params.chapters.length - 1) {
-      const ariaMessage = `${Dictionary.get('a11y.notPossible')}${delimiter}${Dictionary.get('a11y.positionMaxReached')}`;
-      Readspeaker.read(ariaMessage);
+      Readspeaker.read([
+        Dictionary.get('a11y.notPossible'),
+        Dictionary.get('a11y.positionMaxReached')
+      ]);
       return false; // Out of bounds
     }
 
@@ -276,8 +277,10 @@ export default class Portfolio {
       indexSource === 0 &&
       this.params.chapters[1].chapterHierarchy.split('-').length !== 1
     ) {
-      const ariaMessage = `${Dictionary.get('a11y.notPossible')}${delimiter}${Dictionary.get('a11y.firstChapterHierarchyFixed')}`;
-      Readspeaker.read(ariaMessage);
+      Readspeaker.read([
+        Dictionary.get('a11y.notPossible'),
+        Dictionary.get('a11y.firstChapterHierarchyFixed')
+      ]);
       return false; // Position 0 must keep hierarchy 1
     }
 
@@ -285,8 +288,10 @@ export default class Portfolio {
       indexTarget === 0 &&
       this.params.chapters[indexSource].chapterHierarchy.split('-').length !== 1
     ) {
-      const ariaMessage = `${Dictionary.get('a11y.notPossible')}${delimiter}${Dictionary.get('a11y.firstChapterHierarchyFixed')}`;
-      Readspeaker.read(ariaMessage);
+      Readspeaker.read([
+        Dictionary.get('a11y.notPossible'),
+        Dictionary.get('a11y.firstChapterHierarchyFixed')
+      ]);
       return false; // Position 0 must keep hierarchy 1
     }
 
@@ -303,7 +308,7 @@ export default class Portfolio {
     // Update button titles and hierarchies
     this.chapterNavigation.updateButtons();
 
-    this.handleShowChapter(indexTarget);
+    this.showChapter(indexTarget);
 
     // Store values
     this.setValue(this.field, this.params);
@@ -317,9 +322,12 @@ export default class Portfolio {
    * @param {number} index Index of item that was changed.
    * @param {number} offset Diff in hierarchy.
    */
-  handleChangeHierarchy(index, offset) {
+  changeHierarchy(index, offset) {
     if (index === 0) {
-      Readspeaker.read(Dictionary.get('a11y.firstChapterHierarchyFixed'));
+      Readspeaker.read([
+        Dictionary.get('a11y.notPossible'),
+        Dictionary.get('a11y.firstChapterHierarchyFixed')
+      ]);
       return; // Position 0 must keep hierarchy 1
     }
 
@@ -327,15 +335,17 @@ export default class Portfolio {
       .length;
 
     if (oldLength + offset < 1) {
-      const ariaMessage = Dictionary.get('a11y.hierarchyMinReached')
-        .replace(/@level/g, 1);
-      Readspeaker.read(ariaMessage);
+      Readspeaker.read([
+        Dictionary.get('a11y.notPossible'),
+        Dictionary.get('a11y.hierarchyMinReached').replace(/@level/g, 1)
+      ]);
       return;
     }
     else if (oldLength + offset > Portfolio.MAX_LEVEL) {
-      const ariaMessage = Dictionary.get('a11y.hierarchyMaxReached')
-        .replace(/@level/g, Portfolio.MAX_LEVEL);
-      Readspeaker.read(ariaMessage);
+      Readspeaker.read([
+        Dictionary.get('a11y.notPossible'),
+        Dictionary.get('a11y.hierarchyMaxReached').replace(/@level/g, 1)
+      ]);
       return;
     }
 
@@ -364,9 +374,9 @@ export default class Portfolio {
 
     this.chapterNavigation.updateButtons();
 
-    const ariaMessage = Dictionary.get('a11y.hierarchyChangedTo')
-      .replace(/@level/g, newLength);
-    Readspeaker.read(ariaMessage);
+    Readspeaker.read(
+      Dictionary.get('a11y.hierarchyChangedTo').replace(/@level/g, newLength)
+    );
 
     // Store values
     this.setValue(this.field, this.params);
@@ -377,7 +387,7 @@ export default class Portfolio {
    *
    * @param {number} id Id of chapter to show.
    */
-  handleShowChapter(id) {
+  showChapter(id) {
     const chapterDOMs = this.getChapterDOMs();
 
     for (let i = 0; i < chapterDOMs.length; i++) {

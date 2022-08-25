@@ -26,21 +26,30 @@ export default class Readspeaker {
   /**
    * Force readspeaker to read text.
    *
-   * @param {string} text Text to read.
+   * @param {string|string[]} texts Text(s) to read.
    */
-  static read(text) {
-    if (!Readspeaker.container || typeof text === 'undefined') {
+  static read(texts) {
+    if (!Readspeaker.container || typeof texts === 'undefined') {
       return;
     }
 
-    if (Readspeaker.textRead) {
-      const delimiter = Readspeaker.textRead.substr(-1, 1) === '.' ? ' ' : '. ';
-      Readspeaker.textRead = `${Readspeaker.textRead}${delimiter}${text}`;
-    }
-    else {
-      Readspeaker.textRead = text;
+    if (typeof texts === 'string') {
+      texts = [texts];
     }
 
+    if (Readspeaker.textRead) {
+      texts = [Readspeaker.textRead, ... texts];
+    }
+
+    // Remove . at end of strings to be read
+    texts = texts.map(text => {
+      text = text.trim();
+      return text.substring(text.length - 1) === '.' ?
+        text.substring(0, text.length - 1) :
+        text;
+    });
+
+    Readspeaker.textRead = `${texts.join('. ')}.`;
     Readspeaker.container.innerText = Readspeaker.textRead;
 
     setTimeout(() => {
