@@ -135,7 +135,7 @@ export default class ChapterNavigation {
    * Get id of button.
    *
    * @param {HTMLElement} button Button to get id for.
-   * @return {number} Id of button or -1 if not found.
+   * @returns {number} Id of button or -1 if not found.
    */
   getButtonId(button) {
     return this.buttons.findIndex(but => but === button);
@@ -430,7 +430,7 @@ export default class ChapterNavigation {
   /**
    * Handle drag start.
    *
-   * @param {LayoutButton} button Button dragged.
+   * @param {ChapterNavigationButton} button Button dragged.
    */
   handleDragStart(button) {
     this.draggedElement = button;
@@ -441,7 +441,7 @@ export default class ChapterNavigation {
   /**
    * Handle drag enter.
    *
-   * @param {LayoutButton} button Button dragged on.
+   * @param {ChapterNavigationButton} button Button dragged on.
    */
   handleDragEnter(button) {
     if (this.dropzoneElement && this.dropzoneElement === button) {
@@ -472,8 +472,8 @@ export default class ChapterNavigation {
    * Swap buttons.
    *
    * @param {object} params Parameters.
-   * @param {HTMLElement} button1 Button #1.
-   * @param {HTMLElement} button2 Button #2.
+   * @param {HTMLElement} params.button1 Button #1.
+   * @param {HTMLElement} params.button2 Button #2.
    */
   swapButtons(params = {}) {
     // Swap visuals
