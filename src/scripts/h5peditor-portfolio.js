@@ -182,7 +182,7 @@ export default class Portfolio {
   addChapter(id) {
     const hierarchy = this.getNewHierarchy();
     if (!hierarchy) {
-      return; // TODO: This should be handled with a warning?
+      return;
     }
 
     this.params.chapters[id].chapterHierarchy = hierarchy;
@@ -543,7 +543,7 @@ export default class Portfolio {
       return result;
     });
 
-    // Add dummy chapter. TODO: parameters for Advanced Text
+    // Add dummy chapter.
     if (!params.length) {
       params = [{
         id: 0,

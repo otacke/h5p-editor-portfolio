@@ -371,7 +371,6 @@ export default class ChapterNavigation {
       return;
     }
 
-    // TODO: Find better way to detect field
     const inputField = list.$content.get(0)
       .querySelectorAll('input.h5peditor-text')[1];
 
