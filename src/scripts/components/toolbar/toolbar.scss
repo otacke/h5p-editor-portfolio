@@ -1,0 +1,61 @@
+@import './../../../styles/h5p-editor-portfolio-main';
+
+$icon-button-preview-blue: url("./../../../assets/button-preview-icon-blue.svg");
+$icon-button-preview-grey: url("./../../../assets/button-preview-icon-grey.svg");
+$icon-button-export-blue: url("./../../../assets/button-export-icon-blue.svg");
+$icon-button-export-grey: url("./../../../assets/button-export-icon-grey.svg");
+
+.toolbar-tool-bar {
+  align-items: center;
+  box-shadow: 10px 10px 30px $color-shadow-light;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  margin-bottom: .5em;
+  overflow: hidden;
+  padding: .5em;
+  width: 100%;
+
+  .toolbar-page-announcer {
+    color: $color-joubelui-button;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+  }
+
+  .toolbar-button {
+    &.toolbar-button-preview {
+      background-image: $icon-button-preview-blue;
+
+      &.toolbar-button-disabled {
+        background-image: $icon-button-preview-grey;
+      }
+
+      &.toolbar-button-active {
+        background-image: $icon-button-preview-blue;
+        background-color: initial;
+
+        &:hover {
+          background-color: $color-primary-5;
+        }
+      }
+    }
+
+    &.toolbar-button-export {
+      background-image: $icon-button-export-blue;
+
+      &.toolbar-button-disabled {
+        background-image: $icon-button-export-grey;
+      }
+
+      &.toolbar-button-active {
+        background-image: $icon-button-export-blue;
+        background-color: initial;
+
+        &:hover {
+          background-color: $color-primary-5;
+        }
+      }
+    }
+  }
+}

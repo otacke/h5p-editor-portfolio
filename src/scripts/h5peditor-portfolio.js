@@ -2,6 +2,7 @@ import ChapterNavigation from './components/chapter-navigation';
 import Util from './h5peditor-portfolio-util';
 import Dictionary from './services/dictionary';
 import Readspeaker from './services/readspeaker';
+import Toolbar from './components/toolbar/toolbar';
 
 /** Class for Portfolio H5P widget */
 export default class Portfolio {
@@ -55,6 +56,28 @@ export default class Portfolio {
     const mainDOM = document.createElement('div');
     mainDOM.classList.add('h5peditor-portfolio-main');
 
+    const toolbarDOM = document.createElement('div');
+    toolbarDOM.classList.add('h5peditor-portfolio-toolbar');
+
+    this.toolBar = new Toolbar(
+      {},
+      {
+        onClickButtonPreview: () => {
+          //this.showPreview();
+        },
+        onClickButtonExport: () => {
+          //this.showExportDialog();
+        }
+      }
+    );
+    this.toolBar.enableButton('preview');
+    this.toolBar.enableButton('export');
+    toolbarDOM.appendChild(this.toolBar.getDOM());
+    mainDOM.appendChild(toolbarDOM);
+
+    const contentDOM = document.createElement('div');
+    contentDOM.classList.add('h5peditor-portfolio-content');
+
     this.chapterNavigation = new ChapterNavigation(
       {
         title: this.parent?.metadata?.title || 'Portfolio',
@@ -89,10 +112,12 @@ export default class Portfolio {
         }
       }
     );
-    mainDOM.appendChild(this.chapterNavigation.getDOM());
-    mainDOM.appendChild(chaptersDOM);
+    contentDOM.appendChild(this.chapterNavigation.getDOM());
+    contentDOM.appendChild(chaptersDOM);
 
-    Readspeaker.init(mainDOM);
+    Readspeaker.init(contentDOM);
+
+    mainDOM.appendChild(contentDOM);
 
     this.$container.get(0).appendChild(mainDOM);
 

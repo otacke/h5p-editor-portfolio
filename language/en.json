@@ -25,6 +25,10 @@
     "a11y.hierarchyChangedTo": "The hierarchy level was changed to @level",
     "a11y.hierarchyLevel": "hierarchy level @level",
     "a11y.cannotDeleteOnlyItem": "You cannot delete the only item",
-    "a11y.notPossible": "Not possible"
+    "a11y.notPossible": "Not possible",
+    "a11y.preview": "Preview content",
+    "a11y.previewDisabled": "Preview content. Currently not possible.",
+    "a11y.export": "Export content",
+    "a11y.exportDisabled": "Export content. Currently not possible."
   }
 }

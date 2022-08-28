@@ -42,14 +42,24 @@
   }
 
   .h5peditor-portfolio-main {
-    background: #fefefe;
-    background: #fff;
     display: flex;
-    flex-direction: row;
-    width: 100%;
+    flex-direction: column;
 
-    .h5peditor-portfolio-chapters {
+    .h5peditor-portfolio-toolbar {
+      background: #fff;
       width: 100%;
+    }
+
+    .h5peditor-portfolio-content {
+      background: #fefefe;
+      background: #fff;
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+
+      .h5peditor-portfolio-chapters {
+        width: 100%;
+      }
     }
   }
 }
