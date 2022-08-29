@@ -115,7 +115,7 @@ export default class Portfolio {
     contentDOM.appendChild(this.chapterNavigation.getDOM());
     contentDOM.appendChild(chaptersDOM);
 
-    Readspeaker.init(contentDOM);
+    Readspeaker.attach(contentDOM);
 
     mainDOM.appendChild(contentDOM);
 

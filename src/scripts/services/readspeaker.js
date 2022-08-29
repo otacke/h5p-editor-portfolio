@@ -10,7 +10,7 @@ export default class Readspeaker {
    *
    * @param {HTMLElement} wrapper Wrapper to append to.
    */
-  static init(wrapper) {
+  static attach(wrapper) {
     if (!wrapper || Readspeaker.container) {
       return;
     }
