@@ -1,4 +1,4 @@
-import ChapterNavigation from './components/chapter-navigation';
+import ChapterNavigation from './components/navigation/chapter-navigation';
 import Util from './h5peditor-portfolio-util';
 import Dictionary from './services/dictionary';
 import Readspeaker from './services/readspeaker';

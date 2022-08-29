@@ -1,9 +1,9 @@
 import './chapter-navigation.scss';
-import Util from './../h5peditor-portfolio-util';
+import Util from './../../h5peditor-portfolio-util';
 import ChapterNavigationButton from './chapter-navigation-button.js';
 import SubMenu from './sub-menu.js';
-import Dictionary from './../services/dictionary';
-import Readspeaker from './../services/readspeaker';
+import Dictionary from './../../services/dictionary';
+import Readspeaker from './../../services/readspeaker';
 
 export default class ChapterNavigation {
   constructor(params = {}, callbacks = {}) {
