@@ -8,6 +8,10 @@
   min-width: 15rem;
   padding: 0;
 
+  &.display-none {
+    display: none;
+  }
+
   .h5peditor-portfolio-chapter-navigation-maintitle {
     background-color: #1768C4;
     overflow: hidden;

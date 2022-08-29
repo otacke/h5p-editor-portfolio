@@ -1,0 +1,28 @@
+.preview-overlay {
+  background-color: #fff;
+  height: 100%;
+  width: 100%;
+
+  &.display-none {
+    display: none;
+  }
+
+  .preview-content {
+    margin: 1em;
+
+    .preview-label {
+      color: #454347;
+      font-weight: 600;
+    }
+
+    .preview-explanation {
+      color: #454347;
+      font-size: .75em;
+      margin-bottom: 1em;
+    }
+
+    .preview-wrapper {
+      border: 1px solid #d0d0d1;
+    }
+  }
+}

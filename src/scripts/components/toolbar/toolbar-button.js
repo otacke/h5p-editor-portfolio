@@ -76,7 +76,8 @@ export default class ToolbarButton {
       if (this.params.type === 'toggle') {
         this.toggle();
       }
-      this.callbacks.onClick(event);
+
+      this.callbacks.onClick(event, { active: this.active });
     });
   }
 

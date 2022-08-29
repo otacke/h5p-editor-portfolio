@@ -30,19 +30,20 @@ export default class Toolbar {
     this.buttons.preview = new ToolbarButton(
       {
         a11y: {
-          active: Dictionary.get('a11y.preview'),
+          active: Dictionary.get('a11y.previewActive'),
           disabled: Dictionary.get('a11y.previewDisabled'),
+          inactive: Dictionary.get('a11y.previewInactive'),
         },
         classes: [
           'toolbar-button',
           'toolbar-button-preview'
         ],
         disabled: true,
-        type: 'pulse'
+        type: 'toggle'
       },
       {
-        onClick: () => {
-          this.callbacks.onClickButtonPreview();
+        onClick: (event, params = {}) => {
+          this.callbacks.onClickButtonPreview(params.active);
         }
       }
     );

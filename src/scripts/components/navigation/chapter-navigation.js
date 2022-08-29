@@ -565,4 +565,18 @@ export default class ChapterNavigation {
     this.buttons[target].setActive(true);
     this.buttons[target].focus();
   }
+
+  /**
+   * Show chapter navigation.
+   */
+  show() {
+    this.dom.classList.remove('display-none');
+  }
+
+  /**
+   * Hide chapter navigation.
+   */
+  hide() {
+    this.dom.classList.add('display-none');
+  }
 }

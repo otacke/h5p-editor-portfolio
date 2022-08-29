@@ -13,6 +13,8 @@
     "l10n.deleteDialogConfirm": "Yes, delete!",
     "l10n.chapter": "Chapter",
     "l10n.addChapter": "Add chapter",
+    "l10n.preview": "Preview Mode",
+    "l10n.previewExplanation": "This is how user will see your content",
     "a11y.openSubmenu": "Open sub menu",
     "a11y.closeSubmenu": "Close sub menu",
     "a11y.selected": "Selected",
@@ -26,8 +28,11 @@
     "a11y.hierarchyLevel": "hierarchy level @level",
     "a11y.cannotDeleteOnlyItem": "You cannot delete the only item",
     "a11y.notPossible": "Not possible",
-    "a11y.preview": "Preview content",
+    "a11y.previewActive": "Close preview",
+    "a11y.previewInactive": "Preview content",
     "a11y.previewDisabled": "Preview content. Currently not possible.",
+    "a11y.previewOpened": "Preview was opened.",
+    "a11y.previewClosed": "Preview was closed.",
     "a11y.export": "Export content",
     "a11y.exportDisabled": "Export content. Currently not possible."
   }

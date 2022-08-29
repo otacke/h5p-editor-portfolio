@@ -1,4 +1,5 @@
 import ChapterNavigation from './components/navigation/chapter-navigation';
+import PreviewOverlay from './components/preview/preview-overlay';
 import Util from './h5peditor-portfolio-util';
 import Dictionary from './services/dictionary';
 import Readspeaker from './services/readspeaker';
@@ -39,14 +40,14 @@ export default class Portfolio {
     this.$container = H5P.jQuery('<div>', { class: 'h5peditor-portfolio' });
 
     // Build DOM
-    const chaptersDOM = document.createElement('div');
-    chaptersDOM.classList.add('h5peditor-portfolio-chapters');
+    this.chaptersDOM = document.createElement('div');
+    this.chaptersDOM.classList.add('h5peditor-portfolio-chapters');
 
     // Instantiate original field (or create your own and call setValue)
     this.fieldInstance = new H5PEditor.widgets[this.field.type](
       this.parent, this.field, this.params, this.setValue
     );
-    this.fieldInstance.appendTo(H5P.jQuery(chaptersDOM));
+    this.fieldInstance.appendTo(H5P.jQuery(this.chaptersDOM));
 
     // List widget holding the chapters
     this.chapterList = this.fieldInstance.children.find(child => {
@@ -62,8 +63,8 @@ export default class Portfolio {
     this.toolBar = new Toolbar(
       {},
       {
-        onClickButtonPreview: () => {
-          //this.showPreview();
+        onClickButtonPreview: (active) => {
+          this.togglePreview(active);
         },
         onClickButtonExport: () => {
           //this.showExportDialog();
@@ -113,7 +114,10 @@ export default class Portfolio {
       }
     );
     contentDOM.appendChild(this.chapterNavigation.getDOM());
-    contentDOM.appendChild(chaptersDOM);
+    contentDOM.appendChild(this.chaptersDOM);
+
+    this.previewOverlay = new PreviewOverlay();
+    contentDOM.appendChild(this.previewOverlay.getDOM());
 
     Readspeaker.attach(contentDOM);
 
@@ -577,6 +581,51 @@ export default class Portfolio {
     }
 
     return params;
+  }
+
+  /**
+   * Toggle preview.
+   *
+   * @param {boolean} active If active, show preview, else hide.
+   */
+  togglePreview(active) {
+    if (typeof active !== 'boolean') {
+      return;
+    }
+
+    if (active) {
+      const libraryUberName = Object.keys(H5PEditor.libraryLoaded)
+        .find((library) => library.split(' ')[0] === 'H5P.Portfolio');
+
+      const instance = H5P.newRunnable(
+        {
+          library: libraryUberName,
+          params: this.parent.params
+        },
+        H5PEditor.contentId || 1
+      );
+
+      if (!instance) {
+        return;
+      }
+
+      instance.isPreview = true;
+
+      this.chapterNavigation.hide();
+      this.chaptersDOM.classList.add('display-none');
+      this.previewOverlay.show();
+      this.previewOverlay.attachInstance(instance);
+
+      Readspeaker.read(Dictionary.get('a11y.previewOpened'));
+    }
+    else {
+      this.previewOverlay.hide();
+      this.chapterNavigation.show();
+      this.chaptersDOM.classList.remove('display-none');
+
+      Readspeaker.read(Dictionary.get('a11y.previewClosed'));
+    }
+
   }
 
   /**
