@@ -31,6 +31,14 @@ export default class Spinner {
     this.spinnerElement.appendChild(circleBody);
 
     this.container.appendChild(this.spinnerElement);
+
+    this.message = document.createElement('div');
+    this.message.classList.add('spinner-message');
+    this.container.appendChild(this.message);
+
+    this.progress = document.createElement('div');
+    this.progress.classList.add('spinner-progress');
+    this.container.appendChild(this.progress);
   }
 
   /**
@@ -54,5 +62,23 @@ export default class Spinner {
    */
   hide() {
     this.container.classList.add('spinner-none');
+  }
+
+  /**
+   * Set message text.
+   *
+   * @param {string} text Message text.
+   */
+  setMessage(text) {
+    this.message.innerText = text;
+  }
+
+  /**
+   * Set progress text.
+   *
+   * @param {string} text Progress text.
+   */
+  setProgress(text) {
+    this.progress.innerText = text;
   }
 }

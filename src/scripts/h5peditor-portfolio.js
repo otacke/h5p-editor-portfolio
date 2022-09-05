@@ -651,6 +651,8 @@ export default class Portfolio {
    * TODO: Add actual chapter choosing in separate class
    */
   async openScreenshotDialog() {
+    this.spinner.setMessage(Dictionary.get('l10n.generatingExport'));
+    this.spinner.setProgress(' ');
     this.spinner.show();
 
     this.toolBar.disableButton('preview');
@@ -668,6 +670,11 @@ export default class Portfolio {
 
         let blobs = [];
         for (let id = 0; id < chapters.length; id++) {
+          const text = Dictionary.get('l10n.processingChapter')
+            .replace(/@number/g, id + 1)
+            .replace(/@of/g, chapters.length);
+          this.spinner.setProgress(text);
+
           blobs.push({
             name: `${chapters[id].hierarchy}.jpeg`,
             blob: await this.getScreenshot(id)

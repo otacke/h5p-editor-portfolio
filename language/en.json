@@ -15,6 +15,8 @@
     "l10n.addChapter": "Add chapter",
     "l10n.preview": "Preview Mode",
     "l10n.previewExplanation": "This is how the user will see your content",
+    "l10n.generatingExport": "Generating export",
+    "l10n.processingChapter": "Processing chapter @number/@of",
     "a11y.openSubmenu": "Open sub menu",
     "a11y.closeSubmenu": "Close sub menu",
     "a11y.selected": "Selected",
