@@ -77,4 +77,18 @@ export default class PreviewOverlay {
   hide() {
     this.dom.classList.add('display-none');
   }
+
+  /**
+   * Cloak preview.
+   */
+  cloak() {
+    this.dom.classList.add('display-invisible');
+  }
+
+  /**
+   * Decloak preview.
+   */
+  decloak() {
+    this.dom.classList.remove('display-invisible');
+  }
 }

@@ -64,5 +64,25 @@
         }
       }
     }
+
+    .spinner-container {
+      background-color: rgba(44, 44, 44, 0.9);
+      height: 100%;
+      left: 0;
+      position: absolute;
+      top: 0;
+      z-index: 10;
+
+      .spinner {
+        height: 11rem;
+        width: 11rem;
+
+        div {
+          border-width: 1.25rem;
+          height: 10rem;
+          width: 10rem;
+        }
+      }
+    }
   }
 }

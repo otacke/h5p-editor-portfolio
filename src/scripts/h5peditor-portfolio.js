@@ -3,7 +3,10 @@ import PreviewOverlay from './components/preview/preview-overlay';
 import Util from './h5peditor-portfolio-util';
 import Dictionary from './services/dictionary';
 import Readspeaker from './services/readspeaker';
+import Screenshot from './services/screenshot';
 import Toolbar from './components/toolbar/toolbar';
+import Spinner from './components/spinner';
+import JSZip from 'jszip';
 
 /** Class for Portfolio H5P widget */
 export default class Portfolio {
@@ -54,8 +57,8 @@ export default class Portfolio {
       return child?.getName() === 'chapters';
     });
 
-    const mainDOM = document.createElement('div');
-    mainDOM.classList.add('h5peditor-portfolio-main');
+    this.mainDOM = document.createElement('div');
+    this.mainDOM.classList.add('h5peditor-portfolio-main');
 
     const toolbarDOM = document.createElement('div');
     toolbarDOM.classList.add('h5peditor-portfolio-toolbar');
@@ -64,17 +67,17 @@ export default class Portfolio {
       {},
       {
         onClickButtonPreview: (active) => {
-          this.togglePreview(active);
+          this.togglePreview({ active: active });
         },
-        onClickButtonExport: () => {
-          //this.showExportDialog();
+        onClickButtonExport: async () => {
+          await this.openScreenshotDialog();
         }
       }
     );
     this.toolBar.enableButton('preview');
     this.toolBar.enableButton('export');
     toolbarDOM.appendChild(this.toolBar.getDOM());
-    mainDOM.appendChild(toolbarDOM);
+    this.mainDOM.appendChild(toolbarDOM);
 
     const contentDOM = document.createElement('div');
     contentDOM.classList.add('h5peditor-portfolio-content');
@@ -117,13 +120,16 @@ export default class Portfolio {
     contentDOM.appendChild(this.chaptersDOM);
 
     this.previewOverlay = new PreviewOverlay();
-    contentDOM.appendChild(this.previewOverlay.getDOM());
+    this.mainDOM.appendChild(this.previewOverlay.getDOM());
 
     Readspeaker.attach(contentDOM);
 
-    mainDOM.appendChild(contentDOM);
+    this.mainDOM.appendChild(contentDOM);
 
-    this.$container.get(0).appendChild(mainDOM);
+    this.spinner = new Spinner();
+    this.mainDOM.appendChild(this.spinner.getDOM());
+
+    this.$container.get(0).appendChild(this.mainDOM);
 
     // Relay changes
     if (this.fieldInstance.changes) {
@@ -586,18 +592,20 @@ export default class Portfolio {
   /**
    * Toggle preview.
    *
-   * @param {boolean} active If active, show preview, else hide.
+   * @param {object} [params={}] Parameters
+   * @param {boolean} params.active If true, show preview, else hide.
+   * @param {boolean} params.cloaked If true, show preview invisble.
    */
-  togglePreview(active) {
-    if (typeof active !== 'boolean') {
+  togglePreview(params = {}) {
+    if (typeof params.active !== 'boolean') {
       return;
     }
 
-    if (active) {
+    if (params.active) {
       const libraryUberName = Object.keys(H5PEditor.libraryLoaded)
         .find((library) => library.split(' ')[0] === 'H5P.Portfolio');
 
-      const instance = H5P.newRunnable(
+      this.previewInstance = H5P.newRunnable(
         {
           library: libraryUberName,
           params: this.parent.params
@@ -605,27 +613,145 @@ export default class Portfolio {
         H5PEditor.contentId || 1
       );
 
-      if (!instance) {
+      if (!this.previewInstance) {
         return;
       }
 
-      instance.isPreview = true;
+      this.toolBar.disableButton('export');
 
-      this.chapterNavigation.hide();
-      this.chaptersDOM.classList.add('display-none');
+      this.previewInstance.isPreview = true;
+
+      if (params.cloaked) {
+        this.previewOverlay.cloak();
+      }
+      else {
+        this.chapterNavigation.hide();
+        this.chaptersDOM.classList.add('display-none');
+      }
       this.previewOverlay.show();
-      this.previewOverlay.attachInstance(instance);
+      this.previewOverlay.attachInstance(this.previewInstance);
 
       Readspeaker.read(Dictionary.get('a11y.previewOpened'));
     }
     else {
+      this.previewInstance = null;
+      this.previewOverlay.decloak();
       this.previewOverlay.hide();
       this.chapterNavigation.show();
       this.chaptersDOM.classList.remove('display-none');
 
       Readspeaker.read(Dictionary.get('a11y.previewClosed'));
+
+      this.toolBar.enableButton('export');
+    }
+  }
+
+  /**
+   * Open screenshot dialog.
+   * TODO: Add actual chapter choosing in separate class
+   */
+  async openScreenshotDialog() {
+    this.spinner.show();
+
+    this.toolBar.disableButton('preview');
+    this.toolBar.disableButton('export');
+
+    this.togglePreview({ active: true, cloaked: true });
+    if (!this.previewInstance) {
+      this.togglePreview({ active: false });
+      return;
     }
 
+    this.previewInstance.on('attached', async () => {
+      setTimeout(async () => {
+        const chapters = this.previewInstance.getChaptersInformation();
+
+        let blobs = [];
+        for (let id = 0; id < chapters.length; id++) {
+          blobs.push({
+            name: `${chapters[id].hierarchy}.jpeg`,
+            blob: await this.getScreenshot(id)
+          });
+        }
+
+        const zipBlob = await this.createZip(blobs);
+        this.offerDownload({ blob: zipBlob });
+        this.togglePreview({ active: false });
+
+        this.toolBar.enableButton('preview');
+        this.toolBar.enableButton('export');
+
+        this.spinner.hide();
+      }, 100);
+    });
+  }
+
+  /**
+   * Get screenshot of chapter.
+   *
+   * @param {number} chapterId Chapter's id.
+   */
+  async getScreenshot(chapterId) {
+    return await new Promise(resolve => {
+      this.previewInstance.moveTo({ id: chapterId });
+
+      setTimeout(async () => {
+        resolve (await Screenshot.takeScreenshot({
+          element: this.previewInstance.pageContent.getDOM()
+        }));
+      }, 500); // Animation time + buffer for resize
+    });
+  }
+
+  /**
+   * Create ZIP blob.
+   *
+   * @param {object[]} data File data.
+   * @returns {Blob} ZIP file blob.
+   */
+  async createZip(data) {
+    return await new Promise(resolve => {
+      const zip = new JSZip();
+      data.forEach(data => {
+        zip.file(data.name, data.blob);
+      });
+
+      zip.generateAsync({ type: 'blob' }).then(content => {
+        resolve(content);
+      });
+    });
+  }
+
+  /**
+   * Offer blob for download.
+   *
+   * @param {object} [params={}] Parameters.
+   * @param {Blob} params.blob Blob.
+   * @param {string} [params.filename] Filename.
+   */
+  offerDownload(params = {}) {
+    if (!params.blob) {
+      return;
+    }
+
+    if (!params.filename) {
+      params.filename = Date.now().toString();
+    }
+
+    const url = URL.createObjectURL(params.blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = params.filename;
+
+    const clickHandler = () => {
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+        a.removeEventListener('click', clickHandler);
+      }, 150);
+    };
+    a.addEventListener('click', clickHandler, false);
+
+    a.click();
   }
 
   /**

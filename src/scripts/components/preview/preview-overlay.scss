@@ -7,6 +7,11 @@
     display: none;
   }
 
+  &.display-invisible {
+    height: 0;
+    width: 1920px;
+  }
+
   .preview-content {
     margin: 1em;
 
