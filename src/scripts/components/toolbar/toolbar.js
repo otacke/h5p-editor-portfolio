@@ -52,19 +52,20 @@ export default class Toolbar {
     this.buttons.export = new ToolbarButton(
       {
         a11y: {
-          active: Dictionary.get('a11y.export'),
+          active: Dictionary.get('a11y.exportActive'),
           disabled: Dictionary.get('a11y.exportDisabled'),
+          inactive: Dictionary.get('a11y.exportInactive'),
         },
         classes: [
           'toolbar-button',
           'toolbar-button-export'
         ],
         disabled: true,
-        type: 'pulse'
+        type: 'toggle'
       },
       {
-        onClick: () => {
-          this.callbacks.onClickButtonExport();
+        onClick: (event, params = {}) => {
+          this.callbacks.onClickButtonExport(params.active);
         }
       }
     );
@@ -94,6 +95,20 @@ export default class Toolbar {
     for (let attribute in attributes) {
       this.buttons[id].setAttribute(attribute, attributes[attribute]);
     }
+  }
+
+  /**
+   * Enable button.
+   *
+   * @param {string} id Button id.
+   * @param {boolean} active If true, toggle active, else inactive.
+   */
+  forceButton(id = '', active) {
+    if (!this.buttons[id]) {
+      return; // Button not available
+    }
+
+    this.buttons[id].force(active);
   }
 
   /**

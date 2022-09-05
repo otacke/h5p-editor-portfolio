@@ -17,6 +17,9 @@
     "l10n.previewExplanation": "This is how the user will see your content",
     "l10n.generatingExport": "Generating export",
     "l10n.processingChapter": "Processing chapter @number/@of",
+    "l10n.chooseChapters": "Export",
+    "l10n.chooseChaptersDescription": "Please choose which chapters you want to export in what format",
+    "l10n.exportImages": "Export images",
     "a11y.openSubmenu": "Open sub menu",
     "a11y.closeSubmenu": "Close sub menu",
     "a11y.selected": "Selected",
@@ -31,11 +34,14 @@
     "a11y.cannotDeleteOnlyItem": "You cannot delete the only item",
     "a11y.notPossible": "Not possible",
     "a11y.previewActive": "Close preview",
-    "a11y.previewInactive": "Preview content",
     "a11y.previewDisabled": "Preview content. Currently not possible.",
+    "a11y.previewInactive": "Preview content",
     "a11y.previewOpened": "Preview was opened.",
     "a11y.previewClosed": "Preview was closed.",
-    "a11y.export": "Export content",
-    "a11y.exportDisabled": "Export content. Currently not possible."
+    "a11y.exportActive": "Close export",
+    "a11y.exportInactive": "Export content",
+    "a11y.exportDisabled": "Export content. Currently not possible.",
+    "a11y.exportOpened": "Export dialog was opened.",
+    "a11y.exportClosed": "Export dialog was closed."
   }
 }

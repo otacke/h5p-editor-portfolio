@@ -170,6 +170,27 @@ export default class ToolbarButton {
   }
 
   /**
+   * Force button click.
+   *
+   * @param {boolean} [active] If set to boolean, activate accordingly.
+   */
+  force(active) {
+    if (this.params.type === 'toggle') {
+      if (active === true) {
+        this.activate();
+      }
+      else if (active === false) {
+        this.deactivate();
+      }
+      else {
+        this.toggle();
+      }
+    }
+
+    this.callbacks.onClick(event, { active: this.active });
+  }
+
+  /**
    * Deactivate button.
    */
   deactivate() {

@@ -3,7 +3,6 @@ export default class Util {
   /**
    * Extend an array just like JQuery's extend.
    *
-   * @param {object} arguments Objects to be merged.
    * @returns {object} Merged objects.
    */
   static extend() {

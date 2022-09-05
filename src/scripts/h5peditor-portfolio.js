@@ -3,10 +3,9 @@ import PreviewOverlay from './components/preview/preview-overlay';
 import Util from './h5peditor-portfolio-util';
 import Dictionary from './services/dictionary';
 import Readspeaker from './services/readspeaker';
-import Screenshot from './services/screenshot';
 import Toolbar from './components/toolbar/toolbar';
 import Spinner from './components/spinner';
-import JSZip from 'jszip';
+import ChapterChooser from './components/export/chapterchooser';
 
 /** Class for Portfolio H5P widget */
 export default class Portfolio {
@@ -69,8 +68,8 @@ export default class Portfolio {
         onClickButtonPreview: (active) => {
           this.togglePreview({ active: active });
         },
-        onClickButtonExport: async () => {
-          await this.openScreenshotDialog();
+        onClickButtonExport: (active) => {
+          this.toggleExportDialog(active);
         }
       }
     );
@@ -121,6 +120,19 @@ export default class Portfolio {
 
     this.previewOverlay = new PreviewOverlay();
     this.mainDOM.appendChild(this.previewOverlay.getDOM());
+
+    this.chapterChooser = new ChapterChooser({}, {
+      onExportStarted: () => {
+        this.showExportSpinner();
+      },
+      onExportProgress: (params) => {
+        this.setSpinnerProgress(params);
+      },
+      onExportEnded: () => {
+        this.toolBar.forceButton('export', false); // Will close dialog
+      }
+    });
+    this.mainDOM.appendChild(this.chapterChooser.getDOM());
 
     Readspeaker.attach(contentDOM);
 
@@ -602,32 +614,16 @@ export default class Portfolio {
     }
 
     if (params.active) {
-      const libraryUberName = Object.keys(H5PEditor.libraryLoaded)
-        .find((library) => library.split(' ')[0] === 'H5P.Portfolio');
-
-      this.previewInstance = H5P.newRunnable(
-        {
-          library: libraryUberName,
-          params: this.parent.params
-        },
-        H5PEditor.contentId || 1
-      );
-
+      this.createPreviewInstance();
       if (!this.previewInstance) {
         return;
       }
 
       this.toolBar.disableButton('export');
 
-      this.previewInstance.isPreview = true;
+      this.chapterNavigation.hide();
+      this.chaptersDOM.classList.add('display-none');
 
-      if (params.cloaked) {
-        this.previewOverlay.cloak();
-      }
-      else {
-        this.chapterNavigation.hide();
-        this.chaptersDOM.classList.add('display-none');
-      }
       this.previewOverlay.show();
       this.previewOverlay.attachInstance(this.previewInstance);
 
@@ -647,118 +643,117 @@ export default class Portfolio {
   }
 
   /**
-   * Open screenshot dialog.
-   * TODO: Add actual chapter choosing in separate class
+   * Create preview instance.
    */
-  async openScreenshotDialog() {
+  createPreviewInstance() {
+    const libraryUberName = Object.keys(H5PEditor.libraryLoaded)
+      .find((library) => library.split(' ')[0] === 'H5P.Portfolio');
+
+    this.previewInstance = H5P.newRunnable(
+      {
+        library: libraryUberName,
+        params: this.parent.params
+      },
+      H5PEditor.contentId || 1
+    );
+
+    if (!this.previewInstance) {
+      return;
+    }
+
+    this.previewInstance.isPreview = true;
+  }
+
+  /**
+   * Toggle exportDialog.
+   *
+   * @param {boolean} active If true, show export dialog, else hide.
+   */
+  toggleExportDialog(active) {
+    if (active) {
+      this.openExportDialog();
+    }
+    else {
+      this.closeExportDialog();
+    }
+  }
+
+  /**
+   * Open screenshot dialog.
+   */
+  async openExportDialog() {
+    this.toolBar.disableButton('preview');
+
+    this.createPreviewInstance(true);
+    if (!this.previewInstance) {
+      this.toolBar.disableButton('preview');
+      return;
+    }
+
+    this.chapterNavigation.hide();
+    this.chaptersDOM.classList.add('display-none');
+
+    this.previewOverlay.cloak();
+    this.previewOverlay.show();
+    this.previewOverlay.attachInstance(this.previewInstance);
+
+    Readspeaker.read(Dictionary.get('a11y.exportOpened'));
+
+    this.chapterChooser.update({
+      instance: this.previewInstance
+    });
+    this.chapterChooser.show();
+  }
+
+  /**
+   * Show export spinner.
+   */
+  showExportSpinner() {
     this.spinner.setMessage(Dictionary.get('l10n.generatingExport'));
     this.spinner.setProgress(' ');
     this.spinner.show();
-
-    this.toolBar.disableButton('preview');
-    this.toolBar.disableButton('export');
-
-    this.togglePreview({ active: true, cloaked: true });
-    if (!this.previewInstance) {
-      this.togglePreview({ active: false });
-      return;
-    }
-
-    this.previewInstance.on('attached', async () => {
-      setTimeout(async () => {
-        const chapters = this.previewInstance.getChaptersInformation();
-
-        let blobs = [];
-        for (let id = 0; id < chapters.length; id++) {
-          const text = Dictionary.get('l10n.processingChapter')
-            .replace(/@number/g, id + 1)
-            .replace(/@of/g, chapters.length);
-          this.spinner.setProgress(text);
-
-          blobs.push({
-            name: `${chapters[id].hierarchy}.jpeg`,
-            blob: await this.getScreenshot(id)
-          });
-        }
-
-        const zipBlob = await this.createZip(blobs);
-        this.offerDownload({ blob: zipBlob });
-        this.togglePreview({ active: false });
-
-        this.toolBar.enableButton('preview');
-        this.toolBar.enableButton('export');
-
-        this.spinner.hide();
-      }, 100);
-    });
   }
 
   /**
-   * Get screenshot of chapter.
-   *
-   * @param {number} chapterId Chapter's id.
-   */
-  async getScreenshot(chapterId) {
-    return await new Promise(resolve => {
-      this.previewInstance.moveTo({ id: chapterId });
-
-      setTimeout(async () => {
-        resolve (await Screenshot.takeScreenshot({
-          element: this.previewInstance.pageContent.getDOM()
-        }));
-      }, 500); // Animation time + buffer for resize
-    });
-  }
-
-  /**
-   * Create ZIP blob.
-   *
-   * @param {object[]} data File data.
-   * @returns {Blob} ZIP file blob.
-   */
-  async createZip(data) {
-    return await new Promise(resolve => {
-      const zip = new JSZip();
-      data.forEach(data => {
-        zip.file(data.name, data.blob);
-      });
-
-      zip.generateAsync({ type: 'blob' }).then(content => {
-        resolve(content);
-      });
-    });
-  }
-
-  /**
-   * Offer blob for download.
+   * Set spinner progress.
    *
    * @param {object} [params={}] Parameters.
-   * @param {Blob} params.blob Blob.
-   * @param {string} [params.filename] Filename.
+   * @param {number} params.number Current progress.
+   * @param {number} params.of Maximum progress.
    */
-  offerDownload(params = {}) {
-    if (!params.blob) {
+  setSpinnerProgress(params = {}) {
+    if (
+      typeof params.number !== 'number' ||
+      typeof params.of !== 'number'
+    ) {
       return;
     }
 
-    if (!params.filename) {
-      params.filename = Date.now().toString();
-    }
+    this.spinner.setProgress(Dictionary.get('l10n.processingChapter')
+      .replace(/@number/g, params.number)
+      .replace(/@of/g, params.of)
+    );
+  }
 
-    const url = URL.createObjectURL(params.blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = params.filename;
+  /**
+   * Close export dialog.
+   */
+  closeExportDialog() {
+    this.togglePreview({ active: false });
 
-    const clickHandler = () => {
-      setTimeout(() => {
-        URL.revokeObjectURL(url);
-        a.removeEventListener('click', clickHandler);
-      }, 150);
-    };
-    a.addEventListener('click', clickHandler, false);
+    this.toolBar.enableButton('preview');
 
-    a.click();
+    this.previewInstance = null;
+    this.previewOverlay.decloak();
+    this.previewOverlay.hide();
+
+    this.chapterNavigation.show();
+    this.chaptersDOM.classList.remove('display-none');
+
+    this.chapterChooser.hide();
+    this.spinner.hide();
+
+    Readspeaker.read(Dictionary.get('a11y.exportClosed'));
   }
 
   /**

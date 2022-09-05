@@ -4,6 +4,7 @@ $icon-button-preview-blue: url("./../../../assets/button-preview-icon-blue.svg")
 $icon-button-preview-white: url("./../../../assets/button-preview-icon-white.svg");
 $icon-button-preview-grey: url("./../../../assets/button-preview-icon-grey.svg");
 $icon-button-export-blue: url("./../../../assets/button-export-icon-blue.svg");
+$icon-button-export-white: url("./../../../assets/button-export-icon-white.svg");
 $icon-button-export-grey: url("./../../../assets/button-export-icon-grey.svg");
 
 .toolbar-tool-bar {
@@ -50,11 +51,11 @@ $icon-button-export-grey: url("./../../../assets/button-export-icon-grey.svg");
       }
 
       &.toolbar-button-active {
-        background-image: $icon-button-export-blue;
-        background-color: initial;
+        background-image: $icon-button-export-white;
+        background-color: $color-primary;
 
         &:hover {
-          background-color: $color-primary-5;
+          background-color: $color-primary-90;
         }
       }
     }
