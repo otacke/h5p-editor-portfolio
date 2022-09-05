@@ -29,15 +29,15 @@
       animation: h5p-agamotto-spinner 1.2s cubic-bezier(.5, 0, .5, 1) infinite;
       border-color: #999 transparent transparent transparent;
 
-      .spinner-circle-head {
+      &.spinner-circle-head {
         animation-delay: -.45s;
       }
 
-      .spinner-circle-neck-upper {
+      &.spinner-circle-neck-upper {
         animation-delay: -.3s;
       }
 
-      .spinner-circle-neck-lower {
+      &.spinner-circle-neck-lower {
         animation-delay: -.15s;
       }
 
