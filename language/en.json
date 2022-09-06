@@ -20,6 +20,7 @@
     "l10n.chooseChapters": "Export",
     "l10n.chooseChaptersDescription": "Please choose which chapters you want to export in what format",
     "l10n.exportImages": "Export images",
+    "l10n.chapterTitle": "Chapter title",
     "a11y.openSubmenu": "Open sub menu",
     "a11y.closeSubmenu": "Close sub menu",
     "a11y.selected": "Selected",
@@ -42,6 +43,8 @@
     "a11y.exportInactive": "Export content",
     "a11y.exportDisabled": "Export content. Currently not possible.",
     "a11y.exportOpened": "Export dialog was opened.",
-    "a11y.exportClosed": "Export dialog was closed."
+    "a11y.exportClosed": "Export dialog was closed.",
+    "a11y.selectAll": "Select all chapters.",
+    "a11y.unselectAll": "Unselect all chapters."
   }
 }

@@ -22,6 +22,25 @@
       border: 1px solid #d0d0d1;
       padding: 1em;
 
+      .chapter-chooser-checkbox {
+        margin-right: .5rem;
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
+
+      .chapter-chooser-toggle-all-wrapper {
+        border-bottom: 1px solid #d0d0d1;
+        margin-bottom: .25rem;
+        width: 100%;
+
+        .chapter-chooser-label-toggle-all {
+          font-size: .75em;
+          font-weight: bold;
+        }
+      }
+
       .chapter-chooser-list {
         list-style: none;
         margin: 0;
@@ -29,15 +48,19 @@
 
         .chapter-chooser-list-item {
           &.hierarchy-2 {
-            padding-left: 1em;
+            padding-left: 1.25em;
           }
 
           &.hierarchy-3 {
-            padding-left: 2em;
+            padding-left: 2.5em;
           }
 
           .chapter-chooser-label {
             font-size: .75em;
+
+            &:hover {
+              cursor: pointer;
+            }
           }
         }
       }
@@ -45,6 +68,7 @@
       .chapter-chooser-buttons-wrapper {
         display: flex;
         flex-direction: row;
+        margin-top: 0.5rem;
 
         .chapter-chooser-export-button {
           background: $color-primary;

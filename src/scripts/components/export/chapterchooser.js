@@ -23,8 +23,8 @@ export default class ChapterChooser {
       onExportEnded: () => {}
     }, callbacks);
 
-    // Keep track of chosen chapters for export.
-    this.chosenChapters = [];
+    // Keep track of checkboxes.
+    this.checkboxes = [];
 
     this.dom = document.createElement('div');
     this.dom.classList.add('chapter-chooser-overlay');
@@ -47,10 +47,42 @@ export default class ChapterChooser {
     wrapper.classList.add('chapter-chooser-actions');
     content.appendChild(wrapper);
 
+    // Toggle all
+    const toggleAllWrapper = document.createElement('div');
+    toggleAllWrapper.classList.add('chapter-chooser-toggle-all-wrapper');
+    wrapper.appendChild(toggleAllWrapper);
+
+    const toggleAll = document.createElement('input');
+    toggleAll.classList.add('chapter-chooser-checkbox');
+    toggleAll.setAttribute('type', 'checkbox');
+    toggleAll.setAttribute('id', `chapter-chooser-checkbox-toggle-all`);
+    toggleAll.setAttribute('aria-label', Dictionary.get('a11y.selectAll'));
+    toggleAll.addEventListener('change', () => {
+      if (toggleAll.checked) {
+        toggleAll.setAttribute('aria-label', Dictionary.get('a11y.unselectAll'));
+      }
+      else {
+        toggleAll.setAttribute('aria-label', Dictionary.get('a11y.selectAll'));
+      }
+
+      this.checkboxes.forEach(checkbox => {
+        checkbox.checked = toggleAll.checked;
+      });
+      this.updateButtons();
+    });
+    toggleAllWrapper.appendChild(toggleAll);
+
+    const label = document.createElement('label');
+    label.classList.add('chapter-chooser-label-toggle-all');
+    label.innerText = Dictionary.get('l10n.chapterTitle');
+    toggleAllWrapper.appendChild(label);
+
+    // Options
     this.optionsList = document.createElement('ul');
     this.optionsList.classList.add('chapter-chooser-list');
     wrapper.appendChild(this.optionsList);
 
+    // Buttons
     const buttonsWrapper = document.createElement('div');
     buttonsWrapper.classList.add('chapter-chooser-buttons-wrapper');
     wrapper.appendChild(buttonsWrapper);
@@ -66,7 +98,6 @@ export default class ChapterChooser {
     buttonsWrapper.appendChild(this.buttonExportImages);
 
     this.hide();
-
     this.updateButtons();
   }
 
@@ -92,7 +123,7 @@ export default class ChapterChooser {
 
     this.instance = params.instance;
 
-    this.chosenChapters = [];
+    this.checkboxes = [];
 
     this.optionsList.innerHTML = '';
 
@@ -107,21 +138,11 @@ export default class ChapterChooser {
       checkbox.setAttribute('id', `chapter-chooser-checkbox-${index}`);
       checkbox.setAttribute('aria-label', chapter.title);
       checkbox.addEventListener('change', () => {
-        if (checkbox.checked) {
-          this.chosenChapters.push({
-            index: index,
-            hierarchy: chapter.hierarchy
-          });
-        }
-        else {
-          this.chosenChapters.splice(
-            this.chosenChapters.findIndex(chapter => chapter.index === index), 1
-          );
-        }
-
         this.updateButtons();
       });
       li.appendChild(checkbox);
+
+      this.checkboxes.push(checkbox);
 
       const label = document.createElement('label');
       label.classList.add('chapter-chooser-label');
@@ -137,7 +158,7 @@ export default class ChapterChooser {
    * Update buttons.
    */
   updateButtons() {
-    if (this.chosenChapters.length) {
+    if (this.checkboxes.some(checkbox => checkbox.checked)) {
       this.buttonExportImages.removeAttribute('disabled');
     }
     else {
@@ -182,27 +203,44 @@ export default class ChapterChooser {
   async handleExportImages() {
     this.callbacks.onExportStarted();
 
+    // Retrieve information for chosen chapters
+    const chapterInfo = this.instance.getChaptersInformation();
+    const chosenChapters = this.checkboxes.reduce((checked, current, index) => {
+      if (!current.checked) {
+        return checked;
+      }
+
+      const chosen = { index: index, hierarchy: chapterInfo[index].hierarchy };
+      return [...checked, chosen];
+    }, []);
+
     let blobs = [];
 
-    for (let i = 0; i < this.chosenChapters.length; i++) {
+    for (let i = 0; i < chosenChapters.length; i++) {
       this.callbacks.onExportProgress({
         number: i + 1,
-        of: this.chosenChapters.length
+        of: chosenChapters.length
       });
 
-      const blob = await this.getScreenshot(this.chosenChapters[i].index);
+      const blob = await this.getScreenshot(chosenChapters[i].index);
       if (blob === null) {
         continue;
       }
 
       blobs.push({
-        name: `${this.chosenChapters[i].hierarchy}.${blob.type.split('/')[1]}`,
+        name: `${chosenChapters[i].hierarchy}.${blob.type.split('/')[1]}`,
         blob: blob
       });
     }
 
-    Export.offerDownload({ blob: await Export.createZip(blobs) });
+    Export.offerDownload({
+      blob: await Export.createZip(blobs),
+      filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.zip`
+    });
 
     this.callbacks.onExportEnded();
   }
 }
+
+/** @constant {string} Export file name prefix. */
+ChapterChooser.FILENAME_PREFIX = 'H5P.Portfolio-Export';
