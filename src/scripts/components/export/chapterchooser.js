@@ -43,19 +43,27 @@ export default class ChapterChooser {
     description.innerHTML = Dictionary.get('l10n.chooseChaptersDescription');
     content.appendChild(description);
 
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('chapter-chooser-actions');
+    content.appendChild(wrapper);
+
     this.optionsList = document.createElement('ul');
     this.optionsList.classList.add('chapter-chooser-list');
-    content.appendChild(this.optionsList);
+    wrapper.appendChild(this.optionsList);
+
+    const buttonsWrapper = document.createElement('div');
+    buttonsWrapper.classList.add('chapter-chooser-buttons-wrapper');
+    wrapper.appendChild(buttonsWrapper);
 
     this.buttonExportImages = document.createElement('button');
     this.buttonExportImages.classList.add('h5peditor-button');
     this.buttonExportImages.classList.add('h5peditor-button-textual');
-    this.buttonExportImages.classList.add('chapter-chooser-export-images');
+    this.buttonExportImages.classList.add('chapter-chooser-export-button');
     this.buttonExportImages.innerText = Dictionary.get('l10n.exportImages');
     this.buttonExportImages.addEventListener('click', () => {
       this.handleExportImages();
     });
-    content.appendChild(this.buttonExportImages);
+    buttonsWrapper.appendChild(this.buttonExportImages);
 
     this.hide();
 
