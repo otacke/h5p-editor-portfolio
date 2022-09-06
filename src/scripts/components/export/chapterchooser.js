@@ -93,9 +93,19 @@ export default class ChapterChooser {
     this.buttonExportImages.classList.add('chapter-chooser-export-button');
     this.buttonExportImages.innerText = Dictionary.get('l10n.exportImages');
     this.buttonExportImages.addEventListener('click', () => {
-      this.handleExportImages();
+      this.handleExport('images');
     });
     buttonsWrapper.appendChild(this.buttonExportImages);
+
+    this.buttonExportPDF = document.createElement('button');
+    this.buttonExportPDF.classList.add('h5peditor-button');
+    this.buttonExportPDF.classList.add('h5peditor-button-textual');
+    this.buttonExportPDF.classList.add('chapter-chooser-export-button');
+    this.buttonExportPDF.innerText = Dictionary.get('l10n.exportPDF');
+    this.buttonExportPDF.addEventListener('click', () => {
+      this.handleExport('pdf');
+    });
+    buttonsWrapper.appendChild(this.buttonExportPDF);
 
     this.hide();
     this.updateButtons();
@@ -152,6 +162,8 @@ export default class ChapterChooser {
 
       this.optionsList.appendChild(li);
     });
+
+    this.updateButtons();
   }
 
   /**
@@ -160,9 +172,11 @@ export default class ChapterChooser {
   updateButtons() {
     if (this.checkboxes.some(checkbox => checkbox.checked)) {
       this.buttonExportImages.removeAttribute('disabled');
+      this.buttonExportPDF.removeAttribute('disabled');
     }
     else {
       this.buttonExportImages.setAttribute('disabled', 'disabled');
+      this.buttonExportPDF.setAttribute('disabled', 'disabled');
     }
   }
 
@@ -198,10 +212,14 @@ export default class ChapterChooser {
   }
 
   /**
-   * Handle export images.
+   * Handle export.
+   *
+   * @param {string} type Type of export.
    */
-  async handleExportImages() {
-    this.callbacks.onExportStarted();
+  async handleExport(type) {
+    if (typeof type !== 'string') {
+      return;
+    }
 
     // Retrieve information for chosen chapters
     const chapterInfo = this.instance.getChaptersInformation();
@@ -210,11 +228,17 @@ export default class ChapterChooser {
         return checked;
       }
 
-      const chosen = { index: index, hierarchy: chapterInfo[index].hierarchy };
+      const chosen = {
+        index: index,
+        hierarchy: chapterInfo[index].hierarchy,
+        title: chapterInfo[index].title
+      };
       return [...checked, chosen];
     }, []);
 
-    let blobs = [];
+    this.callbacks.onExportStarted();
+
+    let imageBlobs = [];
 
     for (let i = 0; i < chosenChapters.length; i++) {
       this.callbacks.onExportProgress({
@@ -227,16 +251,25 @@ export default class ChapterChooser {
         continue;
       }
 
-      blobs.push({
+      imageBlobs.push({
+        title: chosenChapters[i].title,
         name: `${chosenChapters[i].hierarchy}.${blob.type.split('/')[1]}`,
         blob: blob
       });
     }
 
-    Export.offerDownload({
-      blob: await Export.createZip(blobs),
-      filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.zip`
-    });
+    if (type === 'image') {
+      Export.offerDownload({
+        blob: await Export.createZip(imageBlobs),
+        filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.zip`
+      });
+    }
+    else if (type === 'pdf') {
+      Export.getPDF({
+        imageBlobs: imageBlobs,
+        filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.pdf`
+      });
+    }
 
     this.callbacks.onExportEnded();
   }

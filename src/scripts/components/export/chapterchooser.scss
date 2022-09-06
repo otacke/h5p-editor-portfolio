@@ -73,6 +73,10 @@
         .chapter-chooser-export-button {
           background: $color-primary;
 
+          &:not(:last-child) {
+            margin-right: .5rem;
+          }
+
           &:hover {
             background: $color-primary-90;
           }

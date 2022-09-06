@@ -1,6 +1,51 @@
 import JSZip from 'jszip';
+import { jsPDF } from 'jspdf';
 
 export default class Export {
+
+  /**
+   * Export PDF.
+   *
+   * @param {object} [params={}] Parameters.
+   * @param {object[]} params.imageBlobs Imageblob data.
+   * @param {string} params.filename Filename for export.
+   */
+  static exportPDF(params = {}) {
+    if (!Array.isArray(params.imageBlobs)) {
+      return;
+    }
+
+    params.filename = params.filename ||
+      `${H5P.createUUID()}-${Date.now()}.pdf`;
+
+    const widthMax = 190;
+    const heightMax = 267;
+    const ratio = widthMax / heightMax;
+
+    const pdf = new jsPDF();
+
+    params.imageBlobs.forEach((entry, index) => {
+      if (index > 0) {
+        pdf.addPage();
+      }
+
+      pdf.text(entry.title || entry.name || '', 10, 10);
+
+      const image = document.createElement('img');
+      image.src = URL.createObjectURL(entry.blob);
+
+      const imageSize = pdf.getImageProperties(image);
+      const imageRatio = imageSize.width / imageSize.height;
+
+      const scaled = imageRatio < ratio ?
+        { height: heightMax, width: heightMax * imageRatio } :
+        { height: widthMax / imageRatio, width: widthMax };
+
+      pdf.addImage(image, 'JPEG', 10, 20, scaled.width, scaled.height);
+    });
+
+    pdf.save(params.filename);
+  }
 
   /**
    * Create ZIP blob.

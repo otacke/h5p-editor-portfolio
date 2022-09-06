@@ -20,6 +20,7 @@
     "l10n.chooseChapters": "Export",
     "l10n.chooseChaptersDescription": "Please choose which chapters you want to export in what format",
     "l10n.exportImages": "Export images",
+    "l10n.exportPDF": "Export PDF",
     "l10n.chapterTitle": "Chapter title",
     "a11y.openSubmenu": "Open sub menu",
     "a11y.closeSubmenu": "Close sub menu",
