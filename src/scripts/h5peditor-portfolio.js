@@ -614,32 +614,43 @@ export default class Portfolio {
     }
 
     if (params.active) {
-      this.createPreviewInstance();
-      if (!this.previewInstance) {
-        return;
-      }
-
-      this.toolBar.disableButton('export');
-
-      this.chapterNavigation.hide();
-      this.chaptersDOM.classList.add('display-none');
-
-      this.previewOverlay.show();
-      this.previewOverlay.attachInstance(this.previewInstance);
-
-      Readspeaker.read(Dictionary.get('a11y.previewOpened'));
+      this.toolBar.forceButton('export', false);
+      this.openPreview();
     }
     else {
-      this.previewInstance = null;
-      this.previewOverlay.decloak();
-      this.previewOverlay.hide();
-      this.chapterNavigation.show();
-      this.chaptersDOM.classList.remove('display-none');
-
-      Readspeaker.read(Dictionary.get('a11y.previewClosed'));
-
-      this.toolBar.enableButton('export');
+      this.closePreview();
     }
+  }
+
+  /**
+   * Open preview.
+   */
+  openPreview() {
+    this.createPreviewInstance();
+    if (!this.previewInstance) {
+      return;
+    }
+
+    this.chapterNavigation.hide();
+    this.chaptersDOM.classList.add('display-none');
+
+    this.previewOverlay.show();
+    this.previewOverlay.attachInstance(this.previewInstance);
+
+    Readspeaker.read(Dictionary.get('a11y.previewOpened'));
+  }
+
+  /**
+   * Close preview.
+   */
+  closePreview() {
+    this.previewInstance = null;
+    this.previewOverlay.decloak();
+    this.previewOverlay.hide();
+    this.chapterNavigation.show();
+    this.chaptersDOM.classList.remove('display-none');
+
+    Readspeaker.read(Dictionary.get('a11y.previewClosed'));
   }
 
   /**
@@ -671,6 +682,7 @@ export default class Portfolio {
    */
   toggleExportDialog(active) {
     if (active) {
+      this.toolBar.forceButton('preview', false);
       this.openExportDialog();
     }
     else {
@@ -682,11 +694,8 @@ export default class Portfolio {
    * Open screenshot dialog.
    */
   async openExportDialog() {
-    this.toolBar.disableButton('preview');
-
     this.createPreviewInstance(true);
     if (!this.previewInstance) {
-      this.toolBar.disableButton('preview');
       return;
     }
 
@@ -740,8 +749,6 @@ export default class Portfolio {
    */
   closeExportDialog() {
     this.togglePreview({ active: false });
-
-    this.toolBar.enableButton('preview');
 
     this.previewInstance = null;
     this.previewOverlay.decloak();
