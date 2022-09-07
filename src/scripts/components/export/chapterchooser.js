@@ -232,6 +232,9 @@ export default class ChapterChooser {
       return;
     }
 
+    // Close cover
+    this.instance.handleCoverRemoved();
+
     // Retrieve information for chosen chapters
     const chapterInfo = this.instance.getChaptersInformation();
     const chosenChapters = this.checkboxes.reduce((checked, current, index) => {
