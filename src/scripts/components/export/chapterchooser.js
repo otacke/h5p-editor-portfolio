@@ -234,8 +234,11 @@ export default class ChapterChooser {
       return;
     }
 
-    // Close cover
+    // Close cover and close menu
     this.instance.handleCoverRemoved();
+    if (this.instance.isMenuOpen()) {
+      this.instance.toggleMenu();
+    }
 
     // Retrieve information for chosen chapters
     const chapterInfo = this.instance.getChaptersInformation();
