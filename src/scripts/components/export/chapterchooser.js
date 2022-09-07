@@ -265,7 +265,7 @@ export default class ChapterChooser {
       });
     }
     else if (type === 'pdf') {
-      Export.getPDF({
+      Export.exportPDF({
         imageBlobs: imageBlobs,
         filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.pdf`
       });
