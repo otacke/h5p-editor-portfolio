@@ -52,25 +52,25 @@ export default class ChapterChooser {
     toggleAllWrapper.classList.add('chapter-chooser-toggle-all-wrapper');
     wrapper.appendChild(toggleAllWrapper);
 
-    const toggleAll = document.createElement('input');
-    toggleAll.classList.add('chapter-chooser-checkbox');
-    toggleAll.setAttribute('type', 'checkbox');
-    toggleAll.setAttribute('id', `chapter-chooser-checkbox-toggle-all`);
-    toggleAll.setAttribute('aria-label', Dictionary.get('a11y.selectAll'));
-    toggleAll.addEventListener('change', () => {
-      if (toggleAll.checked) {
-        toggleAll.setAttribute('aria-label', Dictionary.get('a11y.unselectAll'));
+    this.toggleAll = document.createElement('input');
+    this.toggleAll.classList.add('chapter-chooser-checkbox');
+    this.toggleAll.setAttribute('type', 'checkbox');
+    this.toggleAll.setAttribute('id', `chapter-chooser-checkbox-toggle-all`);
+    this.toggleAll.setAttribute('aria-label', Dictionary.get('a11y.selectAll'));
+    this.toggleAll.addEventListener('change', () => {
+      if (this.toggleAll.checked) {
+        this.toggleAll.setAttribute('aria-label', Dictionary.get('a11y.unselectAll'));
       }
       else {
-        toggleAll.setAttribute('aria-label', Dictionary.get('a11y.selectAll'));
+        this.toggleAll.setAttribute('aria-label', Dictionary.get('a11y.selectAll'));
       }
 
       this.checkboxes.forEach(checkbox => {
-        checkbox.checked = toggleAll.checked;
+        checkbox.checked = this.toggleAll.checked;
       });
       this.updateButtons();
     });
-    toggleAllWrapper.appendChild(toggleAll);
+    toggleAllWrapper.appendChild(this.toggleAll);
 
     const label = document.createElement('label');
     label.classList.add('chapter-chooser-label-toggle-all');
@@ -132,6 +132,8 @@ export default class ChapterChooser {
     }
 
     this.instance = params.instance;
+
+    this.toggleAll.checked = false;
 
     this.checkboxes = [];
 
