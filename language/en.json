@@ -22,6 +22,7 @@
     "l10n.exportImages": "Export images",
     "l10n.exportPDF": "Export PDF",
     "l10n.chapterTitle": "Chapter title",
+    "l10n.creatingExportFile": "Creating export file",
     "a11y.openSubmenu": "Open sub menu",
     "a11y.closeSubmenu": "Close sub menu",
     "a11y.selected": "Selected",

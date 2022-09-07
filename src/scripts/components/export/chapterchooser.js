@@ -276,6 +276,10 @@ export default class ChapterChooser {
       }
     }
 
+    this.callbacks.onExportProgress({
+      text: Dictionary.get('l10n.creatingExportFile')
+    });
+
     if (type === 'images') {
       Export.offerDownload({
         blob: await Export.createZip(imageBlobs),

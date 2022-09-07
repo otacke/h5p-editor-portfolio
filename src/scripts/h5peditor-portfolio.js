@@ -729,19 +729,21 @@ export default class Portfolio {
    * @param {object} [params={}] Parameters.
    * @param {number} params.number Current progress.
    * @param {number} params.of Maximum progress.
+   * @param {number} params.text custom text.
    */
   setSpinnerProgress(params = {}) {
-    if (
+    if (!params.text && (
       typeof params.number !== 'number' ||
       typeof params.of !== 'number'
-    ) {
+    )) {
       return;
     }
 
-    this.spinner.setProgress(Dictionary.get('l10n.processingChapter')
+    const message = params.text || Dictionary.get('l10n.processingChapter')
       .replace(/@number/g, params.number)
-      .replace(/@of/g, params.of)
-    );
+      .replace(/@of/g, params.of);
+
+    this.spinner.setProgress(message);
   }
 
   /**
