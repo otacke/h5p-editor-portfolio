@@ -18,18 +18,29 @@ export default class Export {
     params.filename = params.filename ||
       `${H5P.createUUID()}-${Date.now()}.pdf`;
 
-    const widthMax = 190;
-    const heightMax = 267;
-    const ratio = widthMax / heightMax;
+    const marginMM = 10; // Margin
+
+    const pageWidthMM = 210; // 210 is DinA4 width in mm
+    const pageHeightMM = 297; // 297 is DinA4 height in mm
+
+    const widthMaxMM = pageWidthMM - 2 * marginMM;
+    const heightMaxMM = pageHeightMM - 2 * marginMM;
 
     const pdf = new jsPDF();
 
+    let remainingHeightMM = heightMaxMM;
+    let hasPageImage = false;
+
     params.imageBlobs.forEach((entry, index) => {
-      if (index > 0) {
+      if (index > 0 && (entry.title || remainingHeightMM <= 0)) {
         pdf.addPage();
+        remainingHeightMM = heightMaxMM;
       }
 
-      pdf.text(entry.title || entry.name || '', 10, 10);
+      if (entry.title) {
+        pdf.text(entry.title || entry.name, marginMM, 1.5 * marginMM);
+        remainingHeightMM -= marginMM; // Assuming text height = marginMM
+      }
 
       const image = document.createElement('img');
       image.src = URL.createObjectURL(entry.blob);
@@ -37,11 +48,45 @@ export default class Export {
       const imageSize = pdf.getImageProperties(image);
       const imageRatio = imageSize.width / imageSize.height;
 
-      const scaled = imageRatio < ratio ?
-        { height: heightMax, width: heightMax * imageRatio } :
-        { height: widthMax / imageRatio, width: widthMax };
+      // Determine image size at full width
+      let imageSizeScaled = {
+        width: widthMaxMM,
+        height: widthMaxMM / imageRatio
+      };
 
-      pdf.addImage(image, 'JPEG', 10, 20, scaled.width, scaled.height);
+      // Handle not enough space for image
+      if (imageSizeScaled.height > remainingHeightMM) {
+
+        // Not first image, so use new page
+        if (hasPageImage) {
+          pdf.addPage();
+          remainingHeightMM = heightMaxMM;
+          hasPageImage = false;
+
+          if (imageSizeScaled.height > remainingHeightMM) {
+            imageSizeScaled = {
+              width: remainingHeightMM * imageRatio,
+              height: remainingHeightMM
+            };
+          }
+        }
+        else {
+          imageSizeScaled = {
+            width: remainingHeightMM * imageRatio,
+            height: remainingHeightMM
+          };
+        }
+      }
+
+      pdf.addImage(
+        image, 'JPEG',
+        marginMM, marginMM + heightMaxMM - remainingHeightMM,
+        imageSizeScaled.width, imageSizeScaled.height
+      );
+      hasPageImage = true;
+
+      remainingHeightMM -= imageSizeScaled.height;
+      remainingHeightMM -= 10; // gap between images
     });
 
     pdf.save(params.filename);

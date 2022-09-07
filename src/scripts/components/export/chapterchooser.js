@@ -195,18 +195,29 @@ export default class ChapterChooser {
   }
 
   /**
-   * Get screenshot of chapter.
+   * Get screenshots of chapter.
    *
    * @param {number} chapterId Chapter's id.
+   * @returns {Blob[]} Screenshots.
    */
-  async getScreenshot(chapterId) {
+  async getScreenshots(chapterId) {
     return await new Promise(resolve => {
       this.instance.moveTo({ id: chapterId });
 
       setTimeout(async () => {
-        resolve (await Screenshot.takeScreenshot({
-          element: this.instance.pageContent.getDOM() // TODO: function
-        }));
+        const screenshots = [];
+        const doms = this.instance.getChaptersInformation(chapterId)
+          ?.placeholderDOMs || [];
+
+        for (let i = 0; i < doms.length; i++) {
+          const screenshot = await Screenshot.takeScreenshot(
+            { element: doms[i] }
+          );
+
+          screenshots.push(screenshot);
+        }
+
+        resolve(screenshots);
       }, 500); // Animation time + buffer for resize
     });
   }
@@ -246,19 +257,23 @@ export default class ChapterChooser {
         of: chosenChapters.length
       });
 
-      const blob = await this.getScreenshot(chosenChapters[i].index);
-      if (blob === null) {
+      // Get screenshots
+      const screenshots = await this.getScreenshots(chosenChapters[i].index);
+      if (!screenshots.length) {
         continue;
       }
 
-      imageBlobs.push({
-        title: chosenChapters[i].title,
-        name: `${chosenChapters[i].hierarchy}.${blob.type.split('/')[1]}`,
-        blob: blob
-      });
+      // Build objects, could be improved in non image export (title value used for layout)
+      for (let j = 0; j < screenshots.length; j++) {
+        imageBlobs.push({
+          title: (j === 0) ? chosenChapters[i].title : null,
+          name: `${chosenChapters[i].hierarchy}_${j}.${screenshots[j].type.split('/')[1]}`,
+          blob: screenshots[j]
+        });
+      }
     }
 
-    if (type === 'image') {
+    if (type === 'images') {
       Export.offerDownload({
         blob: await Export.createZip(imageBlobs),
         filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.zip`
