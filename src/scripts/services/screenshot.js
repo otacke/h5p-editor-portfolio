@@ -20,10 +20,7 @@ export default class Screenshot {
     return await new Promise(resolve => {
       canvas.toBlob((blob) => {
         resolve(blob);
-      }, 'image/jpeg', Screenshot.IMAGE_QUALITY);
+      }, 'image/png');
     });
   }
 }
-
-/** @constant {number} Default image quality */
-Screenshot.IMAGE_QUALITY = .9;
