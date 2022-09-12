@@ -1,5 +1,9 @@
 import JSZip from 'jszip';
 import { jsPDF } from 'jspdf';
+import {
+  Document, Paragraph, TextRun, Packer, ImageRun, HeadingLevel,
+  convertMillimetersToTwip, PageOrientation
+} from 'docx';
 
 export default class Export {
 
@@ -18,28 +22,25 @@ export default class Export {
     params.filename = params.filename ||
       `${H5P.createUUID()}-${Date.now()}.pdf`;
 
-    const marginMM = 10; // Margin
-
-    const pageWidthMM = 210; // 210 is DinA4 width in mm
-    const pageHeightMM = 297; // 297 is DinA4 height in mm
-
-    const widthMaxMM = pageWidthMM - 2 * marginMM;
-    const heightMaxMM = pageHeightMM - 2 * marginMM;
-
     const pdf = new jsPDF();
 
-    let remainingHeightMM = heightMaxMM;
+    let remainingHeightMM = Export.PAGE_HEIGHT_MAX_MM;
     let hasPageImage = false;
 
     params.imageBlobs.forEach((entry, index) => {
       if (index > 0 && (entry.title || remainingHeightMM <= 0)) {
         pdf.addPage();
-        remainingHeightMM = heightMaxMM;
+        remainingHeightMM = Export.PAGE_HEIGHT_MAX_MM;
       }
 
       if (entry.title) {
-        pdf.text(entry.title || entry.name, marginMM, 1.5 * marginMM);
-        remainingHeightMM -= marginMM; // Assuming text height = marginMM
+        pdf.text(
+          entry.title || entry.name,
+          Export.PAGE_MARGIN_MM,
+          1.5 * Export.PAGE_MARGIN_MM
+        );
+        // Assuming text height = marginMM
+        remainingHeightMM -= Export.PAGE_MARGIN_MM;
       }
 
       const image = document.createElement('img');
@@ -50,8 +51,8 @@ export default class Export {
 
       // Determine image size at full width
       let imageSizeScaled = {
-        width: widthMaxMM,
-        height: widthMaxMM / imageRatio
+        width: Export.PAGE_WIDTH_MAX_MM,
+        height: Export.PAGE_WIDTH_MAX_MM / imageRatio
       };
 
       // Handle not enough space for image
@@ -60,7 +61,7 @@ export default class Export {
         // Not first image, so use new page
         if (hasPageImage) {
           pdf.addPage();
-          remainingHeightMM = heightMaxMM;
+          remainingHeightMM = Export.PAGE_HEIGHT_MAX_MM;
           hasPageImage = false;
 
           if (imageSizeScaled.height > remainingHeightMM) {
@@ -80,8 +81,10 @@ export default class Export {
 
       pdf.addImage(
         image, 'JPEG',
-        marginMM, marginMM + heightMaxMM - remainingHeightMM,
-        imageSizeScaled.width, imageSizeScaled.height
+        Export.PAGE_MARGIN_MM,
+        Export.PAGE_MARGIN_MM + Export.PAGE_HEIGHT_MAX_MM - remainingHeightMM,
+        imageSizeScaled.width,
+        imageSizeScaled.height
       );
       hasPageImage = true;
 
@@ -90,6 +93,84 @@ export default class Export {
     });
 
     pdf.save(params.filename);
+  }
+
+  /**
+   * Create ZIP blob.
+   *
+   * @param {object} [params={}] Parameters.
+   * @param {object[]} params.imageBlobs Imageblob data.
+   * @returns {Blob} ZIP file blob.
+   */
+  static async createDOCX(params = {}) {
+    const sectionChildren = [];
+
+    for (let i = 0; i < params.imageBlobs.length; i++) {
+      if (params.imageBlobs[i].title) {
+        sectionChildren.push(new Paragraph({
+          children: [new TextRun(params.imageBlobs[i].title)],
+          heading: HeadingLevel.HEADING_1,
+          pageBreakBefore: true,
+          spacing: { after: convertMillimetersToTwip(Export.PAGE_MARGIN_MM) }
+        }));
+      }
+
+      const image = await Export.getImage(params.imageBlobs[i].blob);
+      const imageRatio = image.naturalWidth / image.naturalHeight;
+
+      // Determine image size at full width
+      let imageSizeScaled = {
+        width: Export.PAGE_WIDTH_MAX_MM * Export.MM_EQUALS_PX,
+        height: Export.PAGE_WIDTH_MAX_MM * Export.MM_EQUALS_PX / imageRatio
+      };
+
+      // Handle not enough space for image
+      if (
+        imageSizeScaled.height > Export.PAGE_HEIGHT_MAX_MM * Export.MM_EQUALS_PX
+      ) {
+        imageSizeScaled = {
+          width: Export.PAGE_HEIGHT_MAX_MM * Export.MM_EQUALS_PX * imageRatio,
+          height: Export.PAGE_HEIGHT_MAX_MM * Export.MM_EQUALS_PX
+        };
+      }
+
+      sectionChildren.push(new Paragraph({
+        children: [new ImageRun({
+          data: params.imageBlobs[i].blob,
+          transformation: {
+            width: imageSizeScaled.width,
+            height: imageSizeScaled.height
+          }
+        })],
+        spacing: { after: convertMillimetersToTwip(Export.PAGE_MARGIN_MM) }
+      }));
+    }
+
+    // Create document
+    const doc = new Document({
+      sections: [{
+        properties: {
+          page: {
+            size: {
+              orientation: PageOrientation.PORTRAIT,
+              height: convertMillimetersToTwip(Export.PAGE_HEIGHT_MM),
+              width: convertMillimetersToTwip(Export.PAGE_WIDTH_MM)
+            },
+            margin: {
+              top: convertMillimetersToTwip(Export.PAGE_MARGIN_MM),
+              right: convertMillimetersToTwip(Export.PAGE_MARGIN_MM),
+              bottom: convertMillimetersToTwip(Export.PAGE_MARGIN_MM),
+              left: convertMillimetersToTwip(Export.PAGE_MARGIN_MM)
+            },
+          },
+        },
+        children: sectionChildren
+      }]
+    });
+
+    return await Packer.toBlob(doc).then((blob) => {
+      return blob;
+    });
   }
 
   /**
@@ -129,6 +210,19 @@ export default class Export {
     });
   }
 
+  static async getImage(imageBlob) {
+    return await new Promise((resolve, reject) => {
+      const image = document.createElement('img');
+      image.addEventListener('load', () => {
+        resolve(image);
+      });
+      image.addEventListener('error', () => {
+        reject();
+      });
+      image.src = URL.createObjectURL(imageBlob);
+    });
+  }
+
   /**
    * Offer blob for download.
    *
@@ -161,3 +255,21 @@ export default class Export {
     a.click();
   }
 }
+
+/** @constant {number} Page width in mm. */
+Export.PAGE_WIDTH_MM = 210; // 210 is DinA4 width in mm
+
+/** @constant {number} Page height in mm. */
+Export.PAGE_HEIGHT_MM = 297; // 297 is DinA4 height in mm
+
+/** @constant {number} Default gap between elements in mm. */
+Export.PAGE_MARGIN_MM = 10; // Default gap between elements in mm
+
+/** @constant {number} Max width in mm. */
+Export.PAGE_WIDTH_MAX_MM = Export.PAGE_WIDTH_MM - 2 * Export.PAGE_MARGIN_MM;
+
+/** @constant {number} Max width in mm. */
+Export.PAGE_HEIGHT_MAX_MM = Export.PAGE_HEIGHT_MM - 2 * Export.PAGE_MARGIN_MM;
+
+/** @constant {number} Pixels that equal one mm */
+Export.MM_EQUALS_PX = 3.7795275591;

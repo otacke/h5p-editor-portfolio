@@ -107,6 +107,16 @@ export default class ChapterChooser {
     });
     buttonsWrapper.appendChild(this.buttonExportPDF);
 
+    this.buttonExportDOCX = document.createElement('button');
+    this.buttonExportDOCX.classList.add('h5peditor-button');
+    this.buttonExportDOCX.classList.add('h5peditor-button-textual');
+    this.buttonExportDOCX.classList.add('chapter-chooser-export-button');
+    this.buttonExportDOCX.innerText = Dictionary.get('l10n.exportDOCX');
+    this.buttonExportDOCX.addEventListener('click', () => {
+      this.handleExport('docx');
+    });
+    buttonsWrapper.appendChild(this.buttonExportDOCX);
+
     this.hide();
     this.updateButtons();
   }
@@ -175,10 +185,12 @@ export default class ChapterChooser {
     if (this.checkboxes.some(checkbox => checkbox.checked)) {
       this.buttonExportImages.removeAttribute('disabled');
       this.buttonExportPDF.removeAttribute('disabled');
+      this.buttonExportDOCX.removeAttribute('disabled');
     }
     else {
       this.buttonExportImages.setAttribute('disabled', 'disabled');
       this.buttonExportPDF.setAttribute('disabled', 'disabled');
+      this.buttonExportDOCX.setAttribute('disabled', 'disabled');
     }
   }
 
@@ -295,6 +307,12 @@ export default class ChapterChooser {
       Export.exportPDF({
         imageBlobs: imageBlobs,
         filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.pdf`
+      });
+    }
+    else if (type === 'docx') {
+      Export.offerDownload({
+        blob: await Export.createDOCX({ imageBlobs: imageBlobs }),
+        filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.docx`
       });
     }
 
