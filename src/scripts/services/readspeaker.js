@@ -42,7 +42,7 @@ export default class Readspeaker {
     }
 
     // Remove . at end of strings to be read
-    texts = texts.map(text => {
+    texts = texts.map((text) => {
       text = text.trim();
       return text.substring(text.length - 1) === '.' ?
         text.substring(0, text.length - 1) :

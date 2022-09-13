@@ -180,15 +180,15 @@ export default class Export {
    * @returns {Blob} ZIP file blob.
    */
   static async createZip(data = []) {
-    return await new Promise(resolve => {
+    return await new Promise((resolve) => {
       if (!Array.isArray(data)) {
         resolve(null);
       }
 
       // Sanitize data
       data = data
-        .filter(entry => entry.blob instanceof Blob)
-        .map(entry => {
+        .filter((entry) => entry.blob instanceof Blob)
+        .map((entry) => {
           if (typeof entry.name !== 'string') {
             entry.name = `${H5P.createUUID()}.${entry.blob.type.split('/')[1]}`;
           }
@@ -200,11 +200,11 @@ export default class Export {
       }
 
       const zip = new JSZip();
-      data.forEach(data => {
+      data.forEach((data) => {
         zip.file(data.name, data.blob);
       });
 
-      zip.generateAsync({ type: 'blob' }).then(content => {
+      zip.generateAsync({ type: 'blob' }).then((content) => {
         resolve(content);
       });
     });

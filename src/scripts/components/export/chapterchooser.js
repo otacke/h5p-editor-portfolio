@@ -66,7 +66,7 @@ export default class ChapterChooser {
         this.toggleAll.setAttribute('aria-label', Dictionary.get('a11y.selectAll'));
       }
 
-      this.checkboxes.forEach(checkbox => {
+      this.checkboxes.forEach((checkbox) => {
         checkbox.checked = this.toggleAll.checked;
       });
       this.updateButtons();
@@ -183,7 +183,7 @@ export default class ChapterChooser {
    * Update buttons.
    */
   updateButtons() {
-    if (this.checkboxes.some(checkbox => checkbox.checked)) {
+    if (this.checkboxes.some((checkbox) => checkbox.checked)) {
       this.buttonExportImages.removeAttribute('disabled');
       this.buttonExportPDF.removeAttribute('disabled');
       this.buttonExportDOCX.removeAttribute('disabled');
@@ -216,7 +216,7 @@ export default class ChapterChooser {
    * @returns {Blob[]} Screenshots.
    */
   async getScreenshots(chapterId) {
-    return await new Promise(resolve => {
+    return await new Promise((resolve) => {
       this.instance.moveTo({ id: chapterId });
 
       setTimeout(async () => {

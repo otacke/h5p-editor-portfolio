@@ -31,7 +31,7 @@ export default class SubMenu extends H5P.EventDispatcher {
     optionsWrapper.classList.add(`${this.baseClass}-options`);
     optionsWrapper.setAttribute('role', 'menu');
 
-    this.params.options.forEach(option => {
+    this.params.options.forEach((option) => {
       const subMenuOption = document.createElement('button');
       subMenuOption.classList.add(`${this.baseClass}-option`);
       subMenuOption.classList.add(`${this.baseClass}-option-${option.id}`);

@@ -17,7 +17,7 @@ export default class Screenshot {
 
     const canvas = await html2canvas(params.element);
 
-    return await new Promise(resolve => {
+    return await new Promise((resolve) => {
       canvas.toBlob((blob) => {
         resolve(blob);
       }, 'image/png');

@@ -80,10 +80,10 @@ export default class ChapterNavigationButton {
     this.dragPlaceholder.classList.add('h5peditor-portfolio-chapter-button-placeholder');
 
     // These listeners prevent Firefox from showing draggable animation
-    this.dragPlaceholder.addEventListener('dragover', event => {
+    this.dragPlaceholder.addEventListener('dragover', (event) => {
       event.preventDefault();
     });
-    this.dragPlaceholder.addEventListener('drop', event => {
+    this.dragPlaceholder.addEventListener('drop', (event) => {
       event.preventDefault();
     });
 
@@ -121,7 +121,7 @@ export default class ChapterNavigationButton {
       .replace(/@level/g, parseInt(this.params.hierarchyLevel));
 
     const label = [this.label.innerText, hierarchyText, selectedText]
-      .filter(label => label.trim() !== '')
+      .filter((label) => label.trim() !== '')
       .join('. ');
 
     this.dom.setAttribute('aria-label', label);
@@ -396,38 +396,38 @@ export default class ChapterNavigationButton {
    */
   addMoveHandlers(button) {
     // Mouse down. Prevent dragging when using buttons.
-    button.addEventListener('mousedown', event => {
+    button.addEventListener('mousedown', (event) => {
       this.callbacks.onShowChapter(this);
       this.handleMouseUpDown(event, 'onMouseDown');
     });
 
     // Mouse up. Allow dragging after using buttons.
-    button.addEventListener('mouseup', event => {
+    button.addEventListener('mouseup', (event) => {
       this.handleMouseUpDown(event, 'onMouseUp');
     });
 
     // Focus out
-    button.addEventListener('focusout', event => {
+    button.addEventListener('focusout', (event) => {
       this.handleFocusOut(event);
     });
 
     // Drag start
-    button.addEventListener('dragstart', event => {
+    button.addEventListener('dragstart', (event) => {
       this.handleDragStart(event);
     });
 
     // Drag over
-    button.addEventListener('dragover', event => {
+    button.addEventListener('dragover', (event) => {
       this.handleDragOver(event);
     });
 
     // Drag enter
-    button.addEventListener('dragenter', event => {
+    button.addEventListener('dragenter', (event) => {
       this.handleDragEnter(event);
     });
 
     // Drag leave
-    button.addEventListener('dragleave', event => {
+    button.addEventListener('dragleave', (event) => {
       this.handleDragLeave(event);
     });
 

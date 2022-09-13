@@ -52,7 +52,7 @@ export default class Portfolio {
     this.fieldInstance.appendTo(H5P.jQuery(this.chaptersDOM));
 
     // List widget holding the chapters
-    this.chapterList = this.fieldInstance.children.find(child => {
+    this.chapterList = this.fieldInstance.children.find((child) => {
       return child?.getName() === 'chapters';
     });
 
@@ -91,7 +91,7 @@ export default class Portfolio {
         onGetChapterTitle: (id) => {
           return this.getChapterTitle(id);
         },
-        onGetButtonCapabilities: (id => {
+        onGetButtonCapabilities: ((id) => {
           return this.getButtonCapabilities(id);
         }),
         onAddChapter: (id) => {
@@ -216,7 +216,7 @@ export default class Portfolio {
    */
   handleFieldChange() {
     this.params = this.fieldInstance.params;
-    this.changes.forEach(change => {
+    this.changes.forEach((change) => {
       change(this.params);
     });
   }
@@ -269,7 +269,7 @@ export default class Portfolio {
     }
 
     this.chapterDOMsOrder.splice(id, 1);
-    this.chapterDOMsOrder = this.chapterDOMsOrder.map(index => {
+    this.chapterDOMsOrder = this.chapterDOMsOrder.map((index) => {
       return (index < id) ? index : index - 1;
     });
 
@@ -520,7 +520,7 @@ export default class Portfolio {
     const currentHierarchy = new Array(hierarchyDepth).fill(1);
     let previousDepth = 0;
 
-    this.params.chapters.forEach(chapter => {
+    this.params.chapters.forEach((chapter) => {
       const depth = chapter.chapterHierarchy.split('-').length;
       if (depth === previousDepth) {
         currentHierarchy[depth - 1]++;
@@ -547,7 +547,7 @@ export default class Portfolio {
   sanitize(params = []) {
 
     // Filter out invalid chapters
-    params = params.filter(chapter => {
+    params = params.filter((chapter) => {
       const validHierarchy = (new RegExp('^[1-9][0-9]*(-[1-9][0-9]*)*$'))
         .test(chapter.chapterHierarchy);
 
@@ -779,7 +779,7 @@ export default class Portfolio {
       const lastSplit = splits.pop();
 
       // Create nested object structure if necessary
-      splits.forEach(split => {
+      splits.forEach((split) => {
         if (!current[split]) {
           current[split] = {};
         }

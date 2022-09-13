@@ -65,7 +65,7 @@ export default class ChapterNavigation {
           {
             id: 'edit-label',
             label: Dictionary.get('l10n.editLabel'),
-            onClick: (target => {
+            onClick: ((target) => {
               this.editButtonLabel(this.getButtonId(target));
             }),
             keepFocus: true
@@ -73,7 +73,7 @@ export default class ChapterNavigation {
           {
             id: 'move-up',
             label: Dictionary.get('l10n.moveUp'),
-            onClick: (target => {
+            onClick: ((target) => {
               this.callbacks.onMoveChapter(this.getButtonId(target), -1);
             }),
             keepFocus: true
@@ -81,7 +81,7 @@ export default class ChapterNavigation {
           {
             id: 'move-down',
             label: Dictionary.get('l10n.moveDown'),
-            onClick: (target => {
+            onClick: ((target) => {
               this.callbacks.onMoveChapter(this.getButtonId(target), +1);
             }),
             keepFocus: true
@@ -89,21 +89,21 @@ export default class ChapterNavigation {
           {
             id: 'hierarchy-up',
             label: Dictionary.get('l10n.hierarchyUp'),
-            onClick: (target => {
+            onClick: ((target) => {
               this.callbacks.onChangeHierarchy(this.getButtonId(target), -1);
             })
           },
           {
             id: 'hierarchy-down',
             label: Dictionary.get('l10n.hierarchyDown'),
-            onClick: (target => {
+            onClick: ((target) => {
               this.callbacks.onChangeHierarchy(this.getButtonId(target), 1);
             })
           },
           {
             id: 'delete',
             label: Dictionary.get('l10n.delete'),
-            onClick: (target => {
+            onClick: ((target) => {
               this.handleSubMenuDeleted(target);
             }),
             keepFocus: true
@@ -138,7 +138,7 @@ export default class ChapterNavigation {
    * @returns {number} Id of button or -1 if not found.
    */
   getButtonId(button) {
-    return this.buttons.findIndex(but => but === button);
+    return this.buttons.findIndex((but) => but === button);
   }
 
   /**
@@ -169,7 +169,7 @@ export default class ChapterNavigation {
       return;
     }
 
-    this.buttons.forEach(button => {
+    this.buttons.forEach((button) => {
       button.toggleDragging(state);
     });
   }
