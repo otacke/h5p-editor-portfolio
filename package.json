@@ -1,6 +1,6 @@
 {
   "name": "h5p-editor-portfolio",
-  "version": "0.1.4",
+  "version": "0.5.0",
   "description": "Editor for H5P.Portfolio",
   "private": true,
   "scripts": {
