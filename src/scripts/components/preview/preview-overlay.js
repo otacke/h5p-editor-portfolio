@@ -1,20 +1,14 @@
 import './preview-overlay.scss';
 import Preview from './preview';
 import Dictionary from './../../services/dictionary';
-import Util from './../../h5peditor-portfolio-util';
 
 /** Class representing the preview overlay */
 export default class PreviewOverlay {
 
   /**
    * @class
-   * @param {object} [params={}] Parameters.
-   * @param {object} [callbacks={}] Callbacks.
    */
-  constructor(params = {}, callbacks = {}) {
-    this.params = Util.extend({}, params);
-    this.callbacks = Util.extend({}, callbacks);
-
+  constructor() {
     this.dom = document.createElement('div');
     this.dom.classList.add('preview-overlay');
 

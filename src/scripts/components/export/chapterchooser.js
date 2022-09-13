@@ -12,6 +12,7 @@ export default class ChapterChooser {
    * @param {object} [params={}] Parameters.
    * @param {object} [callbacks={}] Callbacks.
    * @param {function} [callbacks.onExportStarted] Callback export started.
+   * @param {function} [callbacks.onExportProgress] Callback export progress.
    * @param {function} [callbacks.onExportEnded] Callback export ended.
    */
   constructor(params = {}, callbacks = {}) {

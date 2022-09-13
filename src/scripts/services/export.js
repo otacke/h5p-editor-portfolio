@@ -210,6 +210,12 @@ export default class Export {
     });
   }
 
+  /**
+   * Get image from blob.
+   *
+   * @param {Blob} imageBlob Image blob.
+   * @returns {HTMLElement|null} Image element or null if error.
+   */
   static async getImage(imageBlob) {
     return await new Promise((resolve, reject) => {
       const image = document.createElement('img');
@@ -217,7 +223,7 @@ export default class Export {
         resolve(image);
       });
       image.addEventListener('error', () => {
-        reject();
+        reject(null);
       });
       image.src = URL.createObjectURL(imageBlob);
     });

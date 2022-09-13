@@ -323,18 +323,11 @@ export default class Portfolio {
 
     if (
       indexSource === 0 &&
-      this.params.chapters[1].chapterHierarchy.split('-').length !== 1
-    ) {
-      Readspeaker.read([
-        Dictionary.get('a11y.notPossible'),
-        Dictionary.get('a11y.firstChapterHierarchyFixed')
-      ]);
-      return false; // Position 0 must keep hierarchy 1
-    }
-
-    if (
-      indexTarget === 0 &&
-      this.params.chapters[indexSource].chapterHierarchy.split('-').length !== 1
+      (
+        this.params.chapters[1].chapterHierarchy.split('-').length !== 1 ||
+        this.params.chapters[indexSource].chapterHierarchy.split('-').length
+          !== 1
+      )
     ) {
       Readspeaker.read([
         Dictionary.get('a11y.notPossible'),
@@ -447,6 +440,12 @@ export default class Portfolio {
     this.chapterNavigation.setCurrentButton(id);
   }
 
+  /**
+   * Get chapter title.
+   *
+   * @param {number} id Chapter id.
+   * @returns {string} Chapter title.
+   */
   getChapterTitle(id) {
     let title = this.params.chapters[id]?.content?.metadata?.title;
     if (!title) {

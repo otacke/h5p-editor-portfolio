@@ -1,18 +1,12 @@
 import './preview.scss';
-import Util from './../../h5peditor-portfolio-util';
 
 /** Class representing preview */
 export default class Preview {
 
   /**
    * @class
-   * @param {object} [params={}] Parameters.
-   * @param {object} [callbacks={}] Callbacks.
    */
-  constructor(params = {}, callbacks = {}) {
-    this.params = Util.extend({}, params);
-    this.callbacks = Util.extend({}, callbacks);
-
+  constructor() {
     this.dom = document.createElement('div');
     this.dom.classList.add('preview');
   }
