@@ -12,6 +12,21 @@
   "author": "Oliver Tacke",
   "preloadedJs": [
     {
+      "path": "dist/runtime.js"
+    },
+    {
+      "path": "dist/html2canvas.js"
+    },
+    {
+      "path": "dist/jspdf.js"
+    },
+    {
+      "path": "dist/docx.js"
+    },
+    {
+      "path": "dist/vendor.js"
+    },
+    {
       "path": "dist/h5peditor-portfolio.js"
     }
   ],

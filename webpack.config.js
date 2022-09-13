@@ -8,6 +8,7 @@ const isProd = (nodeEnv === 'production');
 module.exports = {
   mode: nodeEnv,
   optimization: {
+    runtimeChunk: 'single',
     minimize: isProd,
     minimizer: [
       new TerserPlugin({
@@ -18,6 +19,41 @@ module.exports = {
         }
       }),
     ],
+    splitChunks: {
+      chunks: 'all',
+      maxInitialRequests: Infinity,
+      cacheGroups: {
+        defaultVendors: {
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10,
+          reuseExistingChunk: true,
+          name: 'vendor'
+        },
+        html2canvas: {
+          test: /[\\/]node_modules[\\/]html2canvas/,
+          priority: -5,
+          reuseExistingChunk: true,
+          name: 'html2canvas',
+        },
+        docx: {
+          test: /[\\/]node_modules[\\/]docx/,
+          priority: -5,
+          reuseExistingChunk: true,
+          name: 'docx',
+        },
+        jspdf: {
+          test: /[\\/]node_modules[\\/]jspdf/,
+          priority: -5,
+          reuseExistingChunk: true,
+          name: 'jspdf',
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true,
+        },
+      },
+    }
   },
   plugins: [
     new MiniCssExtractPlugin({
@@ -25,10 +61,10 @@ module.exports = {
     })
   ],
   entry: {
-    dist: './src/entries/h5peditor-portfolio.js'
+    'h5peditor-portfolio': './src/entries/h5peditor-portfolio.js'
   },
   output: {
-    filename: 'h5peditor-portfolio.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, 'dist')
   },
   module: {
