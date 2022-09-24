@@ -662,7 +662,7 @@ export default class Portfolio {
     this.previewInstance = H5P.newRunnable(
       {
         library: libraryUberName,
-        params: this.parent.params
+        params: this.filterContentTypesNotPreviewable(this.parent.params)
       },
       H5PEditor.contentId || 1
     );
@@ -672,6 +672,62 @@ export default class Portfolio {
     }
 
     this.previewInstance.isPreview = true;
+  }
+
+  /**
+   * Replace content types that cannot be previewed with message.
+   *
+   * @param {object} [params={}] Instance parameters.
+   * @returns {object} Filtered parameters.
+   */
+  filterContentTypesNotPreviewable(params = {}) {
+    // Not tampering with original values
+    const filteredParams = JSON.parse(JSON.stringify(params));
+
+    const portfolioChapters = filteredParams?.portfolio?.chapters;
+    if (!portfolioChapters || !Array.isArray(portfolioChapters)) {
+      return params;
+    }
+
+    const filteredChapters = portfolioChapters.map((chapter) => {
+      let contents = chapter.content?.params?.chapter?.contents;
+      if (!contents) {
+        return chapter;
+      }
+
+      contents = contents.map((content) => {
+        let fields = content?.content?.params?.placeholder?.fields;
+        if (!fields) {
+          return content;
+        }
+
+        fields = fields.map((field) => {
+          const machineName = field?.content?.library?.split(' ').shift();
+          if (Portfolio.CONTENT_TYPES_WITHOUT_PREVIEW.includes(machineName)) {
+            field.content = {
+              library: 'H5P.AdvancedText 1.1',
+              params: {
+                text: `<p align="center">${machineName.split('.')[1]}</p>\
+                  <p align="center">\
+                    ${Dictionary.get('l10n.noPreviewPossible')}\
+                  </p>`
+              }
+            };
+          }
+
+          return field;
+        });
+
+        return content;
+      });
+      chapter.content.params.chapter.contents = contents;
+
+      return chapter;
+    });
+
+    filteredParams.portfolio.chapters = filteredChapters;
+
+    return filteredParams;
   }
 
   /**
@@ -796,3 +852,8 @@ export default class Portfolio {
 
 /** @constant {number} Maximum depth of chapters */
 Portfolio.MAX_LEVEL = 3;
+
+/** @constant {string[]} Content types that cannot render preview */
+Portfolio.CONTENT_TYPES_WITHOUT_PREVIEW = [
+  'H5P.Timeline' // Seems to require some extra treatment when attaching
+];
