@@ -6,6 +6,9 @@ $icon-button-preview-grey: url("./../../../assets/button-preview-icon-grey.svg")
 $icon-button-export-blue: url("./../../../assets/button-export-icon-blue.svg");
 $icon-button-export-white: url("./../../../assets/button-export-icon-white.svg");
 $icon-button-export-grey: url("./../../../assets/button-export-icon-grey.svg");
+$icon-button-delete-blue: url("./../../../assets/button-delete-icon-blue.svg");
+$icon-button-delete-white: url("./../../../assets/button-delete-icon-white.svg");
+$icon-button-delete-grey: url("./../../../assets/button-delete-icon-grey.svg");
 
 .toolbar-tool-bar {
   align-items: center;
@@ -52,6 +55,23 @@ $icon-button-export-grey: url("./../../../assets/button-export-icon-grey.svg");
 
       &.toolbar-button-active {
         background-image: $icon-button-export-white;
+        background-color: $color-primary;
+
+        &:hover {
+          background-color: $color-primary-90;
+        }
+      }
+    }
+
+    &.toolbar-button-delete-hidden {
+      background-image: $icon-button-delete-blue;
+
+      &.toolbar-button-disabled {
+        background-image: $icon-button-delete-grey;
+      }
+
+      &.toolbar-button-active {
+        background-image: $icon-button-delete-white;
         background-color: $color-primary;
 
         &:hover {

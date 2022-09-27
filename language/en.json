@@ -11,6 +11,8 @@
     "l10n.deleteDialogText": "You are about to delete the page and all its contents. Are you sure you want to proceed?",
     "l10n.deleteDialogCancel": "No, abort.",
     "l10n.deleteDialogConfirm": "Yes, delete!",
+    "l10n.deleteHiddenDialogHeader": "Delete hidden contents",
+    "l10n.deleteHiddenDialogText": "You are about to delete all hidden contents for good. Are you sure you want to proceed?",
     "l10n.chapter": "Chapter",
     "l10n.addChapter": "Add chapter",
     "l10n.preview": "Preview Mode",
@@ -49,6 +51,9 @@
     "a11y.exportOpened": "Export dialog was opened.",
     "a11y.exportClosed": "Export dialog was closed.",
     "a11y.selectAll": "Select all chapters.",
-    "a11y.unselectAll": "Unselect all chapters."
+    "a11y.unselectAll": "Unselect all chapters.",
+    "a11y.deleteHiddenActive": "Delete hidden contents",
+    "a11y.deleteHiddenDisabled": "Delete hidden contents. Currently not possible.",
+    "a11y.deleteHiddenInactive": "Delete hidden contents"
   }
 }

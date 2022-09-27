@@ -18,7 +18,8 @@ export default class Toolbar {
 
     this.callbacks = Util.extend({
       onClickButtonPreview: (() => {}),
-      onClickButtonExport: (() => {})
+      onClickButtonExport: (() => {}),
+      onClickButtonDeleteHidden: (() => {})
     }, callbacks);
 
     this.buttons = {};
@@ -70,6 +71,28 @@ export default class Toolbar {
       }
     );
     this.toolBar.appendChild(this.buttons.export.getDOM());
+
+    this.buttons.deleteHidden = new ToolbarButton(
+      {
+        a11y: {
+          active: Dictionary.get('a11y.deleteHiddenActive'),
+          disabled: Dictionary.get('a11y.deleteHiddenDisabled'),
+          inactive: Dictionary.get('a11y.deleteHiddenInactive'),
+        },
+        classes: [
+          'toolbar-button',
+          'toolbar-button-delete-hidden'
+        ],
+        disabled: true,
+        type: 'pulse'
+      },
+      {
+        onClick: () => {
+          this.callbacks.onClickButtonDeleteHidden();
+        }
+      }
+    );
+    this.toolBar.appendChild(this.buttons.deleteHidden.getDOM());
   }
 
   /**
@@ -95,6 +118,20 @@ export default class Toolbar {
     for (let attribute in attributes) {
       this.buttons[id].setAttribute(attribute, attributes[attribute]);
     }
+  }
+
+  /**
+   * Determine whether button is active.
+   *
+   * @param {string} id Button id.
+   * @returns {boolean} True, if button is active. False, if inactive.
+   */
+  isButtonActive(id = '') {
+    if (!this.buttons[id]) {
+      return; // Button not available
+    }
+
+    return this.buttons[id].isActive();
   }
 
   /**

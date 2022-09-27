@@ -6,6 +6,7 @@ import Readspeaker from './services/readspeaker';
 import Toolbar from './components/toolbar/toolbar';
 import Spinner from './components/spinner';
 import ChapterChooser from './components/export/chapterchooser';
+import H5PLibrary from './../../library.json';
 
 /** Class for Portfolio H5P widget */
 export default class Portfolio {
@@ -37,6 +38,11 @@ export default class Portfolio {
 
     // Let parent handle ready callbacks of children
     this.passReadies = true;
+
+    // Keep track of placeholders that have been instantiated
+    this.chaptersDone = [];
+    this.chaptersPending = this.params?.chapters?.length;
+    this.allChildrenDone = false;
 
     // jQuery and $container required by H5P
     this.$container = H5P.jQuery('<div>', { class: 'h5peditor-portfolio' });
@@ -70,11 +76,16 @@ export default class Portfolio {
         },
         onClickButtonExport: (active) => {
           this.toggleExportDialog(active);
+        },
+        onClickButtonDeleteHidden: () => {
+          this.handleDeleteHiddenDialog();
         }
       }
     );
+
     this.toolBar.enableButton('preview');
     this.toolBar.enableButton('export');
+
     toolbarDOM.appendChild(this.toolBar.getDOM());
     this.mainDOM.appendChild(toolbarDOM);
 
@@ -140,6 +151,15 @@ export default class Portfolio {
 
     this.spinner = new Spinner();
     this.mainDOM.appendChild(this.spinner.getDOM());
+
+    // Dialog to ask whether to delete all hidden contents
+    this.deleteHiddenDialog = new H5P.ConfirmationDialog({
+      headerText: Dictionary.get('l10n.deleteHiddenDialogHeader'),
+      dialogText: Dictionary.get('l10n.deleteHiddenDialogText'),
+      cancelText: Dictionary.get('l10n.deleteDialogCancel'),
+      confirmText: Dictionary.get('l10n.deleteDialogConfirm')
+    });
+    this.deleteHiddenDialog.appendTo(document.body);
 
     this.$container.get(0).appendChild(this.mainDOM);
 
@@ -614,9 +634,13 @@ export default class Portfolio {
 
     if (params.active) {
       this.toolBar.forceButton('export', false);
+      this.toolBar.disableButton('deleteHidden');
       this.openPreview();
     }
     else {
+      if (this.allChildrenDone && !this.toolBar.isButtonActive('export')) {
+        this.toolBar.enableButton('deleteHidden');
+      }
       this.closePreview();
     }
   }
@@ -740,11 +764,66 @@ export default class Portfolio {
   toggleExportDialog(active) {
     if (active) {
       this.toolBar.forceButton('preview', false);
+      this.toolBar.disableButton('deleteHidden');
       this.openExportDialog();
     }
     else {
+      if (this.allChildrenDone && !this.toolBar.isButtonActive('preview')) {
+        this.toolBar.enableButton('deleteHidden');
+      }
       this.closeExportDialog();
     }
+  }
+
+  /**
+   * Delete hidden placeholders throughout the portfolio
+   */
+  handleDeleteHiddenDialog() {
+    this.deleteHiddenDialog.once('confirmed', () => {
+      this.deleteHiddenDialog.off('canceled');
+
+      this.deleteHidden();
+    });
+
+    this.deleteHiddenDialog.once('canceled', () => {
+      this.deleteHiddenDialog.off('confirmed');
+    });
+
+    this.deleteHiddenDialog.show();
+  }
+
+  /**
+   * Delete hidden contents.
+   */
+  deleteHidden() {
+    H5P.externalDispatcher.trigger(
+      'H5PEditor.PortfolioPlaceholder:deleteHidden',
+      { contentId: H5PEditor.contentId || 1 }
+    );
+  }
+
+  /**
+   * Handle placeholders done instantiating.
+   *
+   * @param {string} id Subcontent id.
+   */
+  handleChapterDone(id) {
+    if (!this.chaptersDone.includes(id)) {
+      this.chaptersDone.push(id);
+
+      this.chaptersPending--;
+      if (this.chaptersPending === 0) {
+        this.handleAllChildrenDone();
+      }
+    }
+  }
+
+  /**
+   * Handle all children instantiated.
+   */
+  handleAllChildrenDone() {
+    this.allChildrenDone = true;
+    this.toolBar.enableButton('deleteHidden');
   }
 
   /**
@@ -849,6 +928,15 @@ export default class Portfolio {
     }
 
     Dictionary.fill(translations);
+  }
+
+  /**
+   * Get machineName.
+   *
+   * @returns {string} Machine name.
+   */
+  getMachineName() {
+    return H5PLibrary.machineName;
   }
 }
 
