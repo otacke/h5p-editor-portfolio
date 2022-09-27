@@ -659,10 +659,14 @@ export default class Portfolio {
     const libraryUberName = Object.keys(H5PEditor.libraryLoaded)
       .find((library) => library.split(' ')[0] === 'H5P.Portfolio');
 
+    // Copy of params without certain contents in preview.
+    const params = this.filterContentTypesNotPreviewable(this.parent.params);
+    params.behaviour.isPreview = true;
+
     this.previewInstance = H5P.newRunnable(
       {
         library: libraryUberName,
-        params: this.filterContentTypesNotPreviewable(this.parent.params)
+        params: params
       },
       H5PEditor.contentId || 1
     );
@@ -670,8 +674,6 @@ export default class Portfolio {
     if (!this.previewInstance) {
       return;
     }
-
-    this.previewInstance.isPreview = true;
   }
 
   /**
