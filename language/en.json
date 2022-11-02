@@ -9,7 +9,7 @@
     "l10n.moveDown": "Move down",
     "l10n.deleteDialogHeader": "Delete page",
     "l10n.deleteDialogText": "You are about to delete the page and all its contents. Are you sure you want to proceed?",
-    "l10n.deleteDialogCancel": "No, abort.",
+    "l10n.deleteDialogCancel": "No, abort!",
     "l10n.deleteDialogConfirm": "Yes, delete!",
     "l10n.deleteHiddenDialogHeader": "Delete hidden contents",
     "l10n.deleteHiddenDialogText": "You are about to delete all hidden contents for good. Are you sure you want to proceed?",
