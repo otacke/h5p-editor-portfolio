@@ -9,7 +9,7 @@
     "l10n.moveDown": "Nach unten",
     "l10n.deleteDialogHeader": "Seite löschen",
     "l10n.deleteDialogText": "Du bist dabei, die Seite mit all ihren Inhalten zu löschen. Möchtest du das wirklich?",
-    "l10n.deleteDialogCancel": "Nein",
+    "l10n.deleteDialogCancel": "Nein, abbrechen!",
     "l10n.deleteDialogConfirm": "Ja, löschen!",
     "l10n.deleteHiddenDialogHeader": "Versteckte Inhalte löschen",
     "l10n.deleteHiddenDialogText": "Du bist dabei, alle versteckten Inhalte ein für alle mal zu löschen. Möchtest du das wirklich?",
