@@ -53,7 +53,7 @@
     "a11y.selectAll": "Wähle alle Kapitel.",
     "a11y.unselectAll": "Wähle alle Kapitel ab.",
     "a11y.deleteHiddenActive": "Lösche versteckte Inhalte",
-    "a11y.deleteHiddenDisabled": "Lösche versteckte Inhalte. Derzeit nicht möglich",
+    "a11y.deleteHiddenDisabled": "Lösche versteckte Inhalte. Derzeit nicht möglich.",
     "a11y.deleteHiddenInactive": "Lösche versteckte Inhalte"
   }
 }
