@@ -213,9 +213,10 @@ export default class ChapterChooser {
    * Get screenshots of chapter.
    *
    * @param {number} chapterId Chapter's id.
+   * @param {boolean} enforceImage If true, enforce image in return.
    * @returns {Blob[]} Screenshots.
    */
-  async getScreenshots(chapterId) {
+  async getScreenshots(chapterId, enforceImage) {
     return await new Promise((resolve) => {
       this.instance.moveTo({ id: chapterId });
 
@@ -226,7 +227,7 @@ export default class ChapterChooser {
 
         for (let i = 0; i < doms.length; i++) {
           const screenshot = await Screenshot.takeScreenshot(
-            { element: doms[i] }
+            { element: doms[i], enforceImage: enforceImage }
           );
 
           if (!screenshot) {
@@ -283,7 +284,11 @@ export default class ChapterChooser {
       });
 
       // Get screenshots
-      const screenshots = await this.getScreenshots(chosenChapters[i].index);
+      const screenshots = await this.getScreenshots(
+        chosenChapters[i].index,
+        type !== 'images' // Enforce pixel for pdf/docx
+      );
+
       if (!screenshots.length) {
         continue;
       }

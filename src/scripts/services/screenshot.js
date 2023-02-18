@@ -8,6 +8,7 @@ export default class Screenshot {
    * @param {object} params Parameters.
    * @param {HTMLElement} [params.element=document.body] Element to
    *   take screenshot from.
+   * @param {boolean} [params.enforceImage] If true, always return some image.
    * @returns {Blob} Image blob.
    */
   static async takeScreenshot(params = {}) {
@@ -16,6 +17,13 @@ export default class Screenshot {
     }
 
     const canvas = await html2canvas(params.element);
+    if (params.enforceImage &&
+      canvas.getAttribute('height') === '0' ||
+      canvas.getAttribute('width') === '0'
+    ) {
+      canvas.setAttribute('height', '1');
+      canvas.setAttribute('width', '1');
+    }
 
     return await new Promise((resolve) => {
       canvas.toBlob((blob) => {
