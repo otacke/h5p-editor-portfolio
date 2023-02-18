@@ -229,6 +229,10 @@ export default class ChapterChooser {
             { element: doms[i] }
           );
 
+          if (!screenshot) {
+            continue; // Probably empty chapter
+          }
+
           screenshots.push(screenshot);
         }
 
