@@ -73,10 +73,10 @@ export default class ChapterChooser {
     });
     toggleAllWrapper.appendChild(this.toggleAll);
 
-    const label = document.createElement('label');
-    label.classList.add('chapter-chooser-label-toggle-all');
-    label.innerText = Dictionary.get('l10n.chapterTitle');
-    toggleAllWrapper.appendChild(label);
+    this.toggleAllLabel = document.createElement('label');
+    this.toggleAllLabel.classList.add('chapter-chooser-label-toggle-all');
+    this.toggleAllLabel.innerText = Dictionary.get('l10n.selectAll');
+    toggleAllWrapper.appendChild(this.toggleAllLabel);
 
     // Options
     this.optionsList = document.createElement('ul');
@@ -183,6 +183,15 @@ export default class ChapterChooser {
    * Update buttons.
    */
   updateButtons() {
+    // Update toggle label
+    if (this.checkboxes.every((checkbox) => checkbox.checked)) {
+      this.toggleAllLabel.innerHTML = Dictionary.get('l10n.unselectAll');
+    }
+    else {
+      this.toggleAllLabel.innerHTML = Dictionary.get('l10n.selectAll');
+    }
+
+    // Update export buttons
     if (this.checkboxes.some((checkbox) => checkbox.checked)) {
       this.buttonExportImages.removeAttribute('disabled');
       this.buttonExportPDF.removeAttribute('disabled');
