@@ -54,6 +54,8 @@
     "a11y.unselectAll": "Deshautatu kapitulu guztiak.",
     "a11y.deleteHiddenActive": "Ezabatu ezkutuko edukiak",
     "a11y.deleteHiddenDisabled": "Ezabatu ezkutuko edukiak. Momentuz ez da posible.",
-    "a11y.deleteHiddenInactive": "Ezabatu ezkutuko edukiak"
+    "a11y.deleteHiddenInactive": "Ezabatu ezkutuko edukiak",
+    "l10n.unselectAll": "Unselect all chapters",
+    "l10n.selectAll": "Select all chapters"
   }
 }

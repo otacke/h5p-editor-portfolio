@@ -21,7 +21,7 @@
     "l10n.processingChapter": "Procesando capítulo @number/@of",
     "l10n.chooseChapters": "Exportar",
     "l10n.chooseChaptersDescription": "Escolle os capítulos que queres exportar e en que formato",
-    "l10n.exportImages": "Exportar imaxes",
+    "l10n.exportImages": "Exportar PNG",
     "l10n.exportPDF": "Exportar PDF",
     "l10n.exportDOCX": "Exportar DOCX",
     "l10n.chapterTitle": "Título do capítulo",
