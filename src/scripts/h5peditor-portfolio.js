@@ -939,7 +939,7 @@ export default class Portfolio {
 }
 
 /** @constant {number} Maximum depth of chapters */
-Portfolio.MAX_LEVEL = 3;
+Portfolio.MAX_LEVEL = 4;
 
 /** @constant {string[]} Content types that cannot render preview */
 Portfolio.CONTENT_TYPES_WITHOUT_PREVIEW = [
