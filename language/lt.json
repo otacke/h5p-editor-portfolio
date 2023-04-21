@@ -21,7 +21,7 @@
     "l10n.preview": "Peržiūros režimas",
     "l10n.previewExplanation": "Taip naudotojas matys jūsų turinį",
     "l10n.generatingExport": "Eksporto generavimas",
-    "l10n.processingChapter": "Processing chapter @number/@of",
+    "l10n.processingChapter": "Vykdomas skyrius @number/@of",
     "l10n.processingCover": "Processing cover page",
     "l10n.chooseChapters": "Eksportuoti",
     "l10n.chooseChaptersDescription": "Pasirinkite, kuriuos skyrius kokiu formatu norite eksportuoti",
