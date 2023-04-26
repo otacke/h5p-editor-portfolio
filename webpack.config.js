@@ -2,14 +2,14 @@ const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserPlugin = require('terser-webpack-plugin');
 
-const nodeEnv = process.env.NODE_ENV || 'development';
-const isProd = (nodeEnv === 'production');
+const mode = process.argv.includes('--mode=production') ?
+  'production' : 'development';
 
 module.exports = {
-  mode: nodeEnv,
+  mode: mode,
   optimization: {
     runtimeChunk: 'single',
-    minimize: isProd,
+    minimize: mode === 'production',
     minimizer: [
       new TerserPlugin({
         terserOptions: {
@@ -65,7 +65,8 @@ module.exports = {
   },
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
+    clean: true
   },
   module: {
     rules: [
@@ -104,5 +105,5 @@ module.exports = {
   stats: {
     colors: true
   },
-  devtool: (isProd) ? undefined : 'eval-cheap-module-source-map'
+  devtool: (mode === 'production') ? undefined : 'eval-cheap-module-source-map'
 };

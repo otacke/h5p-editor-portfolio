@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "cross-env NODE_ENV=production webpack",
-    "watch": "webpack --watch",
+    "build": "webpack --mode=production",
+    "watch": "webpack --watch --mode=development",
     "optimize": "svgo -f ./src/assets/"
   },
   "repository": {
@@ -25,7 +25,6 @@
     "@babel/plugin-transform-destructuring": "^7.21.3",
     "@babel/preset-env": "^7.21.4",
     "babel-loader": "^9.1.2",
-    "cross-env": "^7.0.3",
     "css-loader": "^6.7.3",
     "eslint": "^8.37.0",
     "eslint-plugin-jsdoc": "^40.1.1",
