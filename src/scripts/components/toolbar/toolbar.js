@@ -1,7 +1,7 @@
 import './toolbar.scss';
 import ToolbarButton from './toolbar-button';
-import Dictionary from './../../services/dictionary';
-import Util from './../../h5peditor-portfolio-util';
+import Dictionary from '@services/dictionary';
+import Util from '@services/util';
 
 /** Class representing the button bar */
 export default class Toolbar {
@@ -128,7 +128,7 @@ export default class Toolbar {
    */
   isButtonActive(id = '') {
     if (!this.buttons[id]) {
-      return; // Button not available
+      return false; // Button not available
     }
 
     return this.buttons[id].isActive();

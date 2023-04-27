@@ -1,14 +1,14 @@
-@import './../../../styles/h5p-editor-portfolio-main';
+@import "@styles/h5p-editor-portfolio-main";
 
-$icon-button-preview-blue: url("./../../../assets/button-preview-icon-blue.svg");
-$icon-button-preview-white: url("./../../../assets/button-preview-icon-white.svg");
-$icon-button-preview-grey: url("./../../../assets/button-preview-icon-grey.svg");
-$icon-button-export-blue: url("./../../../assets/button-export-icon-blue.svg");
-$icon-button-export-white: url("./../../../assets/button-export-icon-white.svg");
-$icon-button-export-grey: url("./../../../assets/button-export-icon-grey.svg");
-$icon-button-delete-blue: url("./../../../assets/button-delete-icon-blue.svg");
-$icon-button-delete-white: url("./../../../assets/button-delete-icon-white.svg");
-$icon-button-delete-grey: url("./../../../assets/button-delete-icon-grey.svg");
+$icon-button-preview-blue: url("@assets/button-preview-icon-blue.svg");
+$icon-button-preview-white: url("@assets/button-preview-icon-white.svg");
+$icon-button-preview-grey: url("@assets/button-preview-icon-grey.svg");
+$icon-button-export-blue: url("@assets/button-export-icon-blue.svg");
+$icon-button-export-white: url("@assets/button-export-icon-white.svg");
+$icon-button-export-grey: url("@assets/button-export-icon-grey.svg");
+$icon-button-delete-blue: url("@assets/button-delete-icon-blue.svg");
+$icon-button-delete-white: url("@assets/button-delete-icon-white.svg");
+$icon-button-delete-grey: url("@assets/button-delete-icon-grey.svg");
 
 .toolbar-tool-bar {
   align-items: center;

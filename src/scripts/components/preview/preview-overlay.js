@@ -1,6 +1,6 @@
 import './preview-overlay.scss';
 import Preview from './preview';
-import Dictionary from './../../services/dictionary';
+import Dictionary from '@services/dictionary';
 
 /** Class representing the preview overlay */
 export default class PreviewOverlay {

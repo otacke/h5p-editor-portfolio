@@ -1,6 +1,6 @@
 import './sub-menu.scss';
-import Util from './../../h5peditor-portfolio-util';
-import Dictionary from './../../services/dictionary';
+import Util from '@services/util';
+import Dictionary from '@services/dictionary';
 
 export default class SubMenu extends H5P.EventDispatcher {
   constructor(params = {}) {

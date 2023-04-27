@@ -1,6 +1,6 @@
 // Import required classes
 import './toolbar-button.scss';
-import Util from './../../h5peditor-portfolio-util';
+import Util from '@services/util';
 
 /** Class representing the content */
 export default class ToolbarButton {

@@ -1,6 +1,6 @@
 import './chapter-navigation-button.scss';
-import Util from './../../h5peditor-portfolio-util';
-import Dictionary from './../../services/dictionary';
+import Util from '@services/util';
+import Dictionary from '@services/dictionary';
 import SubMenu from './sub-menu.js';
 
 export default class ChapterNavigationButton {

@@ -2,7 +2,7 @@
   "globals": {
     "H5P": "readonly",
     "H5PIntegration": "readonly",
-    "H5PEditor": true
+    "H5PEditor": "readonly"
   },
   "env": {
     "browser": true,

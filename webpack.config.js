@@ -4,9 +4,20 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 const mode = process.argv.includes('--mode=production') ?
   'production' : 'development';
+const libraryName = process.env.npm_package_name;
 
 module.exports = {
   mode: mode,
+  resolve: {
+    alias: {
+      '@assets': path.resolve(__dirname, 'src/assets'),
+      '@components': path.resolve(__dirname, 'src/scripts/components'),
+      '@root': path.resolve(__dirname, '.'),
+      '@scripts': path.resolve(__dirname, 'src/scripts'),
+      '@services': path.resolve(__dirname, 'src/scripts/services'),
+      '@styles': path.resolve(__dirname, 'src/styles')
+    }
+  },
   optimization: {
     runtimeChunk: 'single',
     minimize: mode === 'production',
@@ -57,17 +68,18 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: 'h5peditor-portfolio.css'
+      filename: `${libraryName}.css`
     })
   ],
   entry: {
-    'h5peditor-portfolio': './src/entries/h5peditor-portfolio.js'
+    'h5peditor-portfolio': './src/entries/dist.js'
   },
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
     clean: true
   },
+  target: ['browserslist'],
   module: {
     rules: [
       {
@@ -105,5 +117,5 @@ module.exports = {
   stats: {
     colors: true
   },
-  devtool: (mode === 'production') ? undefined : 'eval-cheap-module-source-map'
+  ...(mode !== 'production' && { devtool: 'eval-cheap-module-source-map' })
 };

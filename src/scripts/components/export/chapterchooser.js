@@ -1,8 +1,7 @@
-import Dictionary from './../../services/dictionary';
-import Export from './../../services/export';
-import Screenshot from './../../services/screenshot';
-import Util from './../../h5peditor-portfolio-util';
-
+import Dictionary from '@services/dictionary';
+import Export from '@services/export';
+import Screenshot from '@services/screenshot';
+import Util from '@services/util';
 import './chapterchooser.scss';
 
 /** Class for an activity indicator aka spinner */

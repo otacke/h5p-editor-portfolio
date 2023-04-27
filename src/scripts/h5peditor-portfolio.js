@@ -1,12 +1,12 @@
-import ChapterNavigation from './components/navigation/chapter-navigation';
-import PreviewOverlay from './components/preview/preview-overlay';
-import Util from './h5peditor-portfolio-util';
-import Dictionary from './services/dictionary';
-import Readspeaker from './services/readspeaker';
-import Toolbar from './components/toolbar/toolbar';
-import Spinner from './components/spinner';
-import ChapterChooser from './components/export/chapterchooser';
-import H5PLibrary from './../../library.json';
+import ChapterNavigation from '@components/navigation/chapter-navigation';
+import PreviewOverlay from '@components/preview/preview-overlay';
+import Util from '@services/util';
+import Dictionary from '@services/dictionary';
+import Readspeaker from '@services/readspeaker';
+import Toolbar from '@components/toolbar/toolbar';
+import Spinner from '@components/spinner/spinner';
+import ChapterChooser from '@components/export/chapterchooser';
+import H5PLibrary from '@root/library.json';
 
 /** Class for Portfolio H5P widget */
 export default class Portfolio {
