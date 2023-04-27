@@ -38,7 +38,6 @@ export default class PreviewOverlay {
 
   /**
    * Return the DOM for this class.
-   *
    * @returns {HTMLElement} DOM for this class.
    */
   getDOM() {
@@ -47,7 +46,6 @@ export default class PreviewOverlay {
 
   /**
    * Attach instance to preview.
-   *
    * @param {H5P.ContentType} instance Instance to attach.
    */
   attachInstance(instance) {

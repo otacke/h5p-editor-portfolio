@@ -183,7 +183,6 @@ export default class Portfolio {
 
   /**
    * Append field to wrapper. Invoked by H5P core.
-   *
    * @param {H5P.jQuery} $wrapper Wrapper.
    */
   appendTo($wrapper) {
@@ -192,7 +191,6 @@ export default class Portfolio {
 
   /**
    * Validate current values. Invoked by H5P core.
-   *
    * @returns {boolean} True, if current value is valid, else false.
    */
   validate() {
@@ -208,7 +206,6 @@ export default class Portfolio {
 
   /**
    * Get chapter DOMs.
-   *
    * @returns {HTMLElement[]} DOMs of chapters in list widget.
    */
   getChapterDOMs() {
@@ -218,7 +215,6 @@ export default class Portfolio {
 
   /**
    * Get new hierarchy level.
-   *
    * @returns {string|null} New hierarchy level.
    */
   getNewHierarchy() {
@@ -243,7 +239,6 @@ export default class Portfolio {
 
   /**
    * Handle adding new chapter.
-   *
    * @param {number} id Id of item that was added.
    */
   addChapter(id) {
@@ -263,7 +258,6 @@ export default class Portfolio {
 
   /**
    * Handle adding new chapter.
-   *
    * @param {number} id Id of chater to delete.
    */
   deleteChapter(id) {
@@ -309,7 +303,6 @@ export default class Portfolio {
 
   /**
    * Handler for moving a chapter.
-   *
    * @param {string} indexSource Button id of button to be moved.
    * @param {number} offset Offset of where to move chapter to.
    * @returns {boolean} True if could be moved, else false.
@@ -379,7 +372,6 @@ export default class Portfolio {
 
   /**
    * Handle hierarchy changed.
-   *
    * @param {number} index Index of item that was changed.
    * @param {number} offset Diff in hierarchy.
    */
@@ -445,7 +437,6 @@ export default class Portfolio {
 
   /**
    * Handle request to show particular chapter.
-   *
    * @param {number} id Id of chapter to show.
    */
   showChapter(id) {
@@ -462,7 +453,6 @@ export default class Portfolio {
 
   /**
    * Get chapter title.
-   *
    * @param {number} id Chapter id.
    * @returns {string} Chapter title.
    */
@@ -477,7 +467,6 @@ export default class Portfolio {
 
   /**
    * Get button capabilities in submenu.
-   *
    * @param {number} id Id of button.
    * @returns {object} Key and boolean indicating capabilities.
    */
@@ -560,7 +549,6 @@ export default class Portfolio {
 
   /**
    * Sanitize chapters.
-   *
    * @param {object[]} params Semantics parameters for chapters.
    * @returns {object} Sanitized parameters for chapters.
    */
@@ -620,7 +608,6 @@ export default class Portfolio {
 
   /**
    * Toggle preview.
-   *
    * @param {object} [params={}] Parameters
    * @param {boolean} params.active If true, show preview, else hide.
    * @param {boolean} params.cloaked If true, show preview invisble.
@@ -700,7 +687,6 @@ export default class Portfolio {
 
   /**
    * Replace content types that cannot be previewed with message.
-   *
    * @param {object} [params={}] Instance parameters.
    * @returns {object} Filtered parameters.
    */
@@ -756,7 +742,6 @@ export default class Portfolio {
 
   /**
    * Toggle exportDialog.
-   *
    * @param {boolean} active If true, show export dialog, else hide.
    */
   toggleExportDialog(active) {
@@ -802,7 +787,6 @@ export default class Portfolio {
 
   /**
    * Handle placeholders done instantiating.
-   *
    * @param {string} id Subcontent id.
    */
   handleChapterDone(id) {
@@ -859,7 +843,6 @@ export default class Portfolio {
 
   /**
    * Set spinner progress.
-   *
    * @param {object} [params={}] Parameters.
    * @param {number} params.number Current progress.
    * @param {number} params.of Maximum progress.
@@ -930,7 +913,6 @@ export default class Portfolio {
 
   /**
    * Get machineName.
-   *
    * @returns {string} Machine name.
    */
   getMachineName() {

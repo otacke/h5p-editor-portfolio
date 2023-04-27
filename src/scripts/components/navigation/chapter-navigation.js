@@ -124,7 +124,6 @@ export default class ChapterNavigation {
 
   /**
    * Get DOM.
-   *
    * @returns {HTMLElement} DOM.
    */
   getDOM() {
@@ -133,7 +132,6 @@ export default class ChapterNavigation {
 
   /**
    * Get id of button.
-   *
    * @param {HTMLElement} button Button to get id for.
    * @returns {number} Id of button or -1 if not found.
    */
@@ -143,7 +141,6 @@ export default class ChapterNavigation {
 
   /**
    * Get chapter group from list widget.
-   *
    * @param {number} id Id of chapter.
    * @returns {object} Chapter group object.
    */
@@ -161,7 +158,6 @@ export default class ChapterNavigation {
 
   /**
    * Toggle dragging state.
-   *
    * @param {boolean} state If true/false, set dragging state to true/false.
    */
   toggleDragging(state) {
@@ -176,7 +172,6 @@ export default class ChapterNavigation {
 
   /**
    * Add button.
-   *
    * @param {number} id Id of button to add.
    */
   addButton(id) {
@@ -256,7 +251,6 @@ export default class ChapterNavigation {
 
   /**
    * Remove button.
-   *
    * @param {number} id Id of button to remove.
    */
   removeButton(id) {
@@ -271,7 +265,6 @@ export default class ChapterNavigation {
 
   /**
    * Edit button label.
-   *
    * @param {number} id Id of button to re-label.
    */
   editButtonLabel(id) {
@@ -294,7 +287,6 @@ export default class ChapterNavigation {
 
   /**
    * Set current button.
-   *
    * @param {number} targetId Id of button to set active.
    */
   setCurrentButton(targetId) {
@@ -308,7 +300,6 @@ export default class ChapterNavigation {
 
   /**
    * Set button selected.
-   *
    * @param {number} targetId Id of button to set selected.
    */
   setSelectedButton(targetId) {
@@ -319,7 +310,6 @@ export default class ChapterNavigation {
 
   /**
    * Handle label deleted.
-   *
    * @param {ChapterNavigationButton} target Calling button.
    */
   handleSubMenuDeleted(target) {
@@ -356,7 +346,6 @@ export default class ChapterNavigation {
 
   /**
    * Handle label edited.
-   *
    * @param {ChapterNavigationButton} target Calling button.
    * @param {string} label Label text.
    */
@@ -384,7 +373,6 @@ export default class ChapterNavigation {
 
   /**
    * Handle show sub menu.
-   *
    * @param {ChapterNavigationButton} target Calling button.
    * @param {boolean} keyboardUsed True, if non-pointer device used.
    */
@@ -428,7 +416,6 @@ export default class ChapterNavigation {
 
   /**
    * Handle drag start.
-   *
    * @param {ChapterNavigationButton} button Button dragged.
    */
   handleDragStart(button) {
@@ -439,7 +426,6 @@ export default class ChapterNavigation {
 
   /**
    * Handle drag enter.
-   *
    * @param {ChapterNavigationButton} button Button dragged on.
    */
   handleDragEnter(button) {
@@ -469,7 +455,6 @@ export default class ChapterNavigation {
 
   /**
    * Swap buttons.
-   *
    * @param {object} params Parameters.
    * @param {HTMLElement} params.button1 Button #1.
    * @param {HTMLElement} params.button2 Button #2.
@@ -542,7 +527,6 @@ export default class ChapterNavigation {
 
   /**
    * Tab to previous/next button.
-   *
    * @param {HTMLElement} button Button.
    * @param {number} offset Offset for tabbing.
    * @param {object} [options] Options.

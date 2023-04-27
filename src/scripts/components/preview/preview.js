@@ -13,7 +13,6 @@ export default class Preview {
 
   /**
    * Return the DOM for this class.
-   *
    * @returns {HTMLElement} DOM for this class.
    */
   getDOM() {
@@ -22,7 +21,6 @@ export default class Preview {
 
   /**
    * Attach instance to preview.
-   *
    * @param {H5P.ContentType} instance Instance to attach.
    */
   attachInstance(instance) {

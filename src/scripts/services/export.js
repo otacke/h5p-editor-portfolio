@@ -9,7 +9,6 @@ export default class Export {
 
   /**
    * Export PDF.
-   *
    * @param {object} [params={}] Parameters.
    * @param {object[]} params.imageBlobs Imageblob data.
    * @param {string} params.filename Filename for export.
@@ -97,7 +96,6 @@ export default class Export {
 
   /**
    * Create ZIP blob.
-   *
    * @param {object} [params={}] Parameters.
    * @param {object[]} params.imageBlobs Imageblob data.
    * @returns {Blob} ZIP file blob.
@@ -175,7 +173,6 @@ export default class Export {
 
   /**
    * Create ZIP blob.
-   *
    * @param {object[]} data File data.
    * @returns {Blob} ZIP file blob.
    */
@@ -212,7 +209,6 @@ export default class Export {
 
   /**
    * Get image from blob.
-   *
    * @param {Blob} imageBlob Image blob.
    * @returns {HTMLElement|null} Image element or null if error.
    */
@@ -231,7 +227,6 @@ export default class Export {
 
   /**
    * Offer blob for download.
-   *
    * @param {object} [params={}] Parameters.
    * @param {Blob} params.blob Blob.
    * @param {string} [params.filename] Filename.

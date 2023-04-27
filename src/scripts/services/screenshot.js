@@ -4,7 +4,6 @@ export default class Screenshot {
 
   /**
    * Take screenshot of DOM element.
-   *
    * @param {object} params Parameters.
    * @param {HTMLElement} [params.element=document.body] Element to
    *   take screenshot from.

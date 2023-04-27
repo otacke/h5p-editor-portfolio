@@ -2,7 +2,6 @@
 export default class Util {
   /**
    * Extend an array just like JQuery's extend.
-   *
    * @returns {object} Merged objects.
    */
   static extend() {
@@ -26,7 +25,6 @@ export default class Util {
 
   /**
    * Swap two DOM elements.
-   *
    * @param {HTMLElement} element1 Element 1.
    * @param {HTMLElement} element2 Element 2.
    */

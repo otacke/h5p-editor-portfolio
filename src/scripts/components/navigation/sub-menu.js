@@ -53,7 +53,6 @@ export default class SubMenu extends H5P.EventDispatcher {
 
   /**
    * Get DOM for sub menu.
-   *
    * @returns {HTMLElement} DOM for sub menu.
    */
   getDOM() {
@@ -62,7 +61,6 @@ export default class SubMenu extends H5P.EventDispatcher {
 
   /**
    * Set parent.
-   *
    * @param {HTMLElement} parent Parent element.
    */
   setParent(parent) {
@@ -71,7 +69,6 @@ export default class SubMenu extends H5P.EventDispatcher {
 
   /**
    * Toggle options.
-   *
    * @param {object} [capabilities = {}] Capabilities.
    */
   toggleOptions(capabilities = {}) {
@@ -82,7 +79,6 @@ export default class SubMenu extends H5P.EventDispatcher {
 
   /**
    * Toggle option.
-   *
    * @param {string} id Option id.
    * @param {boolean} state State. False to show.
    */
@@ -96,7 +92,6 @@ export default class SubMenu extends H5P.EventDispatcher {
 
   /**
    * Show.
-   *
    * @param {object} [params = {}] Parameters.
    * @param {object} [params.css] CSS parameters.
    */
@@ -124,7 +119,6 @@ export default class SubMenu extends H5P.EventDispatcher {
 
   /**
    * Hide.
-   *
    * @param {boolean} [keepFocus=false] If true, request to not grab focus.
    */
   hide(keepFocus = false) {
@@ -137,7 +131,6 @@ export default class SubMenu extends H5P.EventDispatcher {
 
   /**
    * Get visible options.
-   *
    * @returns {HTMLElement[]} Visible options.
    */
   getVisibleOptions() {
@@ -156,7 +149,6 @@ export default class SubMenu extends H5P.EventDispatcher {
 
   /**
    * Focus option.
-   *
    * @param {number} [offset=0] Offset.
    */
   focusOption(offset = 0) {
@@ -179,7 +171,6 @@ export default class SubMenu extends H5P.EventDispatcher {
 
   /**
    * Handle key down.
-   *
    * @param {KeyboardEvent} event Keyboard event.
    */
   handleKeyDown(event) {

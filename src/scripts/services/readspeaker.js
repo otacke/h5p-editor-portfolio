@@ -7,7 +7,6 @@ export default class Readspeaker {
 
   /**
    * Initialize.
-   *
    * @param {HTMLElement} wrapper Wrapper to append to.
    */
   static attach(wrapper) {
@@ -25,7 +24,6 @@ export default class Readspeaker {
 
   /**
    * Force readspeaker to read text.
-   *
    * @param {string|string[]} texts Text(s) to read.
    */
   static read(texts) {

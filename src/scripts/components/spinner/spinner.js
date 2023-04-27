@@ -43,7 +43,6 @@ export default class Spinner {
 
   /**
    * Get the DOM.
-   *
    * @returns {HTMLElement} Spinner container.
    */
   getDOM() {
@@ -66,7 +65,6 @@ export default class Spinner {
 
   /**
    * Set message text.
-   *
    * @param {string} text Message text.
    */
   setMessage(text) {
@@ -75,7 +73,6 @@ export default class Spinner {
 
   /**
    * Set progress text.
-   *
    * @param {string} text Progress text.
    */
   setProgress(text) {

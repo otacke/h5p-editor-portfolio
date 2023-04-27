@@ -123,7 +123,6 @@ export default class ChapterChooser {
 
   /**
    * Get the DOM.
-   *
    * @returns {HTMLElement} Chapter chooser DOM.
    */
   getDOM() {
@@ -132,7 +131,6 @@ export default class ChapterChooser {
 
   /**
    * Update chooser.
-   *
    * @param {object} [params={}] Parameters.
    * @param {H5P.ContentType} params.instance Preview instance.
    */
@@ -219,7 +217,6 @@ export default class ChapterChooser {
 
   /**
    * Get screenshots of chapter.
-   *
    * @param {number} chapterId Chapter's id.
    * @param {boolean} enforceImage If true, enforce image in return.
    * @returns {Blob[]} Screenshots.
@@ -252,7 +249,6 @@ export default class ChapterChooser {
 
   /**
    * Handle export.
-   *
    * @param {string} type Type of export.
    */
   async handleExport(type) {

@@ -101,7 +101,6 @@ export default class ChapterNavigationButton {
 
   /**
    * Get DOM.
-   *
    * @returns {HTMLElement} The DOM.
    */
   getDOM() {
@@ -129,7 +128,6 @@ export default class ChapterNavigationButton {
 
   /**
    * Set active.
-   *
    * @param {boolean} state If true, set active.
    */
   setActive(state) {
@@ -139,7 +137,6 @@ export default class ChapterNavigationButton {
 
   /**
    * Set selected.
-   *
    * @param {boolean} state If true, set selected.
    */
   setSelected(state) {
@@ -150,7 +147,6 @@ export default class ChapterNavigationButton {
 
   /**
    * Update button values.
-   *
    * @param {object} params Parameters.
    * @param {string} [params.title] Button label.
    * @param {number} [params.hierarchyLevel] Hierarchy level.
@@ -173,7 +169,6 @@ export default class ChapterNavigationButton {
 
   /**
    * Determine whether paragraph is shown.
-   *
    * @returns {boolean} True, if paragraph is shown.
    */
   isShown() {
@@ -212,7 +207,6 @@ export default class ChapterNavigationButton {
 
   /**
    * Toggle dragging state.
-   *
    * @param {boolean} state If true/false, set dragging state to true/false.
    */
   toggleDragging(state) {
@@ -244,7 +238,6 @@ export default class ChapterNavigationButton {
 
   /**
    * Handle label was edited.
-   *
    * @param {KeyboardEvent|FocusEvent} event Event.
    */
   handleLabelEdited(event) {
@@ -272,7 +265,6 @@ export default class ChapterNavigationButton {
 
   /**
    * Show sub menu.
-   *
    * @param {SubMenu} subMenu Sub menu.
    * @param {boolean} keyboardUsed True, if was called using keyboard.
    */
@@ -309,7 +301,6 @@ export default class ChapterNavigationButton {
 
   /**
    * Handle click on menu button.
-   *
    * @param {PointerEvent} event Event.
    */
   handleClickMenu(event) {
@@ -352,7 +343,6 @@ export default class ChapterNavigationButton {
 
   /**
    * Update drag placeholder size.
-   *
    * @param {object} [params={}] Parameters.
    * @param {number} [params.width] Optional explicit width.
    * @param {number} [params.height] Optional explicit height.
@@ -391,7 +381,6 @@ export default class ChapterNavigationButton {
 
   /**
    * Add drag handlers to button.
-   *
    * @param {HTMLElement} button Button.
    */
   addMoveHandlers(button) {
@@ -444,7 +433,6 @@ export default class ChapterNavigationButton {
 
   /**
    * Handle mouse button up or down.
-   *
    * @param {Event} event Mouse event.
    * @param {string} callbackName Callback name.
    */
@@ -469,7 +457,6 @@ export default class ChapterNavigationButton {
 
   /**
    * Handle drag start.
-   *
    * @param {Event} event Event.
    */
   handleDragStart(event) {
@@ -495,7 +482,6 @@ export default class ChapterNavigationButton {
 
   /**
    * Handle drag over.
-   *
    * @param {Event} event Event.
    */
   handleDragOver(event) {
@@ -511,7 +497,6 @@ export default class ChapterNavigationButton {
 
   /**
    * Handle drag leave.
-   *
    * @param {Event} event Event.
    */
   handleDragLeave(event) {
@@ -536,7 +521,6 @@ export default class ChapterNavigationButton {
 
   /**
    * Handle keydown.
-   *
    * @param {Event} event Event.
    */
   handleKeyDown(event) {
@@ -585,7 +569,6 @@ export default class ChapterNavigationButton {
 
   /**
    * Determine whether button is selected.
-   *
    * @returns {boolean} True, if button is selected.
    */
   isSelected() {

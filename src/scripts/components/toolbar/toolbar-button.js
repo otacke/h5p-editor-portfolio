@@ -83,7 +83,6 @@ export default class ToolbarButton {
 
   /**
    * Return the DOM for this class.
-   *
    * @returns {HTMLElement} DOM for this class.
    */
   getDOM() {
@@ -171,7 +170,6 @@ export default class ToolbarButton {
 
   /**
    * Force button click.
-   *
    * @param {boolean} [active] If set to boolean, activate accordingly.
    */
   force(active) {
@@ -226,7 +224,6 @@ export default class ToolbarButton {
 
   /**
    * Set attribute.
-   *
    * @param {string} attribute Attribute key.
    * @param {string} value Attribute value.
    */
@@ -236,7 +233,6 @@ export default class ToolbarButton {
 
   /**
    * Determine whether button is active.
-   *
    * @returns {boolean} True, if button is active, else false.
    */
   isActive() {
@@ -245,7 +241,6 @@ export default class ToolbarButton {
 
   /**
    * Determine whether button is disabled.
-   *
    * @returns {boolean} True, if button is disabled, else false.
    */
   isDisabled() {
@@ -254,7 +249,6 @@ export default class ToolbarButton {
 
   /**
    * Determine whether button is cloaked.
-   *
    * @returns {boolean} True, if button is cloaked, else false.
    */
   isCloaked() {
