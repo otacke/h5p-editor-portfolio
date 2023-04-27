@@ -147,33 +147,64 @@ export default class ChapterChooser {
 
     this.optionsList.innerHTML = '';
 
-    this.instance.getChaptersInformation().forEach((chapter, index) => {
-      const li = document.createElement('li');
-      li.classList.add('chapter-chooser-list-item');
-      li.classList.add(`hierarchy-${chapter.hierarchy.split('-').length}`);
+    let chapterIndexOffset = 0;
 
-      const checkbox = document.createElement('input');
-      checkbox.classList.add('chapter-chooser-checkbox');
-      checkbox.setAttribute('type', 'checkbox');
-      checkbox.setAttribute('id', `chapter-chooser-checkbox-${index}`);
-      checkbox.setAttribute('aria-label', chapter.title);
-      checkbox.addEventListener('change', () => {
-        this.updateButtons();
-      });
-      li.appendChild(checkbox);
+    if (this.instance.params.showCoverPage) {
+      const fakeChapterParams = {
+        hierarchy: '0',
+        title: Dictionary.get('l10n.coverPage')
+      };
+
+      const { li, checkbox } = this.buildListItem(fakeChapterParams, 0);
 
       this.checkboxes.push(checkbox);
+      this.optionsList.appendChild(li);
 
-      const label = document.createElement('label');
-      label.classList.add('chapter-chooser-label');
-      label.setAttribute('for', `chapter-chooser-checkbox-${index}`);
-      label.innerText = chapter.title;
-      li.appendChild(label);
+      chapterIndexOffset++;
+    }
 
+    this.instance.getChaptersInformation().forEach((chapter, index) => {
+      const { li, checkbox } = this.buildListItem(
+        chapter, index + chapterIndexOffset
+      );
+
+      this.checkboxes.push(checkbox);
       this.optionsList.appendChild(li);
     });
 
     this.updateButtons();
+  }
+
+  /**
+   * Build list item.
+   * @param {object} chapter Chapter params.
+   * @param {number} index Index.
+   * @returns {HTMLLIElement} List item.
+   */
+  buildListItem(chapter, index) {
+    const li = document.createElement('li');
+    li.classList.add('chapter-chooser-list-item');
+    li.classList.add(`hierarchy-${chapter.hierarchy.split('-').length}`);
+
+    const uuid = H5P.createUUID();
+
+    const checkbox = document.createElement('input');
+    checkbox.classList.add('chapter-chooser-checkbox');
+    checkbox.setAttribute('type', 'checkbox');
+    checkbox.setAttribute('id', `chapter-chooser-checkbox-${index}-${uuid}`);
+    checkbox.setAttribute('aria-label', chapter.title);
+    checkbox.addEventListener('change', () => {
+      this.updateButtons();
+    });
+    li.appendChild(checkbox);
+
+    const label = document.createElement('label');
+    label.classList.add('chapter-chooser-label');
+    label.setAttribute('for', `chapter-chooser-checkbox-${index}-${uuid}`);
+    label.innerText = chapter.title;
+    li.appendChild(label);
+
+    return { li, checkbox };
   }
 
   /**
@@ -213,6 +244,31 @@ export default class ChapterChooser {
    */
   hide() {
     this.dom.classList.add('display-none');
+  }
+
+  /**
+   * Get cover.
+   * @param {boolean} enforceImage If true, enforce image in return.
+   * @returns {Blob} Screenshot.
+   */
+  async getCover(enforceImage) {
+    const dom = this.instance.getCoverDOM();
+
+    // Hide read button
+    const button = dom.querySelector('.h5p-portfolio-cover-readbutton');
+    if (button) {
+      button.classList.add('display-none');
+    }
+
+    const coverBlob = await Screenshot.takeScreenshot(
+      { element: dom, enforceImage: enforceImage }
+    );
+
+    if (button) {
+      button.classList.remove('display-none');
+    }
+
+    return coverBlob;
   }
 
   /**
@@ -256,81 +312,115 @@ export default class ChapterChooser {
       return;
     }
 
-    // Close cover and close menu
-    this.instance.handleCoverRemoved();
-    if (this.instance.isMenuOpen()) {
-      this.instance.toggleMenu();
-    }
-
-    // Retrieve information for chosen chapters
-    const chapterInfo = this.instance.getChaptersInformation();
-    const chosenChapters = this.checkboxes.reduce((checked, current, index) => {
-      if (!current.checked) {
-        return checked;
-      }
-
-      const chosen = {
-        index: index,
-        hierarchy: chapterInfo[index].hierarchy,
-        title: chapterInfo[index].title
-      };
-      return [...checked, chosen];
-    }, []);
-
     this.callbacks.onExportStarted();
 
-    let imageBlobs = [];
+    window.setTimeout(async () => {
+      // Retrieve information for chosen chapters
+      const chapterInfo = this.instance.getChaptersInformation();
+      const chosenChapters = this.checkboxes.reduce((checked, current, index) => {
+        let chapterIndex = index;
+        if (this.instance.params.showCoverPage) {
+          if (index === 0) {
+            return checked;
+          }
+          else {
+            chapterIndex--;
+          }
+        }
 
-    for (let i = 0; i < chosenChapters.length; i++) {
-      this.callbacks.onExportProgress({
-        number: i + 1,
-        of: chosenChapters.length
-      });
+        if (!current.checked) {
+          return checked;
+        }
 
-      // Get screenshots
-      const screenshots = await this.getScreenshots(
-        chosenChapters[i].index,
-        type !== 'images' // Enforce pixel for pdf/docx
-      );
+        const chosen = {
+          index: chapterIndex,
+          hierarchy: chapterInfo[chapterIndex].hierarchy,
+          title: chapterInfo[chapterIndex].title
+        };
+        return [...checked, chosen];
+      }, []);
 
-      if (!screenshots.length) {
-        continue;
+      let imageBlobs = [];
+
+      if (
+        this.instance.params.showCoverPage && this.checkboxes[0].checked
+      ) {
+        this.callbacks.onExportProgress({
+          text: Dictionary.get('l10n.processingCover')
+        });
+
+        const coverBlob = await this.getCover(type !== 'images');
+        if (coverBlob) {
+          // Sanitize name for file output
+          const name = Dictionary.get('l10n.coverPage')
+            .replace(/[/\\?%*:|"<>]/g, '-')
+            .toLowerCase();
+
+          imageBlobs.push({
+            title: null,
+            name: `${name}.${coverBlob.type.split('/')[1]}`,
+            blob: coverBlob
+          });
+        }
       }
 
-      // Build objects, could be improved in non image export (title value used for layout)
-      for (let j = 0; j < screenshots.length; j++) {
-        imageBlobs.push({
-          title: (j === 0) ? chosenChapters[i].title : null,
-          name: `${chosenChapters[i].hierarchy}_${j}.${screenshots[j].type.split('/')[1]}`,
-          blob: screenshots[j]
+      // Close cover and close menu
+      this.instance.handleCoverRemoved({ skipFocus: true });
+      if (this.instance.isMenuOpen()) {
+        this.instance.toggleMenu();
+      }
+
+      for (let i = 0; i < chosenChapters.length; i++) {
+        this.callbacks.onExportProgress({
+          number: i + 1,
+          of: chosenChapters.length
+        });
+
+        // Get screenshots
+        const screenshots = await this.getScreenshots(
+          chosenChapters[i].index,
+          type !== 'images' // Enforce pixel for pdf/docx
+        );
+
+        if (!screenshots.length) {
+          continue;
+        }
+
+        // Build objects, could be improved in non image export (title value used for layout)
+        for (let j = 0; j < screenshots.length; j++) {
+          imageBlobs.push({
+            title: (j === 0) ? chosenChapters[i].title : null,
+            name: `${chosenChapters[i].hierarchy}_${j}.${screenshots[j].type.split('/')[1]}`,
+            blob: screenshots[j]
+          });
+        }
+      }
+
+      this.callbacks.onExportProgress({
+        text: Dictionary.get('l10n.creatingExportFile')
+      });
+
+      if (type === 'images') {
+        Export.offerDownload({
+          blob: await Export.createZip(imageBlobs),
+          filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.zip`
         });
       }
-    }
+      else if (type === 'pdf') {
+        Export.exportPDF({
+          imageBlobs: imageBlobs,
+          filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.pdf`
+        });
+      }
+      else if (type === 'docx') {
+        Export.offerDownload({
+          blob: await Export.createDOCX({ imageBlobs: imageBlobs }),
+          filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.docx`
+        });
+      }
 
-    this.callbacks.onExportProgress({
-      text: Dictionary.get('l10n.creatingExportFile')
-    });
-
-    if (type === 'images') {
-      Export.offerDownload({
-        blob: await Export.createZip(imageBlobs),
-        filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.zip`
-      });
-    }
-    else if (type === 'pdf') {
-      Export.exportPDF({
-        imageBlobs: imageBlobs,
-        filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.pdf`
-      });
-    }
-    else if (type === 'docx') {
-      Export.offerDownload({
-        blob: await Export.createDOCX({ imageBlobs: imageBlobs }),
-        filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.docx`
-      });
-    }
-
-    this.callbacks.onExportEnded();
+      this.callbacks.onExportEnded();
+    }, 0);
   }
 }
 
