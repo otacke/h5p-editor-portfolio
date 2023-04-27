@@ -73,6 +73,14 @@
         content: "\e5c8";
       }
 
+      &.submenu-popup-option-clone::before {
+        content: "\e14d";
+      }
+
+      &.submenu-popup-option-clone-plus-subchapters::before {
+        content: "\e14d";
+      }
+
       &.submenu-popup-option-delete::before {
         content: "\e872";
       }

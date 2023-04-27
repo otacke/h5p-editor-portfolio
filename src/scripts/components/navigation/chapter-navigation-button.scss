@@ -16,6 +16,33 @@
   text-decoration: none solid #4c4452;
   width: 100%;
 
+  &.h5peditor-portfolio-chapter-button-level-1 {
+    .h5peditor-portfolio-chapter-button-label {
+      margin-left: calc(1rem + .5rem);
+    }
+  }
+
+  &.h5peditor-portfolio-chapter-button-level-2 {
+    .h5peditor-portfolio-chapter-button-label {
+      margin-left: calc(2rem + .5rem);
+      width: calc(100% - 1rem);
+    }
+  }
+
+  &.h5peditor-portfolio-chapter-button-level-3 {
+    .h5peditor-portfolio-chapter-button-label {
+      margin-left: calc(3rem + .5rem);
+      width: calc(100% - 2rem);
+    }
+  }
+
+  &.h5peditor-portfolio-chapter-button-level-4 {
+    .h5peditor-portfolio-chapter-button-label {
+      margin-left: calc(4rem + .5rem);
+      width: calc(100% - 2rem);
+    }
+  }
+
   .h5peditor-portfolio-chapter-button-label {
     overflow: hidden;
     margin-right: .25rem;
@@ -41,33 +68,6 @@
     top: 0;
     transition: visibility 0s linear 0.1s, opacity 0.1s linear;
     width: 1.9rem;
-
-    &.h5peditor-portfolio-chapter-button-level-1 {
-      .h5peditor-portfolio-chapter-button-label {
-        margin-left: calc(1rem + .5rem);
-      }
-    }
-
-    &.h5peditor-portfolio-chapter-button-level-2 {
-      .h5peditor-portfolio-chapter-button-label {
-        margin-left: calc(2rem + .5rem);
-        width: calc(100% - 1rem);
-      }
-    }
-
-    &.h5peditor-portfolio-chapter-button-level-3 {
-      .h5peditor-portfolio-chapter-button-label {
-        margin-left: calc(3rem + .5rem);
-        width: calc(100% - 2rem);
-      }
-    }
-
-    &.h5peditor-portfolio-chapter-button-level-4 {
-      .h5peditor-portfolio-chapter-button-label {
-        margin-left: calc(4rem + .5rem);
-        width: calc(100% - 2rem);
-      }
-    }
 
     &.focus {
       visibility: visible;

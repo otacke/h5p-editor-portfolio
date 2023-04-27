@@ -19,6 +19,7 @@ export default class ChapterNavigation {
       onShowChapter: (() => {}),
       onMoveChapter: (() => {}),
       onChangeHierarchy: (() => {}),
+      onCloneChapter: (() => {}),
       onDeleteChapter: (() => {})
     }, callbacks);
 
@@ -98,6 +99,22 @@ export default class ChapterNavigation {
             label: Dictionary.get('l10n.hierarchyDown'),
             onClick: ((target) => {
               this.callbacks.onChangeHierarchy(this.getButtonId(target), 1);
+            })
+          },
+          {
+            id: 'clone',
+            label: Dictionary.get('l10n.clone'),
+            onClick: ((target) => {
+              this.callbacks.onCloneChapter(this.getButtonId(target));
+            })
+          },
+          {
+            id: 'clone-plus-subchapters',
+            label: Dictionary.get('l10n.cloneWithSubchapters'),
+            onClick: ((target) => {
+              this.callbacks.onCloneChapter(
+                this.getButtonId(target), { subchapters: true }
+              );
             })
           },
           {
@@ -390,14 +407,21 @@ export default class ChapterNavigation {
 
   /**
    * Handle chapter added.
+   * @param {object} [params={}] Parameters.
+   * @param {object} [params.instanceParams] Instance parameters.
+   * @returns {number|null} Id of added button or null;
    */
-  handleAddChapter() {
-    if (this.params.chapterList.addItem()) {
-      const idAdded = this.buttons.length;
+  handleAddChapter(params = {}) {
+    let idAdded = null;
+
+    if (this.params.chapterList.addItem(params?.instanceParams)) {
+      idAdded = this.buttons.length;
       this.addButton(idAdded);
 
-      this.callbacks.onAddChapter(idAdded);
+      this.callbacks.onAddChapter(idAdded, { doNotShow: true });
     }
+
+    return idAdded;
   }
 
   /**

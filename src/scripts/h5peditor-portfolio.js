@@ -105,8 +105,8 @@ export default class Portfolio {
         onGetButtonCapabilities: ((id) => {
           return this.getButtonCapabilities(id);
         }),
-        onAddChapter: (id) => {
-          this.addChapter(id);
+        onAddChapter: (id, options) => {
+          this.addChapter(id, options);
         },
         onShowChapter: (id) => {
           this.showChapter(id);
@@ -120,6 +120,9 @@ export default class Portfolio {
         },
         onChangeHierarchy: (id, offset) => {
           this.changeHierarchy(id, offset);
+        },
+        onCloneChapter: (id, options) => {
+          this.cloneChapter(id, options);
         },
         onDeleteChapter: (id) => {
           this.deleteChapter(id);
@@ -240,8 +243,10 @@ export default class Portfolio {
   /**
    * Handle adding new chapter.
    * @param {number} id Id of item that was added.
+   * @param {object} [options={}] Options.
+   * @param {boolean} [options.doNotShow] If true, don't show after adding.
    */
-  addChapter(id) {
+  addChapter(id, options = {}) {
     const hierarchy = this.getNewHierarchy();
     if (!hierarchy) {
       return;
@@ -250,15 +255,89 @@ export default class Portfolio {
     this.params.chapters[id].chapterHierarchy = hierarchy;
     this.chapterDOMsOrder.push(id);
 
-    this.showChapter(id);
+    if (!options.doNotShow) {
+      this.showChapter(id);
+    }
 
     // Store values
     this.setValue(this.field, this.params);
   }
 
   /**
+   * Handle cloning chapter.
+   * @param {number} id Id of chapter to clone.
+   * @param {object} [options={}] Options.
+   * @param {boolean} [options.subchapters] If true, also clone subchapters.
+   */
+  cloneChapter(id, options = {}) {
+    if (typeof id !== 'number') {
+      return;
+    }
+
+    this.showCopySpinner();
+
+    // Timeout required, because otherwise spinner will not show
+    window.setTimeout(() => {
+      const chapterParams = this.chapterList.getValue();
+
+      const startHierarchy = chapterParams[id].chapterHierarchy;
+
+      // Determine all chapters that potentially need cloning
+      const cloneParams = chapterParams.reduce((toClone, currentParams, index) => {
+        const currentHierarchy = currentParams.chapterHierarchy;
+        const isSubChapter = currentHierarchy.indexOf(`${startHierarchy}-`) === 0;
+
+        if (currentHierarchy === startHierarchy || isSubChapter
+        ) {
+          return [...toClone, {
+            index: index,
+            level: currentHierarchy.split('-').length,
+            isSubchapter: isSubChapter
+          }];
+        }
+
+        return toClone;
+      }, []);
+
+      const moveOffset = -chapterParams.length + id + cloneParams.length;
+
+      cloneParams.forEach((cloneParam) => {
+        if (!options.subchapters && cloneParam.isSubchapter) {
+          return;
+        }
+
+        // Create copy of chapter
+        const newId = this.chapterNavigation.handleAddChapter(
+          { instanceParams: chapterParams[cloneParam.index] }
+        );
+
+        if (!newId) {
+          return;
+        }
+
+        // Set correct hierarchy
+        for (let i = 0; i < cloneParam.level - 1; i++) {
+          this.changeHierarchy(this.chapterList.getValue().length - 1, 1);
+        }
+
+        // Move to appropriate position
+        this.moveChapter(
+          newId,
+          moveOffset,
+          { doNotShow: true, silent: true, doNotSave: true }
+        );
+      });
+
+      // Store values
+      this.setValue(this.field, this.params);
+
+      this.spinner.hide();
+    }, 0);
+  }
+
+  /**
    * Handle adding new chapter.
-   * @param {number} id Id of chater to delete.
+   * @param {number} id Id of chapter to delete.
    */
   deleteChapter(id) {
     if (typeof id !== 'number') {
@@ -305,9 +384,13 @@ export default class Portfolio {
    * Handler for moving a chapter.
    * @param {string} indexSource Button id of button to be moved.
    * @param {number} offset Offset of where to move chapter to.
+   * @param {object} [options={}] Options.
+   * @param {boolean} [options.doNotShow] If true, don't show moved button.
+   * @param {boolean} [options.silent] If true, don't announce via screenreader.
+   * @param {boolean} [options.doNotSave] If true, don't save.
    * @returns {boolean} True if could be moved, else false.
    */
-  moveChapter(indexSource, offset) {
+  moveChapter(indexSource, offset, options = {}) {
     if (
       typeof indexSource !== 'number' ||
       indexSource < 0 || indexSource > this.params.chapters.length - 1 ||
@@ -319,18 +402,24 @@ export default class Portfolio {
     const indexTarget = indexSource + offset;
 
     if (indexTarget < 0) {
-      Readspeaker.read([
-        Dictionary.get('a11y.notPossible'),
-        Dictionary.get('a11y.positionMinReached')
-      ]);
+      if (!options.silent) {
+        Readspeaker.read([
+          Dictionary.get('a11y.notPossible'),
+          Dictionary.get('a11y.positionMinReached')
+        ]);
+      }
+
       return false; // Out of bounds
     }
 
     if (indexTarget > this.params.chapters.length - 1) {
-      Readspeaker.read([
-        Dictionary.get('a11y.notPossible'),
-        Dictionary.get('a11y.positionMaxReached')
-      ]);
+      if (!options.silent) {
+        Readspeaker.read([
+          Dictionary.get('a11y.notPossible'),
+          Dictionary.get('a11y.positionMaxReached')
+        ]);
+      }
+
       return false; // Out of bounds
     }
 
@@ -342,10 +431,12 @@ export default class Portfolio {
           !== 1
       )
     ) {
-      Readspeaker.read([
-        Dictionary.get('a11y.notPossible'),
-        Dictionary.get('a11y.firstChapterHierarchyFixed')
-      ]);
+      if (!options.silent) {
+        Readspeaker.read([
+          Dictionary.get('a11y.notPossible'),
+          Dictionary.get('a11y.firstChapterHierarchyFixed')
+        ]);
+      }
       return false; // Position 0 must keep hierarchy 1
     }
 
@@ -362,10 +453,14 @@ export default class Portfolio {
     // Update button titles and hierarchies
     this.chapterNavigation.updateButtons();
 
-    this.showChapter(indexTarget);
+    if (!options.doNotShow) {
+      this.showChapter(indexTarget);
+    }
 
     // Store values
-    this.setValue(this.field, this.params);
+    if (!options.doNotSave) {
+      this.setValue(this.field, this.params);
+    }
 
     return true;
   }
@@ -374,13 +469,19 @@ export default class Portfolio {
    * Handle hierarchy changed.
    * @param {number} index Index of item that was changed.
    * @param {number} offset Diff in hierarchy.
+   * @param {object} [options={}] Options.
+   * @param {boolean} [options.silent] If true, don't announce via screenreader.
+   * @param {boolean} [options.doNotSave] If true, don't save.
    */
-  changeHierarchy(index, offset) {
+  changeHierarchy(index, offset, options = {}) {
     if (index === 0) {
-      Readspeaker.read([
-        Dictionary.get('a11y.notPossible'),
-        Dictionary.get('a11y.firstChapterHierarchyFixed')
-      ]);
+      if (!options.silent) {
+        Readspeaker.read([
+          Dictionary.get('a11y.notPossible'),
+          Dictionary.get('a11y.firstChapterHierarchyFixed')
+        ]);
+      }
+
       return; // Position 0 must keep hierarchy 1
     }
 
@@ -388,17 +489,23 @@ export default class Portfolio {
       .length;
 
     if (oldLength + offset < 1) {
-      Readspeaker.read([
-        Dictionary.get('a11y.notPossible'),
-        Dictionary.get('a11y.hierarchyMinReached').replace(/@level/g, 1)
-      ]);
+      if (!options.silent) {
+        Readspeaker.read([
+          Dictionary.get('a11y.notPossible'),
+          Dictionary.get('a11y.hierarchyMinReached').replace(/@level/g, 1)
+        ]);
+      }
+
       return;
     }
     else if (oldLength + offset > Portfolio.MAX_LEVEL) {
-      Readspeaker.read([
-        Dictionary.get('a11y.notPossible'),
-        Dictionary.get('a11y.hierarchyMaxReached').replace(/@level/g, 1)
-      ]);
+      if (!options.silent) {
+        Readspeaker.read([
+          Dictionary.get('a11y.notPossible'),
+          Dictionary.get('a11y.hierarchyMaxReached').replace(/@level/g, 1)
+        ]);
+      }
+
       return;
     }
 
@@ -427,12 +534,16 @@ export default class Portfolio {
 
     this.chapterNavigation.updateButtons();
 
-    Readspeaker.read(
-      Dictionary.get('a11y.hierarchyChangedTo').replace(/@level/g, newLength)
-    );
+    if (!options.silent) {
+      Readspeaker.read(
+        Dictionary.get('a11y.hierarchyChangedTo').replace(/@level/g, newLength)
+      );
+    }
 
     // Store values
-    this.setValue(this.field, this.params);
+    if (!options.doNotSave) {
+      this.setValue(this.field, this.params);
+    }
   }
 
   /**
@@ -838,6 +949,15 @@ export default class Portfolio {
   showExportSpinner() {
     this.spinner.setMessage(Dictionary.get('l10n.generatingExport'));
     this.spinner.setProgress(' ');
+    this.spinner.show();
+  }
+
+  /**
+   * Show copy spinner.
+   */
+  showCopySpinner() {
+    this.spinner.setMessage(Dictionary.get('l10n.cloning'));
+    this.spinner.setProgress('');
     this.spinner.show();
   }
 
