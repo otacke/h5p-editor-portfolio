@@ -247,6 +247,10 @@ export default class ChapterNavigationButton {
       }
     }
 
+    if (event.type === 'focusout' && event.relatedTarget === this.dom) {
+      return; // Still on label
+    }
+
     this.editingLabel = false;
 
     event.preventDefault();
@@ -306,6 +310,10 @@ export default class ChapterNavigationButton {
   handleClickMenu(event) {
     if (this.menu.classList.contains('active')) {
       return;
+    }
+
+    if (this.editingLabel) {
+      this.handleLabelEdited(event);
     }
 
     this.callbacks.onShowMenu(this, event.pointerType === '');
@@ -574,6 +582,14 @@ export default class ChapterNavigationButton {
   handleSingleClick(event) {
     if (this.editingLabel && event.pointerType === '') {
       return; // Editing label, ignore 'space'
+    }
+
+    if (this.editingLabel && event.target === this.label) {
+      return; // Only trying to set cursor with mouse
+    }
+
+    if (this.editingLabel) {
+      this.handleLabelEdited(event);
     }
 
     if (!this.isSelected()) {
