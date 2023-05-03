@@ -182,6 +182,12 @@ export default class Portfolio {
 
     // Store values that may have been created as default
     this.setValue(this.field, this.params);
+
+    this.parent.ready(() => {
+      this.passReadies = false;
+
+      this.overrideH5PCoreTitleField();
+    });
   }
 
   /**
@@ -1000,6 +1006,23 @@ export default class Portfolio {
     this.spinner.hide();
 
     Readspeaker.read(Dictionary.get('a11y.exportClosed'));
+  }
+
+  /**
+   * Override H5P Core title field.
+   */
+  overrideH5PCoreTitleField() {
+    const editorContainer = this.$container.get(0)
+      .closest('.h5p-portfolio-editor');
+
+    if (editorContainer) {
+      const titleField = editorContainer
+        .querySelector('.field-name-extraTitle .h5peditor-label');
+
+      if (titleField) {
+        titleField.innerHTML = Dictionary.get('l10n.portfolioTitle');
+      }
+    }
   }
 
   /**
