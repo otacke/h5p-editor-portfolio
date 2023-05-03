@@ -44,4 +44,42 @@ export default class Util {
     parent1.replaceChild(element2, replacement1);
     parent2.replaceChild(element1, replacement2);
   }
+
+  /**
+   * Double click handler.
+   * @param {Event} event Regular click event.
+   * @param {function} callbackSingle Function to execute on single click.
+   * @param {function} callbackDouble Function to execute on double click.
+   */
+  static doubleClick(event, callbackSingle, callbackDouble) {
+    if (
+      !event ||
+      (
+        typeof callbackSingle !== 'function' &&
+        typeof callbackDouble !== 'function'
+      )
+    ) {
+      return;
+    }
+
+    if (isNaN(event.target.count)) {
+      event.target.count = 1;
+    }
+    else {
+      event.target.count++;
+    }
+
+    setTimeout(() => {
+      if (event.target.count === 1) {
+        callbackSingle?.();
+      }
+      if (event.target.count === 2) {
+        callbackDouble?.();
+      }
+      event.target.count = 0;
+    }, Util.DOUBLE_CLICK_TIME);
+  }
 }
+
+/** @constant {number} Double click time */
+Util.DOUBLE_CLICK_TIME = 300;

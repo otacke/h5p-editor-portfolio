@@ -44,19 +44,19 @@ export default class ChapterNavigationButton {
     this.dom.setAttribute('role', 'menuitem');
     this.dom.setAttribute('tabindex', '-1');
     this.dom.addEventListener('click', (event) => {
-      if (event.target !== this.dom) {
+      if (event.target === this.menu) {
         return; // Is sub menu button
       }
 
-      if (this.editingLabel && event.pointerType === '') {
-        return; // Editing label, ignore 'space'
-      }
-
-      if (!this.isSelected()) {
-        this.callbacks.onShowChapter(this);
-      }
-
-      this.setSelected(!this.isSelected());
+      Util.doubleClick(
+        event,
+        () => {
+          this.handleSingleClick(event);
+        },
+        () => {
+          this.handleDoubleClick(event);
+        }
+      );
     });
 
     // Label
@@ -565,6 +565,33 @@ export default class ChapterNavigationButton {
       event.preventDefault();
       this.callbacks.onEdit(this);
     }
+  }
+
+  /**
+   * Handle single click.
+   * @param {MouseEvent|TouchEvent} event Event.
+   */
+  handleSingleClick(event) {
+    if (this.editingLabel && event.pointerType === '') {
+      return; // Editing label, ignore 'space'
+    }
+
+    if (!this.isSelected()) {
+      this.callbacks.onShowChapter(this);
+    }
+
+    if (event.pointerType === 'mouse') {
+      return;
+    }
+
+    this.setSelected(!this.isSelected());
+  }
+
+  /**
+   * Handle single click.
+   */
+  handleDoubleClick() {
+    this.editLabel();
   }
 
   /**
