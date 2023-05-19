@@ -36,6 +36,8 @@
     "l10n.coverPage": "Página de Portada",
     "l10n.portfolioTitle": "Portfolio title",
     "l10n.labelCopy": "(Copy)",
+    "l10n.header": "Header",
+    "l10n.footer": "Footer",
     "a11y.openSubmenu": "Abrir submenú",
     "a11y.closeSubmenu": "Cerrar sub-menú",
     "a11y.selected": "Seleccionado",

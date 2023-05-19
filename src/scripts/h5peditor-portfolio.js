@@ -187,6 +187,7 @@ export default class Portfolio {
       this.passReadies = false;
 
       this.overrideH5PCoreTitleField();
+      this.overrideHeaderFooter();
     });
   }
 
@@ -1057,6 +1058,28 @@ export default class Portfolio {
       if (titleField) {
         titleField.innerHTML = Dictionary.get('l10n.portfolioTitle');
       }
+    }
+  }
+
+  /**
+   * Override H5P Core title field.
+   */
+  overrideHeaderFooter() {
+    const editorContainer = this.$container.get(0)
+      .closest('.h5p-portfolio-editor');
+
+    if (!editorContainer) {
+      return;
+    }
+
+    const header = editorContainer.querySelector('.field-name-headerPlaceholderGroup .title');
+    if (header) {
+      header.innerText = Dictionary.get('l10n.header');
+    }
+
+    const footer = editorContainer.querySelector('.field-name-footerPlaceholderGroup .title');
+    if (footer) {
+      footer.innerText = Dictionary.get('l10n.footer');
     }
   }
 
