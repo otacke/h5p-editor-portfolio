@@ -188,6 +188,7 @@ export default class Portfolio {
 
       this.overrideH5PCoreTitleField();
       this.overrideHeaderFooter();
+      this.overrideCoverTitle();
     });
   }
 
@@ -1080,6 +1081,52 @@ export default class Portfolio {
     const footer = editorContainer.querySelector('.field-name-footerPlaceholderGroup .title');
     if (footer) {
       footer.innerText = Dictionary.get('l10n.footer');
+    }
+  }
+
+  /**
+   * Override H5P cover title field.
+   */
+  overrideCoverTitle() {
+    const editorContainer = this.$container.get(0)
+      .closest('.h5p-portfolio-editor');
+
+    if (!editorContainer) {
+      return;
+    }
+
+    const group = editorContainer.querySelector('.field-name-bookCover');
+    if (!group) {
+      return;
+    }
+
+    /*
+     * There's no way to get hold of the group instance. Copying the same
+     * functionality here, but we cannot trigger 'expanded'/'collapsed'
+     */
+    const title = group.querySelector('.title');
+    if (title) {
+      const titleClone = title.cloneNode(true);
+      titleClone.innerText = Dictionary.get('l10n.cover');
+      title.parentNode.insertBefore(titleClone, title);
+      title.remove();
+
+      const toggle = () => {
+        if (group.classList.contains('expanded')) {
+          title.setAttribute('aria-expanded', 'false');
+          window.setTimeout(() => {
+            group.classList.remove('expanded');
+          }, 100);
+        }
+        else {
+          title.setAttribute('aria-expanded', 'true');
+          window.setTimeout(() => {
+            group.classList.add('expanded');
+          }, 100);
+        }
+      };
+
+      titleClone.addEventListener('click', toggle);
     }
   }
 
