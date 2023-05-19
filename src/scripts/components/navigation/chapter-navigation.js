@@ -157,6 +157,15 @@ export default class ChapterNavigation {
   }
 
   /**
+   * Get button.
+   * @param {number} index Index of button.
+   * @returns {HTMLElement|null} Button.
+   */
+  getButton(index) {
+    return this.buttons?.[index] || null;
+  }
+
+  /**
    * Get chapter group from list widget.
    * @param {number} id Id of chapter.
    * @returns {object} Chapter group object.
@@ -500,6 +509,7 @@ export default class ChapterNavigation {
    * @param {object} params Parameters.
    * @param {HTMLElement} params.button1 Button #1.
    * @param {HTMLElement} params.button2 Button #2.
+   * @param {boolean} [params.skipPlaceholder] If false, no placeholder.
    */
   swapButtons(params = {}) {
     // Swap visuals
@@ -514,7 +524,9 @@ export default class ChapterNavigation {
     [this.buttons[id1], this.buttons[id2]] =
       [this.buttons[id2], this.buttons[id1]];
 
-    params.button1.attachDragPlaceholder();
+    if (!params.skipPlaceholder) {
+      params.button1.attachDragPlaceholder();
+    }
   }
 
   /**
@@ -537,7 +549,8 @@ export default class ChapterNavigation {
     ) {
       const wasMoved = this.callbacks.onMoveChapter (
         this.dragIndexSource,
-        this.dragIndexTarget - this.dragIndexSource
+        this.dragIndexTarget - this.dragIndexSource,
+        { updateNavigationButtons: false }
       );
 
       if (!wasMoved) {

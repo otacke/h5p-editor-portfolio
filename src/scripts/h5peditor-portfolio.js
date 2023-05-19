@@ -111,8 +111,8 @@ export default class Portfolio {
         onShowChapter: (id) => {
           this.showChapter(id);
         },
-        onMoveChapter: (id, offset) => {
-          const success = this.moveChapter(id, offset);
+        onMoveChapter: (id, offset, options = {}) => {
+          const success = this.moveChapter(id, offset, options);
           if (success) {
             this.chapterNavigation.setSelectedButton(id + offset);
           }
@@ -332,11 +332,14 @@ export default class Portfolio {
         );
 
         // Move to appropriate position
-        this.moveChapter(
-          newId,
-          moveOffset,
-          { doNotShow: true, silent: true, doNotSave: true }
-        );
+        // TODO: Clean up, so moveChapter works with abs(moveOffset) > 1
+        for (let count = 0; count < Math.abs(moveOffset); count++) {
+          this.moveChapter(
+            newId + count * Math.sign(moveOffset),
+            Math.sign(moveOffset),
+            { doNotShow: true, silent: true, doNotSave: true }
+          );
+        }
       });
 
       // Store values
@@ -454,7 +457,15 @@ export default class Portfolio {
     // Move item parameters in list widget
     this.chapterList.moveItem(indexSource, indexTarget);
 
-    // List widget doesn't resort DOM elemens, need to move in tracking array
+    // TODO: Beware, this only works for an offset of -1 or 1!!!
+    if (options.updateNavigationButtons !== false) {
+      this.chapterNavigation.swapButtons({
+        button1: this.chapterNavigation.getButton(indexSource),
+        button2: this.chapterNavigation.getButton(indexTarget),
+        skipPlaceholder: true
+      });
+    }
+
     const item = this.chapterDOMsOrder.splice(indexSource, 1);
     this.chapterDOMsOrder.splice(indexTarget, 0, item[0]);
 
