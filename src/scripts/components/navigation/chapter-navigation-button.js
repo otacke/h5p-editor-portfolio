@@ -237,6 +237,14 @@ export default class ChapterNavigationButton {
   }
 
   /**
+   * Get label.
+   * @returns {string} Current label.
+   */
+  getLabel() {
+    return this.label.innerText;
+  }
+
+  /**
    * Handle label was edited.
    * @param {KeyboardEvent|FocusEvent} event Event.
    */

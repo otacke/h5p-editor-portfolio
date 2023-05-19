@@ -326,6 +326,11 @@ export default class Portfolio {
           this.changeHierarchy(this.chapterList.getValue().length - 1, 1);
         }
 
+        this.chapterNavigation.handleLabelEdited(
+          newId,
+          `${this.chapterNavigation.getButtonLabel(newId)} ${Dictionary.get('l10n.labelCopy')}`
+        );
+
         // Move to appropriate position
         this.moveChapter(
           newId,

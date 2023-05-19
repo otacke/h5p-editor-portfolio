@@ -289,6 +289,15 @@ export default class ChapterNavigation {
   }
 
   /**
+   * Get button label.
+   * @param {number} index Index of button.
+   * @returns {string} Button label.
+   */
+  getButtonLabel(index) {
+    return this.buttons?.[index].getLabel() ?? '';
+  }
+
+  /**
    * Update buttons.
    */
   updateButtons() {
@@ -363,11 +372,20 @@ export default class ChapterNavigation {
 
   /**
    * Handle label edited.
-   * @param {ChapterNavigationButton} target Calling button.
+   * @param {ChapterNavigationButton|number} target Calling button or its index.
    * @param {string} label Label text.
    */
   handleLabelEdited(target, label) {
-    const id = this.getButtonId(target);
+    let id = -1;
+
+    if (typeof target === 'number') {
+      id = target;
+      target = this.buttons[id];
+    }
+    else {
+      id = this.getButtonId(target);
+    }
+
     if (id === -1) {
       return;
     }
