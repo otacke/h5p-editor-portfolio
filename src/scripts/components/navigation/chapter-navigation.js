@@ -436,6 +436,7 @@ export default class ChapterNavigation {
    * Handle chapter added.
    * @param {object} [params={}] Parameters.
    * @param {object} [params.instanceParams] Instance parameters.
+   * @param {boolean} [params.doNotShow] If true, don't show chapter.
    * @returns {number|null} Id of added button or null;
    */
   handleAddChapter(params = {}) {
@@ -445,7 +446,7 @@ export default class ChapterNavigation {
       idAdded = this.buttons.length;
       this.addButton(idAdded);
 
-      this.callbacks.onAddChapter(idAdded, { doNotShow: true });
+      this.callbacks.onAddChapter(idAdded, { doNotShow: params.doNotShow });
     }
 
     return idAdded;

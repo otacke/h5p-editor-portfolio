@@ -314,7 +314,10 @@ export default class Portfolio {
 
         // Create copy of chapter
         const newId = this.chapterNavigation.handleAddChapter(
-          { instanceParams: chapterParams[cloneParam.index] }
+          {
+            instanceParams: chapterParams[cloneParam.index],
+            doNotShow: true
+          }
         );
 
         if (!newId) {
