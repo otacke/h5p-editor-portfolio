@@ -18,6 +18,10 @@
           > .h5p-ul > .h5p-li {
             margin: 0;
 
+            &.display-none {
+              display: none;
+            }
+
             > .list-item-title-bar {
               display: none;
             }

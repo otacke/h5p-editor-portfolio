@@ -579,6 +579,17 @@ export default class Portfolio {
       chapterDOMs[i].classList.toggle(
         'active', i === this.chapterDOMsOrder[id]
       );
+
+      /*
+       * Workaround for Firefox that on some platforms will give the list item
+       * some height even though it should be 0.
+       */
+      const listItem = chapterDOMs[i].closest('li');
+      if (listItem) {
+        listItem.classList.toggle(
+          'display-none', i !== this.chapterDOMsOrder[id]
+        );
+      }
     }
 
     this.chapterNavigation.setCurrentButton(id);
