@@ -628,6 +628,11 @@ export default class Portfolio {
       this.params.chapters[1]?.chapterHierarchy?.split('-')?.length === 1
     );
 
+    // Can only clone with subchapters if there are subchapters
+    capabilities['clone-plus-subchapters'] = (
+      this.params.chapters[id]?.chapterHierarchy?.split('-')?.length < Portfolio.MAX_LEVEL
+    );
+
     return capabilities;
   }
 
