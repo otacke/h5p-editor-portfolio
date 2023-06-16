@@ -1,6 +1,5 @@
 import './chapter-navigation-button.scss';
 import Util from '@services/util';
-import Dictionary from '@services/dictionary';
 import SubMenu from './sub-menu.js';
 
 export default class ChapterNavigationButton {
@@ -68,7 +67,7 @@ export default class ChapterNavigationButton {
     // Menu
     this.menu = document.createElement('button');
     this.menu.classList.add('h5peditor-portfolio-chapter-button-menu');
-    this.menu.setAttribute('aria-label', Dictionary.get('a11y.openSubmenu'));
+    this.menu.setAttribute('aria-label', this.params.dictionary.get('a11y.openSubmenu'));
     this.menu.addEventListener('click', (event) => {
       this.handleClickMenu(event);
     });
@@ -112,11 +111,11 @@ export default class ChapterNavigationButton {
    */
   updateARIA() {
     const selectedText = this.isSelected() ?
-      Dictionary.get('a11y.selected') :
-      Dictionary.get('a11y.notSelected');
+      this.params.dictionary.get('a11y.selected') :
+      this.params.dictionary.get('a11y.notSelected');
 
     let hierarchyText = '';
-    hierarchyText = Dictionary.get('a11y.hierarchyLevel')
+    hierarchyText = this.params.dictionary.get('a11y.hierarchyLevel')
       .replace(/@level/g, parseInt(this.params.hierarchyLevel));
 
     const label = [this.label.innerText, hierarchyText, selectedText]
@@ -290,7 +289,7 @@ export default class ChapterNavigationButton {
     setTimeout(() => {
       const rect = this.dom.getBoundingClientRect();
 
-      this.menu.setAttribute('aria-label', Dictionary.get('a11y.closeSubmenu'));
+      this.menu.setAttribute('aria-label', this.params.dictionary.get('a11y.closeSubmenu'));
       this.menu.classList.add('active');
       subMenu.show({
         keyboardUsed: keyboardUsed,
@@ -303,7 +302,7 @@ export default class ChapterNavigationButton {
 
       subMenu.once('hidden', (event) => {
         this.menu.classList.remove('active');
-        this.menu.setAttribute('aria-label', Dictionary.get('a11y.openSubmenu'));
+        this.menu.setAttribute('aria-label', this.params.dictionary.get('a11y.openSubmenu'));
         if (!event?.data?.keepFocus) {
           this.dom.focus();
         }

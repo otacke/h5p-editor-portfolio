@@ -26,6 +26,7 @@ export default class Portfolio {
     }, params);
     this.setValue = setValue;
 
+    this.dictionary = new Dictionary();
     this.fillDictionary();
 
     this.params.chapters = this.sanitize(this.params.chapters || []);
@@ -69,7 +70,9 @@ export default class Portfolio {
     toolbarDOM.classList.add('h5peditor-portfolio-toolbar');
 
     this.toolBar = new Toolbar(
-      {},
+      {
+        dictionary: this.dictionary
+      },
       {
         onClickButtonPreview: (active) => {
           this.togglePreview({ active: active });
@@ -94,6 +97,7 @@ export default class Portfolio {
 
     this.chapterNavigation = new ChapterNavigation(
       {
+        dictionary: this.dictionary,
         title: this.parent?.metadata?.title || 'Portfolio',
         chapterList: this.chapterList,
         hierarchyLevelMax: Portfolio.MAX_LEVEL
@@ -132,20 +136,26 @@ export default class Portfolio {
     contentDOM.appendChild(this.chapterNavigation.getDOM());
     contentDOM.appendChild(this.chaptersDOM);
 
-    this.previewOverlay = new PreviewOverlay();
+    this.previewOverlay = new PreviewOverlay({
+      dictionary: this.dictionary
+    });
     this.mainDOM.appendChild(this.previewOverlay.getDOM());
 
-    this.chapterChooser = new ChapterChooser({}, {
-      onExportStarted: () => {
-        this.showExportSpinner();
-      },
-      onExportProgress: (params) => {
-        this.setSpinnerProgress(params);
-      },
-      onExportEnded: () => {
-        this.toolBar.forceButton('export', false); // Will close dialog
+    this.chapterChooser = new ChapterChooser(
+      {
+        dictionary: this.dictionary
+      }, {
+        onExportStarted: () => {
+          this.showExportSpinner();
+        },
+        onExportProgress: (params) => {
+          this.setSpinnerProgress(params);
+        },
+        onExportEnded: () => {
+          this.toolBar.forceButton('export', false); // Will close dialog
+        }
       }
-    });
+    );
     this.mainDOM.appendChild(this.chapterChooser.getDOM());
 
     Readspeaker.attach(contentDOM);
@@ -157,10 +167,10 @@ export default class Portfolio {
 
     // Dialog to ask whether to delete all hidden contents
     this.deleteHiddenDialog = new H5P.ConfirmationDialog({
-      headerText: Dictionary.get('l10n.deleteHiddenDialogHeader'),
-      dialogText: Dictionary.get('l10n.deleteHiddenDialogText'),
-      cancelText: Dictionary.get('l10n.deleteDialogCancel'),
-      confirmText: Dictionary.get('l10n.deleteDialogConfirm')
+      headerText: this.dictionary.get('l10n.deleteHiddenDialogHeader'),
+      dialogText: this.dictionary.get('l10n.deleteHiddenDialogText'),
+      cancelText: this.dictionary.get('l10n.deleteDialogCancel'),
+      confirmText: this.dictionary.get('l10n.deleteDialogConfirm')
     });
     this.deleteHiddenDialog.appendTo(document.body);
 
@@ -333,7 +343,7 @@ export default class Portfolio {
 
         this.chapterNavigation.handleLabelEdited(
           newId,
-          `${this.chapterNavigation.getButtonLabel(newId)} ${Dictionary.get('l10n.labelCopy')}`
+          `${this.chapterNavigation.getButtonLabel(newId)} ${this.dictionary.get('l10n.labelCopy')}`
         );
 
         // Move to appropriate position
@@ -364,8 +374,8 @@ export default class Portfolio {
     }
     else if (this.params.chapters.length === 1) {
       Readspeaker.read([
-        Dictionary.get('a11y.notPossible'),
-        Dictionary.get('a11y.cannotDeleteOnlyItem')
+        this.dictionary.get('a11y.notPossible'),
+        this.dictionary.get('a11y.cannotDeleteOnlyItem')
       ]);
       return; // Can't delete the one and only chapter
     }
@@ -374,8 +384,8 @@ export default class Portfolio {
       this.params.chapters[1].chapterHierarchy.split('-').length !== 1
     ) {
       Readspeaker.read([
-        Dictionary.get('a11y.notPossible'),
-        Dictionary.get('a11y.firstChapterHierarchyFixed')
+        this.dictionary.get('a11y.notPossible'),
+        this.dictionary.get('a11y.firstChapterHierarchyFixed')
       ]);
       return; // Position 0 must keep hierarchy 1
     }
@@ -423,8 +433,8 @@ export default class Portfolio {
     if (indexTarget < 0) {
       if (!options.silent) {
         Readspeaker.read([
-          Dictionary.get('a11y.notPossible'),
-          Dictionary.get('a11y.positionMinReached')
+          this.dictionary.get('a11y.notPossible'),
+          this.dictionary.get('a11y.positionMinReached')
         ]);
       }
 
@@ -434,8 +444,8 @@ export default class Portfolio {
     if (indexTarget > this.params.chapters.length - 1) {
       if (!options.silent) {
         Readspeaker.read([
-          Dictionary.get('a11y.notPossible'),
-          Dictionary.get('a11y.positionMaxReached')
+          this.dictionary.get('a11y.notPossible'),
+          this.dictionary.get('a11y.positionMaxReached')
         ]);
       }
 
@@ -452,8 +462,8 @@ export default class Portfolio {
     ) {
       if (!options.silent) {
         Readspeaker.read([
-          Dictionary.get('a11y.notPossible'),
-          Dictionary.get('a11y.firstChapterHierarchyFixed')
+          this.dictionary.get('a11y.notPossible'),
+          this.dictionary.get('a11y.firstChapterHierarchyFixed')
         ]);
       }
       return false; // Position 0 must keep hierarchy 1
@@ -504,8 +514,8 @@ export default class Portfolio {
     if (index === 0) {
       if (!options.silent) {
         Readspeaker.read([
-          Dictionary.get('a11y.notPossible'),
-          Dictionary.get('a11y.firstChapterHierarchyFixed')
+          this.dictionary.get('a11y.notPossible'),
+          this.dictionary.get('a11y.firstChapterHierarchyFixed')
         ]);
       }
 
@@ -518,8 +528,8 @@ export default class Portfolio {
     if (oldLength + offset < 1) {
       if (!options.silent) {
         Readspeaker.read([
-          Dictionary.get('a11y.notPossible'),
-          Dictionary.get('a11y.hierarchyMinReached').replace(/@level/g, 1)
+          this.dictionary.get('a11y.notPossible'),
+          this.dictionary.get('a11y.hierarchyMinReached').replace(/@level/g, 1)
         ]);
       }
 
@@ -528,8 +538,8 @@ export default class Portfolio {
     else if (oldLength + offset > Portfolio.MAX_LEVEL) {
       if (!options.silent) {
         Readspeaker.read([
-          Dictionary.get('a11y.notPossible'),
-          Dictionary.get('a11y.hierarchyMaxReached').replace(/@level/g, 1)
+          this.dictionary.get('a11y.notPossible'),
+          this.dictionary.get('a11y.hierarchyMaxReached').replace(/@level/g, 1)
         ]);
       }
 
@@ -563,7 +573,7 @@ export default class Portfolio {
 
     if (!options.silent) {
       Readspeaker.read(
-        Dictionary.get('a11y.hierarchyChangedTo').replace(/@level/g, newLength)
+        this.dictionary.get('a11y.hierarchyChangedTo').replace(/@level/g, newLength)
       );
     }
 
@@ -608,7 +618,7 @@ export default class Portfolio {
   getChapterTitle(id) {
     let title = this.params.chapters[id]?.content?.metadata?.title;
     if (!title) {
-      title = `${Dictionary.get('l10n.chapter')} ${id}`; // Fallback
+      title = `${this.dictionary.get('l10n.chapter')} ${id}`; // Fallback
     }
 
     return title;
@@ -799,7 +809,7 @@ export default class Portfolio {
     this.previewOverlay.show();
     this.previewOverlay.attachInstance(this.previewInstance);
 
-    Readspeaker.read(Dictionary.get('a11y.previewOpened'));
+    Readspeaker.read(this.dictionary.get('a11y.previewOpened'));
   }
 
   /**
@@ -812,7 +822,7 @@ export default class Portfolio {
     this.chapterNavigation.show();
     this.chaptersDOM.classList.remove('display-none');
 
-    Readspeaker.read(Dictionary.get('a11y.previewClosed'));
+    Readspeaker.read(this.dictionary.get('a11y.previewClosed'));
   }
 
   /**
@@ -873,7 +883,7 @@ export default class Portfolio {
               params: {
                 text: `<p align="center">${machineName.split('.')[1]}</p>\
                   <p align="center">\
-                    ${Dictionary.get('l10n.noPreviewPossible')}\
+                    ${this.dictionary.get('l10n.noPreviewPossible')}\
                   </p>`
               }
             };
@@ -978,7 +988,7 @@ export default class Portfolio {
     this.previewOverlay.show();
     this.previewOverlay.attachInstance(this.previewInstance);
 
-    Readspeaker.read(Dictionary.get('a11y.exportOpened'));
+    Readspeaker.read(this.dictionary.get('a11y.exportOpened'));
 
     this.chapterChooser.update({
       instance: this.previewInstance
@@ -990,7 +1000,7 @@ export default class Portfolio {
    * Show export spinner.
    */
   showExportSpinner() {
-    this.spinner.setMessage(Dictionary.get('l10n.generatingExport'));
+    this.spinner.setMessage(this.dictionary.get('l10n.generatingExport'));
     this.spinner.setProgress(' ');
     this.spinner.show();
   }
@@ -999,7 +1009,7 @@ export default class Portfolio {
    * Show copy spinner.
    */
   showCopySpinner() {
-    this.spinner.setMessage(Dictionary.get('l10n.cloning'));
+    this.spinner.setMessage(this.dictionary.get('l10n.cloning'));
     this.spinner.setProgress('');
     this.spinner.show();
   }
@@ -1019,7 +1029,7 @@ export default class Portfolio {
       return;
     }
 
-    const message = params.text || Dictionary.get('l10n.processingChapter')
+    const message = params.text || this.dictionary.get('l10n.processingChapter')
       .replace(/@number/g, params.number)
       .replace(/@of/g, params.of);
 
@@ -1042,7 +1052,7 @@ export default class Portfolio {
     this.chapterChooser.hide();
     this.spinner.hide();
 
-    Readspeaker.read(Dictionary.get('a11y.exportClosed'));
+    Readspeaker.read(this.dictionary.get('a11y.exportClosed'));
   }
 
   /**
@@ -1057,7 +1067,7 @@ export default class Portfolio {
         .querySelector('.field-name-extraTitle .h5peditor-label');
 
       if (titleField) {
-        titleField.innerHTML = Dictionary.get('l10n.portfolioTitle');
+        titleField.innerHTML = this.dictionary.get('l10n.portfolioTitle');
       }
     }
   }
@@ -1075,12 +1085,12 @@ export default class Portfolio {
 
     const header = editorContainer.querySelector('.field-name-headerPlaceholderGroup .title');
     if (header) {
-      header.innerText = Dictionary.get('l10n.header');
+      header.innerText = this.dictionary.get('l10n.header');
     }
 
     const footer = editorContainer.querySelector('.field-name-footerPlaceholderGroup .title');
     if (footer) {
-      footer.innerText = Dictionary.get('l10n.footer');
+      footer.innerText = this.dictionary.get('l10n.footer');
     }
   }
 
@@ -1107,7 +1117,7 @@ export default class Portfolio {
     const title = group.querySelector('.title');
     if (title) {
       const titleClone = title.cloneNode(true);
-      titleClone.innerText = Dictionary.get('l10n.cover');
+      titleClone.innerText = this.dictionary.get('l10n.cover');
       title.parentNode.insertBefore(titleClone, title);
       title.remove();
 
@@ -1131,7 +1141,7 @@ export default class Portfolio {
   }
 
   /**
-   * Fill Dictionary.
+   * Fill this.dictionary.
    */
   fillDictionary() {
     // Convert H5PEditor language strings into object.
@@ -1156,7 +1166,7 @@ export default class Portfolio {
       current[lastSplit] = plainTranslations[key];
     }
 
-    Dictionary.fill(translations);
+    this.dictionary.fill(translations);
   }
 
   /**

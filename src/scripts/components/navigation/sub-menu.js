@@ -1,6 +1,5 @@
 import './sub-menu.scss';
 import Util from '@services/util';
-import Dictionary from '@services/dictionary';
 
 export default class SubMenu extends H5P.EventDispatcher {
   constructor(params = {}) {
@@ -24,7 +23,7 @@ export default class SubMenu extends H5P.EventDispatcher {
 
     const title = document.createElement('div');
     title.classList.add(`${this.baseClass}-title`);
-    title.innerText = Dictionary.get('l10n.options');
+    title.innerText = this.params.dictionary.get('l10n.options');
     this.dom.appendChild(title);
 
     const optionsWrapper = document.createElement('div');

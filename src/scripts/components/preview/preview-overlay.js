@@ -1,14 +1,16 @@
 import './preview-overlay.scss';
 import Preview from './preview';
-import Dictionary from '@services/dictionary';
 
 /** Class representing the preview overlay */
 export default class PreviewOverlay {
 
   /**
    * @class
+   * @param {object} [params] Parameters.
    */
-  constructor() {
+  constructor(params) {
+    this.params = params || {};
+
     this.dom = document.createElement('div');
     this.dom.classList.add('preview-overlay');
 
@@ -20,12 +22,12 @@ export default class PreviewOverlay {
 
     const previewLabel = document.createElement('div');
     previewLabel.classList.add('preview-label');
-    previewLabel.innerHTML = Dictionary.get('l10n.preview');
+    previewLabel.innerHTML = this.params.dictionary.get('l10n.preview');
     previewContent.appendChild(previewLabel);
 
     const previewExplanation = document.createElement('div');
     previewExplanation.classList.add('preview-explanation');
-    previewExplanation.innerHTML = Dictionary.get('l10n.previewExplanation');
+    previewExplanation.innerHTML = this.params.dictionary.get('l10n.previewExplanation');
     previewContent.appendChild(previewExplanation);
 
     this.previewWrapper = document.createElement('div');

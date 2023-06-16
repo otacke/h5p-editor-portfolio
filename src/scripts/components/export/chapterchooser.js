@@ -1,4 +1,3 @@
-import Dictionary from '@services/dictionary';
 import Export from '@services/export';
 import Screenshot from '@services/screenshot';
 import Util from '@services/util';
@@ -35,12 +34,13 @@ export default class ChapterChooser {
 
     const title = document.createElement('div');
     title.classList.add('chapter-chooser-title');
-    title.innerHTML = Dictionary.get('l10n.chooseChapters');
+    title.innerHTML = this.params.dictionary.get('l10n.chooseChapters');
     content.appendChild(title);
 
     const description = document.createElement('div');
     description.classList.add('chapter-chooser-description');
-    description.innerHTML = Dictionary.get('l10n.chooseChaptersDescription');
+    description.innerHTML =
+      this.params.dictionary.get('l10n.chooseChaptersDescription');
     content.appendChild(description);
 
     const wrapper = document.createElement('div');
@@ -56,13 +56,19 @@ export default class ChapterChooser {
     this.toggleAll.classList.add('chapter-chooser-checkbox');
     this.toggleAll.setAttribute('type', 'checkbox');
     this.toggleAll.setAttribute('id', `chapter-chooser-checkbox-toggle-all`);
-    this.toggleAll.setAttribute('aria-label', Dictionary.get('a11y.selectAll'));
+    this.toggleAll.setAttribute(
+      'aria-label', this.params.dictionary.get('a11y.selectAll')
+    );
     this.toggleAll.addEventListener('change', () => {
       if (this.toggleAll.checked) {
-        this.toggleAll.setAttribute('aria-label', Dictionary.get('a11y.unselectAll'));
+        this.toggleAll.setAttribute(
+          'aria-label', this.params.dictionary.get('a11y.unselectAll')
+        );
       }
       else {
-        this.toggleAll.setAttribute('aria-label', Dictionary.get('a11y.selectAll'));
+        this.toggleAll.setAttribute(
+          'aria-label', this.params.dictionary.get('a11y.selectAll')
+        );
       }
 
       this.checkboxes.forEach((checkbox) => {
@@ -74,7 +80,8 @@ export default class ChapterChooser {
 
     this.toggleAllLabel = document.createElement('label');
     this.toggleAllLabel.classList.add('chapter-chooser-label-toggle-all');
-    this.toggleAllLabel.innerText = Dictionary.get('l10n.selectAll');
+    this.toggleAllLabel.innerText =
+      this.params.dictionary.get('l10n.selectAll');
     toggleAllWrapper.appendChild(this.toggleAllLabel);
 
     // Options
@@ -91,7 +98,8 @@ export default class ChapterChooser {
     this.buttonExportImages.classList.add('h5peditor-button');
     this.buttonExportImages.classList.add('h5peditor-button-textual');
     this.buttonExportImages.classList.add('chapter-chooser-export-button');
-    this.buttonExportImages.innerText = Dictionary.get('l10n.exportImages');
+    this.buttonExportImages.innerText =
+      this.params.dictionary.get('l10n.exportImages');
     this.buttonExportImages.addEventListener('click', () => {
       this.handleExport('images');
     });
@@ -101,7 +109,8 @@ export default class ChapterChooser {
     this.buttonExportPDF.classList.add('h5peditor-button');
     this.buttonExportPDF.classList.add('h5peditor-button-textual');
     this.buttonExportPDF.classList.add('chapter-chooser-export-button');
-    this.buttonExportPDF.innerText = Dictionary.get('l10n.exportPDF');
+    this.buttonExportPDF.innerText =
+      this.params.dictionary.get('l10n.exportPDF');
     this.buttonExportPDF.addEventListener('click', () => {
       this.handleExport('pdf');
     });
@@ -111,7 +120,8 @@ export default class ChapterChooser {
     this.buttonExportDOCX.classList.add('h5peditor-button');
     this.buttonExportDOCX.classList.add('h5peditor-button-textual');
     this.buttonExportDOCX.classList.add('chapter-chooser-export-button');
-    this.buttonExportDOCX.innerText = Dictionary.get('l10n.exportDOCX');
+    this.buttonExportDOCX.innerText =
+      this.params.dictionary.get('l10n.exportDOCX');
     this.buttonExportDOCX.addEventListener('click', () => {
       this.handleExport('docx');
     });
@@ -152,7 +162,7 @@ export default class ChapterChooser {
     if (this.instance.params.showCoverPage) {
       const fakeChapterParams = {
         hierarchy: '0',
-        title: Dictionary.get('l10n.coverPage')
+        title: this.params.dictionary.get('l10n.coverPage')
       };
 
       const { li, checkbox } = this.buildListItem(fakeChapterParams, 0);
@@ -213,10 +223,12 @@ export default class ChapterChooser {
   updateButtons() {
     // Update toggle label
     if (this.checkboxes.every((checkbox) => checkbox.checked)) {
-      this.toggleAllLabel.innerHTML = Dictionary.get('l10n.unselectAll');
+      this.toggleAllLabel.innerHTML =
+        this.params.dictionary.get('l10n.unselectAll');
     }
     else {
-      this.toggleAllLabel.innerHTML = Dictionary.get('l10n.selectAll');
+      this.toggleAllLabel.innerHTML =
+        this.params.dictionary.get('l10n.selectAll');
     }
 
     // Update export buttons
@@ -346,13 +358,13 @@ export default class ChapterChooser {
         this.instance.params.showCoverPage && this.checkboxes[0].checked
       ) {
         this.callbacks.onExportProgress({
-          text: Dictionary.get('l10n.processingCover')
+          text: this.params.dictionary.get('l10n.processingCover')
         });
 
         const coverBlob = await this.getCover(type !== 'images');
         if (coverBlob) {
           // Sanitize name for file output
-          const name = Dictionary.get('l10n.coverPage')
+          const name = this.params.dictionary.get('l10n.coverPage')
             .replace(/[/\\?%*:|"<>]/g, '-')
             .toLowerCase();
 
@@ -397,7 +409,7 @@ export default class ChapterChooser {
       }
 
       this.callbacks.onExportProgress({
-        text: Dictionary.get('l10n.creatingExportFile')
+        text: this.params.dictionary.get('l10n.creatingExportFile')
       });
 
       if (type === 'images') {

@@ -2,7 +2,6 @@ import './chapter-navigation.scss';
 import Util from '@services/util';
 import ChapterNavigationButton from './chapter-navigation-button.js';
 import SubMenu from './sub-menu.js';
-import Dictionary from '@services/dictionary';
 import Readspeaker from '@services/readspeaker';
 
 export default class ChapterNavigation {
@@ -47,7 +46,7 @@ export default class ChapterNavigation {
     this.buttonAdd = document.createElement('button');
     this.buttonAdd.classList.add('h5peditor-portfolio-chapter-button-add');
     this.buttonAdd.setAttribute(
-      'aria-label', Dictionary.get('l10n.addChapter')
+      'aria-label', this.params.dictionary.get('l10n.addChapter')
     );
     this.buttonAdd.innerText = '+';
     this.buttonAdd.addEventListener('click', () => {
@@ -62,10 +61,11 @@ export default class ChapterNavigation {
 
     this.subMenu = new SubMenu(
       {
+        dictionary: this.params.dictionary,
         options: [
           {
             id: 'edit-label',
-            label: Dictionary.get('l10n.editLabel'),
+            label: this.params.dictionary.get('l10n.editLabel'),
             onClick: ((target) => {
               this.editButtonLabel(this.getButtonId(target));
             }),
@@ -73,7 +73,7 @@ export default class ChapterNavigation {
           },
           {
             id: 'move-up',
-            label: Dictionary.get('l10n.moveUp'),
+            label: this.params.dictionary.get('l10n.moveUp'),
             onClick: ((target) => {
               this.callbacks.onMoveChapter(this.getButtonId(target), -1);
             }),
@@ -81,7 +81,7 @@ export default class ChapterNavigation {
           },
           {
             id: 'move-down',
-            label: Dictionary.get('l10n.moveDown'),
+            label: this.params.dictionary.get('l10n.moveDown'),
             onClick: ((target) => {
               this.callbacks.onMoveChapter(this.getButtonId(target), +1);
             }),
@@ -89,28 +89,28 @@ export default class ChapterNavigation {
           },
           {
             id: 'hierarchy-up',
-            label: Dictionary.get('l10n.hierarchyUp'),
+            label: this.params.dictionary.get('l10n.hierarchyUp'),
             onClick: ((target) => {
               this.callbacks.onChangeHierarchy(this.getButtonId(target), -1);
             })
           },
           {
             id: 'hierarchy-down',
-            label: Dictionary.get('l10n.hierarchyDown'),
+            label: this.params.dictionary.get('l10n.hierarchyDown'),
             onClick: ((target) => {
               this.callbacks.onChangeHierarchy(this.getButtonId(target), 1);
             })
           },
           {
             id: 'clone',
-            label: Dictionary.get('l10n.clone'),
+            label: this.params.dictionary.get('l10n.clone'),
             onClick: ((target) => {
               this.callbacks.onCloneChapter(this.getButtonId(target));
             })
           },
           {
             id: 'clone-plus-subchapters',
-            label: Dictionary.get('l10n.cloneWithSubchapters'),
+            label: this.params.dictionary.get('l10n.cloneWithSubchapters'),
             onClick: ((target) => {
               this.callbacks.onCloneChapter(
                 this.getButtonId(target), { subchapters: true }
@@ -119,7 +119,7 @@ export default class ChapterNavigation {
           },
           {
             id: 'delete',
-            label: Dictionary.get('l10n.delete'),
+            label: this.params.dictionary.get('l10n.delete'),
             onClick: ((target) => {
               this.handleSubMenuDeleted(target);
             }),
@@ -131,10 +131,10 @@ export default class ChapterNavigation {
     this.dom.appendChild(this.subMenu.getDOM());
 
     this.deleteDialog = new H5P.ConfirmationDialog({
-      headerText: Dictionary.get('l10n.deleteDialogHeader'),
-      dialogText: Dictionary.get('l10n.deleteDialogText'),
-      cancelText: Dictionary.get('l10n.deleteDialogCancel'),
-      confirmText: Dictionary.get('l10n.deleteDialogConfirm')
+      headerText: this.params.dictionary.get('l10n.deleteDialogHeader'),
+      dialogText: this.params.dictionary.get('l10n.deleteDialogText'),
+      cancelText: this.params.dictionary.get('l10n.deleteDialogCancel'),
+      confirmText: this.params.dictionary.get('l10n.deleteDialogConfirm')
     });
     this.deleteDialog.appendTo(document.body);
   }
@@ -205,6 +205,7 @@ export default class ChapterNavigation {
 
     this.buttons[id] = new ChapterNavigationButton(
       {
+        dictionary: this.params.dictionary,
         title: this.callbacks.onGetChapterTitle(id),
         chapterGroup: this.getChapterGroup(id),
         hierarchyLevel: chapters[id]?.chapterHierarchy?.split('-').length || 1,
@@ -350,8 +351,8 @@ export default class ChapterNavigation {
   handleSubMenuDeleted(target) {
     if (this.buttons.length === 1) {
       Readspeaker.read([
-        Dictionary.get('a11y.notPossible'),
-        Dictionary.get('a11y.cannotDeleteOnlyItem')
+        this.params.dictionary.get('a11y.notPossible'),
+        this.params.dictionary.get('a11y.cannotDeleteOnlyItem')
       ]);
       return;
     }
@@ -361,8 +362,8 @@ export default class ChapterNavigation {
         .chapterHierarchy.split('-').length !== 1
     ) {
       Readspeaker.read([
-        Dictionary.get('a11y.notPossible'),
-        Dictionary.get('a11y.firstChapterHierarchyFixed')
+        this.params.dictionary.get('a11y.notPossible'),
+        this.params.dictionary.get('a11y.firstChapterHierarchyFixed')
       ]);
       return; // Position 0 must keep hierarchy 1
     }

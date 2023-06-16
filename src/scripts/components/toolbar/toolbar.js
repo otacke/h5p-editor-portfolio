@@ -1,6 +1,5 @@
 import './toolbar.scss';
 import ToolbarButton from './toolbar-button';
-import Dictionary from '@services/dictionary';
 import Util from '@services/util';
 
 /** Class representing the button bar */
@@ -31,9 +30,9 @@ export default class Toolbar {
     this.buttons.preview = new ToolbarButton(
       {
         a11y: {
-          active: Dictionary.get('a11y.previewActive'),
-          disabled: Dictionary.get('a11y.previewDisabled'),
-          inactive: Dictionary.get('a11y.previewInactive'),
+          active: this.params.dictionary.get('a11y.previewActive'),
+          disabled: this.params.dictionary.get('a11y.previewDisabled'),
+          inactive: this.params.dictionary.get('a11y.previewInactive'),
         },
         classes: [
           'toolbar-button',
@@ -53,9 +52,9 @@ export default class Toolbar {
     this.buttons.export = new ToolbarButton(
       {
         a11y: {
-          active: Dictionary.get('a11y.exportActive'),
-          disabled: Dictionary.get('a11y.exportDisabled'),
-          inactive: Dictionary.get('a11y.exportInactive'),
+          active: this.params.dictionary.get('a11y.exportActive'),
+          disabled: this.params.dictionary.get('a11y.exportDisabled'),
+          inactive: this.params.dictionary.get('a11y.exportInactive'),
         },
         classes: [
           'toolbar-button',
@@ -75,9 +74,9 @@ export default class Toolbar {
     this.buttons.deleteHidden = new ToolbarButton(
       {
         a11y: {
-          active: Dictionary.get('a11y.deleteHiddenActive'),
-          disabled: Dictionary.get('a11y.deleteHiddenDisabled'),
-          inactive: Dictionary.get('a11y.deleteHiddenInactive'),
+          active: this.params.dictionary.get('a11y.deleteHiddenActive'),
+          disabled: this.params.dictionary.get('a11y.deleteHiddenDisabled'),
+          inactive: this.params.dictionary.get('a11y.deleteHiddenInactive'),
         },
         classes: [
           'toolbar-button',
