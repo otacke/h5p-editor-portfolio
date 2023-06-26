@@ -76,6 +76,9 @@
 
         .chapter-chooser-export-button {
           background: $color-primary;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
 
           &:not(:last-child) {
             margin-right: .5rem;
