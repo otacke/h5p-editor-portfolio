@@ -319,6 +319,8 @@ export default class Portfolio {
 
       const moveOffset = -chapterParams.length + id + cloneParams.length;
 
+      let clonedChapterId;
+
       cloneParams.forEach((cloneParam) => {
         if (!options.subchapters && cloneParam.isSubchapter) {
           return;
@@ -346,6 +348,10 @@ export default class Portfolio {
           `${this.chapterNavigation.getButtonLabel(newId)} ${this.dictionary.get('l10n.labelCopy')}`
         );
 
+        if (typeof clonedChapterId === 'undefined') {
+          clonedChapterId = newId + moveOffset;
+        }
+
         // Move to appropriate position
         // TODO: Clean up, so moveChapter works with abs(moveOffset) > 1
         for (let count = 0; count < Math.abs(moveOffset); count++) {
@@ -357,8 +363,13 @@ export default class Portfolio {
         }
       });
 
-      // Store values
-      this.setValue(this.field, this.params);
+      if (typeof clonedChapterId === 'number') {
+        // Store values
+        this.setValue(this.field, this.params);
+
+        // Go to cloned chapter
+        this.showChapter(clonedChapterId);
+      }
 
       this.spinner.hide();
     }, 0);
