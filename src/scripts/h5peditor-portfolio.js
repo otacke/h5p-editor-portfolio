@@ -116,11 +116,7 @@ export default class Portfolio {
           this.showChapter(id);
         },
         onMoveChapter: (id, offset, options = {}) => {
-          const success = this.moveChapter(id, offset, options);
-          if (success) {
-            this.chapterNavigation.setSelectedButton(id + offset);
-          }
-          return success;
+          return this.moveChapter(id, offset, options);
         },
         onChangeHierarchy: (id, offset) => {
           this.changeHierarchy(id, offset);

@@ -6,7 +6,7 @@ export default class ChapterNavigationButton {
   constructor(params = {}, callbacks = {}) {
     this.params = Util.extend({
       hierarchyLevel: 1,
-      hierarchyLevelMax: 3
+      hierarchyLevelMax: 4
     }, params);
 
     this.callbacks = Util.extend({
@@ -71,7 +71,6 @@ export default class ChapterNavigationButton {
     this.menu.addEventListener('click', (event) => {
       this.handleClickMenu(event);
     });
-
     this.dom.appendChild(this.menu);
 
     // Placeholder to show when dragging
@@ -205,6 +204,14 @@ export default class ChapterNavigationButton {
   }
 
   /**
+   * Get hierarchy level.
+   * @returns {number} Hierarchy level.
+   */
+  getHierarchieLevel() {
+    return this.params.hierarchyLevel;
+  }
+
+  /**
    * Toggle dragging state.
    * @param {boolean} state If true/false, set dragging state to true/false.
    */
@@ -214,6 +221,14 @@ export default class ChapterNavigationButton {
     }
 
     this.dom.classList.toggle('is-dragging', state);
+  }
+
+  /**
+   * Set child counter to indicate hidden children when dragging.
+   * @param {string|number} value E.g. number of children being dragged.
+   */
+  setChildCounter(value) {
+    this.dom.setAttribute('data-content', value);
   }
 
   /**

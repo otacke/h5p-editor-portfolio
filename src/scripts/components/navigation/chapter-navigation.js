@@ -474,6 +474,18 @@ export default class ChapterNavigation {
   handleDragStart(button) {
     this.draggedElement = button;
     this.dragIndexSource = this.getButtonId(this.draggedElement);
+
+    this.draggedChildrenIndices =
+      this.getChildButtonIndices(this.dragIndexSource);
+
+    if (this.draggedChildrenIndices.length) {
+      this.draggedElement.setChildCounter(`+${this.draggedChildrenIndices.length}`);
+    }
+
+    this.draggedChildrenIndices.forEach((index) => {
+      this.buttons[index].hide();
+    });
+
     this.toggleDragging(true);
   }
 
@@ -544,14 +556,18 @@ export default class ChapterNavigation {
   handleDragEnd() {
     this.toggleDragging(false);
 
+    let newFocusButton = this.draggedElement;
+
     if (
       typeof this.dragIndexTarget === 'number' &&
       this.dragIndexTarget !== -1 &&
       this.dragIndexTarget !== this.dragIndexSource
     ) {
-      const wasMoved = this.callbacks.onMoveChapter (
+      const moveOffset = this.dragIndexTarget - this.dragIndexSource;
+
+      const wasMoved = this.callbacks.onMoveChapter(
         this.dragIndexSource,
-        this.dragIndexTarget - this.dragIndexSource,
+        moveOffset,
         { updateNavigationButtons: false }
       );
 
@@ -571,15 +587,40 @@ export default class ChapterNavigation {
         this.buttons.splice(this.dragIndexSource, 0, button);
       }
       else {
+        for (let index = 0; index < this.draggedChildrenIndices.length; index++) {
+          const position = this.dragIndexSource +
+            ((moveOffset > 0) ? 0 : index + 1);
+
+          this.callbacks.onMoveChapter(
+            position,
+            moveOffset,
+            { updateNavigationButtons: false }
+          );
+        }
+
+        const newParentPosition = this.dragIndexSource + moveOffset -
+          ((moveOffset < 0) ? 0 : this.draggedChildrenIndices.length);
+        newFocusButton = this.buttons[newParentPosition];
+
+        this.setSelectedButton(newParentPosition);
+        this.setCurrentButton(newParentPosition);
+
         this.buttons[this.dragIndexSource].setActive(false);
       }
     }
 
-    this.draggedElement.focus();
+    this.buttons.forEach((button) => {
+      button.show();
+      button.setChildCounter('');
+    });
+
+    newFocusButton.focus();
+
     this.draggedElement = null;
     this.dropzoneElement = null;
     this.dragIndexSource = null;
     this.dragIndexTarget = null;
+    this.draggedChildrenIndices = [];
   }
 
   /**
@@ -619,5 +660,29 @@ export default class ChapterNavigation {
    */
   hide() {
     this.dom.classList.add('display-none');
+  }
+
+  /**
+   * Get child buttons of a button.
+   * @param {index} parentIndex Index of button to get children of.
+   * @returns {index[]} Children button indices.
+   */
+  getChildButtonIndices(parentIndex) {
+    const hierarchyLevel = this.buttons[parentIndex].getHierarchieLevel();
+
+    let done = false;
+    return this.buttons
+      .reduce((indices, currentButton, index) => {
+        if (done || index <= parentIndex) {
+          return indices;
+        }
+
+        if (currentButton.getHierarchieLevel() <= hierarchyLevel) {
+          done = true;
+          return indices;
+        }
+
+        return [...indices, index];
+      }, []);
   }
 }

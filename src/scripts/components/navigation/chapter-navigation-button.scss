@@ -16,6 +16,14 @@
   text-decoration: none solid #4c4452;
   width: 100%;
 
+  &::after {
+    bottom: 0.125rem;
+    content: attr(data-content);
+    font-style: italic;
+    position: absolute;
+    right: 0.125rem;
+  }
+
   .h5peditor-portfolio-chapter-button-label {
     overflow: hidden;
     margin-right: .25rem;
@@ -111,7 +119,20 @@
         }
       }
     }
+  }
 
+  &.is-dragging {
+    .h5peditor-portfolio-chapter-button-menu {
+      background-color: transparent;
+      color: transparent;
+      visibility: hidden;
+
+      &::before {
+        background-color: transparent;
+        color: transparent;
+        visibility: hidden;
+      }
+    }
   }
 
   &:focus &:active {
