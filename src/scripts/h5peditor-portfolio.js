@@ -196,6 +196,7 @@ export default class Portfolio {
     this.parent.ready(() => {
       this.passReadies = false;
 
+      this.listenToHeaderFooter();
       this.overrideH5PCoreTitleField();
       this.overrideHeaderFooter();
       this.overrideCoverTitle();
@@ -1064,6 +1065,63 @@ export default class Portfolio {
     this.spinner.hide();
 
     Readspeaker.read(this.dictionary.get('a11y.exportClosed'));
+  }
+
+  /**
+   * Handle header/footer was toggled on/off.
+   * @param {string} type One of header|footer.
+   * @param {boolean} state If true, turned on, else off.
+   */
+  handleTogglingHeaderFooter(type, state) {
+    if (
+      type !== 'header' && type !== 'footer' ||
+      typeof state !== 'boolean'
+    ) {
+      return;
+    }
+
+    this.fieldInstance.children.find((child) => {
+      if (child.getName?.() !== 'chapters') {
+        return;
+      }
+
+      child.forEachChild((listChild) => {
+        if (!listChild.children) {
+          return;
+        }
+
+        const fieldName = type === 'header' ?
+          'displayHeader' :
+          'displayFooter';
+
+        const toggle = listChild.children.find((groupChild) => {
+          return groupChild?.field?.name === fieldName;
+        });
+        if (toggle?.$input && toggle.$input.get(0).checked !== state) {
+          toggle.$input.get(0).click();
+        }
+      });
+
+    });
+  }
+
+  /**
+   * Listen to activating/deactiveting header/footer.
+   */
+  listenToHeaderFooter() {
+    const headerSwitchInstance = this.parent.children.find((child) => {
+      return child?.field?.name === 'showHeader';
+    });
+    headerSwitchInstance?.changes.push((state) => {
+      this.handleTogglingHeaderFooter('header', state);
+    });
+
+    const footerSwitchInstance = this.parent.children.find((child) => {
+      return child?.field?.name === 'showFooter';
+    });
+    footerSwitchInstance?.changes.push((state) => {
+      this.handleTogglingHeaderFooter('footer', state);
+    });
   }
 
   /**
