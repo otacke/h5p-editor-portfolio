@@ -435,7 +435,7 @@ export default class ChapterNavigation {
 
   /**
    * Handle chapter added.
-   * @param {object} [params={}] Parameters.
+   * @param {object} [params] Parameters.
    * @param {object} [params.instanceParams] Instance parameters.
    * @param {boolean} [params.doNotShow] If true, don't show chapter.
    * @returns {number|null} Id of added button or null;
@@ -628,7 +628,7 @@ export default class ChapterNavigation {
    * @param {HTMLElement} button Button.
    * @param {number} offset Offset for tabbing.
    * @param {object} [options] Options.
-   * @param {boolean} [options.loop=false] If true, will loop back.
+   * @param {boolean} [options.loop] If true, will loop back.
    */
   tabTo(button, offset, options = {}) {
     let target = this.getButtonId(button) + offset;

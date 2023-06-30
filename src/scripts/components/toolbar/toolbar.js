@@ -7,8 +7,8 @@ export default class Toolbar {
 
   /**
    * @class
-   * @param {object} [params={}] Parameters.
-   * @param {object} [callbacks={}] Callbacks.
+   * @param {object} [params] Parameters.
+   * @param {object} [callbacks] Callbacks.
    * @param {function} [callbacks.onClickButtonPreview] Callback preview button.
    * @param {function} [callbacks.onClickButtonExport] Callback export button.
    */

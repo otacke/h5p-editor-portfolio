@@ -5,7 +5,7 @@ export default class Screenshot {
   /**
    * Take screenshot of DOM element.
    * @param {object} params Parameters.
-   * @param {HTMLElement} [params.element=document.body] Element to
+   * @param {HTMLElement} [params.element] Element to
    *   take screenshot from.
    * @param {boolean} [params.enforceImage] If true, always return some image.
    * @returns {Blob} Image blob.

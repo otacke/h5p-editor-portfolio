@@ -373,7 +373,7 @@ export default class ChapterNavigationButton {
 
   /**
    * Update drag placeholder size.
-   * @param {object} [params={}] Parameters.
+   * @param {object} [params] Parameters.
    * @param {number} [params.width] Optional explicit width.
    * @param {number} [params.height] Optional explicit height.
    */

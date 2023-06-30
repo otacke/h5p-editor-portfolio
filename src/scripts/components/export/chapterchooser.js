@@ -7,8 +7,8 @@ import './chapterchooser.scss';
 export default class ChapterChooser {
   /**
    * @class
-   * @param {object} [params={}] Parameters.
-   * @param {object} [callbacks={}] Callbacks.
+   * @param {object} [params] Parameters.
+   * @param {object} [callbacks] Callbacks.
    * @param {function} [callbacks.onExportStarted] Callback export started.
    * @param {function} [callbacks.onExportProgress] Callback export progress.
    * @param {function} [callbacks.onExportEnded] Callback export ended.
@@ -141,7 +141,7 @@ export default class ChapterChooser {
 
   /**
    * Update chooser.
-   * @param {object} [params={}] Parameters.
+   * @param {object} [params] Parameters.
    * @param {H5P.ContentType} params.instance Preview instance.
    */
   update(params = {}) {

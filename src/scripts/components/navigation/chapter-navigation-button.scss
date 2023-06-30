@@ -97,6 +97,20 @@
     background-color: rgba(23, 104, 196, 0.05);
   }
 
+  &.is-dragging {
+    .h5peditor-portfolio-chapter-button-menu {
+      background-color: transparent;
+      color: transparent;
+      visibility: hidden;
+
+      &::before {
+        background-color: transparent;
+        color: transparent;
+        visibility: hidden;
+      }
+    }
+  }
+
   &:not(.is-dragging) {
     &:hover {
       background-color: rgba(23, 104, 196, 0.05);
@@ -117,20 +131,6 @@
         .h5peditor-portfolio-chapter-button-menu {
           visibility: visible;
         }
-      }
-    }
-  }
-
-  &.is-dragging {
-    .h5peditor-portfolio-chapter-button-menu {
-      background-color: transparent;
-      color: transparent;
-      visibility: hidden;
-
-      &::before {
-        background-color: transparent;
-        color: transparent;
-        visibility: hidden;
       }
     }
   }

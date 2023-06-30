@@ -68,7 +68,7 @@ export default class SubMenu extends H5P.EventDispatcher {
 
   /**
    * Toggle options.
-   * @param {object} [capabilities = {}] Capabilities.
+   * @param {object} [capabilities] Capabilities.
    */
   toggleOptions(capabilities = {}) {
     for (const capability in capabilities) {
@@ -91,7 +91,7 @@ export default class SubMenu extends H5P.EventDispatcher {
 
   /**
    * Show.
-   * @param {object} [params = {}] Parameters.
+   * @param {object} [params] Parameters.
    * @param {object} [params.css] CSS parameters.
    */
   show(params = {}) {
@@ -118,7 +118,7 @@ export default class SubMenu extends H5P.EventDispatcher {
 
   /**
    * Hide.
-   * @param {boolean} [keepFocus=false] If true, request to not grab focus.
+   * @param {boolean} [keepFocus] If true, request to not grab focus.
    */
   hide(keepFocus = false) {
     this.dom.classList.add('display-none');
@@ -148,7 +148,7 @@ export default class SubMenu extends H5P.EventDispatcher {
 
   /**
    * Focus option.
-   * @param {number} [offset=0] Offset.
+   * @param {number} [offset] Offset.
    */
   focusOption(offset = 0) {
     if (typeof offset !== 'number') {

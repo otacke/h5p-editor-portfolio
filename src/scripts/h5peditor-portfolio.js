@@ -258,7 +258,7 @@ export default class Portfolio {
   /**
    * Handle adding new chapter.
    * @param {number} id Id of item that was added.
-   * @param {object} [options={}] Options.
+   * @param {object} [options] Options.
    * @param {boolean} [options.doNotShow] If true, don't show after adding.
    */
   addChapter(id, options = {}) {
@@ -281,7 +281,7 @@ export default class Portfolio {
   /**
    * Handle cloning chapter.
    * @param {number} id Id of chapter to clone.
-   * @param {object} [options={}] Options.
+   * @param {object} [options] Options.
    * @param {boolean} [options.subchapters] If true, also clone subchapters.
    */
   cloneChapter(id, options = {}) {
@@ -421,7 +421,7 @@ export default class Portfolio {
    * Handler for moving a chapter.
    * @param {string} indexSource Button id of button to be moved.
    * @param {number} offset Offset of where to move chapter to.
-   * @param {object} [options={}] Options.
+   * @param {object} [options] Options.
    * @param {boolean} [options.doNotShow] If true, don't show moved button.
    * @param {boolean} [options.silent] If true, don't announce via screenreader.
    * @param {boolean} [options.doNotSave] If true, don't save.
@@ -514,7 +514,7 @@ export default class Portfolio {
    * Handle hierarchy changed.
    * @param {number} index Index of item that was changed.
    * @param {number} offset Diff in hierarchy.
-   * @param {object} [options={}] Options.
+   * @param {object} [options] Options.
    * @param {boolean} [options.silent] If true, don't announce via screenreader.
    * @param {boolean} [options.doNotSave] If true, don't save.
    */
@@ -780,7 +780,7 @@ export default class Portfolio {
 
   /**
    * Toggle preview.
-   * @param {object} [params={}] Parameters
+   * @param {object} [params] Parameters
    * @param {boolean} params.active If true, show preview, else hide.
    * @param {boolean} params.cloaked If true, show preview invisble.
    */
@@ -859,7 +859,7 @@ export default class Portfolio {
 
   /**
    * Replace content types that cannot be previewed with message.
-   * @param {object} [params={}] Instance parameters.
+   * @param {object} [params] Instance parameters.
    * @returns {object} Filtered parameters.
    */
   filterContentTypesNotPreviewable(params = {}) {
@@ -1024,7 +1024,7 @@ export default class Portfolio {
 
   /**
    * Set spinner progress.
-   * @param {object} [params={}] Parameters.
+   * @param {object} [params] Parameters.
    * @param {number} params.number Current progress.
    * @param {number} params.of Maximum progress.
    * @param {number} params.text custom text.
