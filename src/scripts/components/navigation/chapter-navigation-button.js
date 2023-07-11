@@ -490,7 +490,7 @@ export default class ChapterNavigationButton {
    * @param {Event} event Event.
    */
   handleDragStart(event) {
-    this.dom.classList.add(`over`);
+    this.dom.classList.add('over');
     event.dataTransfer.effectAllowed = 'move';
 
     // Workaround for Firefox that may scale the draggable down otherwise
@@ -544,7 +544,7 @@ export default class ChapterNavigationButton {
     clearTimeout(this.placeholderTimeout);
     this.hideDragPlaceholder();
     this.show();
-    this.dom.classList.remove(`over`);
+    this.dom.classList.remove('over');
 
     this.callbacks.onDragEnd(this);
   }

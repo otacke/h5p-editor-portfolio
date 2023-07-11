@@ -55,7 +55,7 @@ export default class ChapterChooser {
     this.toggleAll = document.createElement('input');
     this.toggleAll.classList.add('chapter-chooser-checkbox');
     this.toggleAll.setAttribute('type', 'checkbox');
-    this.toggleAll.setAttribute('id', `chapter-chooser-checkbox-toggle-all`);
+    this.toggleAll.setAttribute('id', 'chapter-chooser-checkbox-toggle-all');
     this.toggleAll.setAttribute(
       'aria-label', this.params.dictionary.get('a11y.selectAll')
     );
