@@ -32,10 +32,10 @@ export default class ChapterNavigation {
 
     const title = document.createElement('div');
     title.classList.add('h5peditor-portfolio-chapter-navigation-maintitle');
-    const titleText = document.createElement('h2');
-    titleText.classList.add('navigation-title');
-    titleText.innerHTML = this.params.title;
-    title.appendChild(titleText);
+    this.titleText = document.createElement('h2');
+    this.titleText.classList.add('navigation-title');
+    title.appendChild(this.titleText);
+    this.setTitle(this.params.title);
     this.dom.appendChild(title);
 
     this.buttonSeparator = document.createElement('div');
@@ -350,6 +350,18 @@ export default class ChapterNavigation {
     this.buttons.forEach((button, id) => {
       button.setSelected(id === targetId);
     });
+  }
+
+  /**
+   * Set chapter navigation title.
+   * @param {string} title Title to set.
+   */
+  setTitle(title) {
+    if (typeof title !== 'string') {
+      return;
+    }
+
+    this.titleText.innerHTML = Util.purifyHTML(title);
   }
 
   /**

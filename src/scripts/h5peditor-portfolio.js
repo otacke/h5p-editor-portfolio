@@ -1178,7 +1178,30 @@ export default class Portfolio {
       if (titleField) {
         titleField.innerHTML = this.dictionary.get('l10n.portfolioTitle');
       }
+
+      const titleInput = editorContainer
+        .querySelector('.field-name-extraTitle .h5peditor-text');
+
+      if (titleInput) {
+        titleInput.addEventListener('keydown', (event) => {
+          if (event.code === 'Enter') {
+            this.setChapterNavigationTitle(titleInput.value);
+          }
+        });
+      }
     }
+  }
+
+  /**
+   * Set chapter navigation title.
+   * @param {string} title Title to set.
+   */
+  setChapterNavigationTitle(title) {
+    if (typeof title !== 'string') {
+      return;
+    }
+
+    this.chapterNavigation.setTitle(title);
   }
 
   /**
