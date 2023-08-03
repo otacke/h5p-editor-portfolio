@@ -885,15 +885,18 @@ export default class Portfolio {
       .find((library) => library.split(' ')[0] === 'H5P.Portfolio');
 
     // Copy of params without certain contents in preview.
-    const params = this.filterContentTypesNotPreviewable(this.parent.params);
-    params.behaviour.isPreview = true;
+    const contentParams = this.filterContentTypesNotPreviewable(this.parent.params);
+    contentParams.behaviour.isPreview = true;
 
     this.previewInstance = H5P.newRunnable(
       {
         library: libraryUberName,
-        params: params
+        params: contentParams
       },
-      H5PEditor.contentId || 1
+      H5PEditor.contentId || 1,
+      undefined,
+      undefined,
+      { metadata: { title: this.contentTitle } }
     );
 
     if (!this.previewInstance) {
@@ -1183,8 +1186,11 @@ export default class Portfolio {
         .querySelector('.field-name-extraTitle .h5peditor-text');
 
       if (titleInput) {
+        this.contentTitle = titleInput.value;
+
         titleInput.addEventListener('keydown', (event) => {
           if (event.code === 'Enter') {
+            this.contentTitle = titleInput.value;
             this.setChapterNavigationTitle(titleInput.value);
           }
         });
