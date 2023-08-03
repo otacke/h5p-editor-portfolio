@@ -92,6 +92,30 @@ export default class Util {
 
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
   }
+
+  /**
+   * Replace all subcontent ids in H5P parameters object.
+   * @param {object} params Parameters.
+   * @returns {object} Parameters with fresh subcontent ids.
+   */
+  static replaceSubContentIDs(params) {
+    if (Array.isArray(params)) {
+      params = params.map((param) => {
+        return Util.replaceSubContentIDs(param);
+      });
+    }
+    else if (typeof params === 'object') {
+      if (params.library && params.subContentId) {
+        params.subContentId = H5P.createUUID();
+      }
+
+      for (let param in params) {
+        param = Util.replaceSubContentIDs(params[param]);
+      }
+    }
+
+    return params;
+  }
 }
 
 /** @constant {number} Double click time */

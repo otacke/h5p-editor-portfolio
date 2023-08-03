@@ -365,10 +365,15 @@ export default class Portfolio {
 
         const newLabel = `${baseName} ${this.dictionary.get('l10n.labelCopy')}${copyCounter}`;
 
+        // Replace subcontent ids in instance params
+        const newInstanceParams = Util.replaceSubContentIDs(
+          { ...chapterParams[cloneParam.index] }
+        );
+
         // Create copy of chapter
         const newId = this.chapterNavigation.handleAddChapter(
           {
-            instanceParams: chapterParams[cloneParam.index],
+            instanceParams: newInstanceParams,
             doNotShow: true
           }
         );
