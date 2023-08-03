@@ -8,7 +8,7 @@ export default class ChapterNavigation {
   constructor(params = {}, callbacks = {}) {
     this.params = Util.extend({
       title: '',
-      hierarchyLevelMax: 3
+      hierarchyLevelMax: 4
     }, params);
 
     this.callbacks = Util.extend({
@@ -305,6 +305,14 @@ export default class ChapterNavigation {
    */
   getButtonLabel(index) {
     return this.buttons?.[index].getLabel() ?? '';
+  }
+
+  /**
+   * Get button labels.
+   * @returns {string[]} Button labels.
+   */
+  getButtonLabels() {
+    return this.buttons.map((button) => button.getLabel() ?? '');
   }
 
   /**

@@ -279,6 +279,26 @@ export default class Portfolio {
   }
 
   /**
+   * Get current number of copies of a label.
+   * @param {string} baseLabel Base label.
+   * @returns {number} Number of copies of a label
+   */
+  getCurrentNumberOfCopyLabels(baseLabel) {
+    const allLabels = this.chapterNavigation.getButtonLabels();
+
+    const copyString = Util.escapeForRegularExpression(
+      this.dictionary.get('l10n.labelCopy')
+    );
+
+    const regexp = new RegExp(`${baseLabel} ${copyString}((d+))?`);
+
+    return allLabels
+      .map((label) => regexp.test(label))
+      .filter((state) => state === true)
+      .length;
+  }
+
+  /**
    * Handle cloning chapter.
    * @param {number} id Id of chapter to clone.
    * @param {object} [options] Options.
@@ -323,6 +343,28 @@ export default class Portfolio {
           return;
         }
 
+        /*
+         * Determine current number of copies (presumably) of a label and add
+         * counter to label. // TODO: move to some util class
+         */
+        const copyString = Util.escapeForRegularExpression(
+          this.dictionary.get('l10n.labelCopy')
+        );
+        const regexp = new RegExp(`(.+) ${copyString}()((d+))?`);
+        const matches = this.chapterNavigation.getButtonLabel(cloneParam.index).match(
+          regexp
+        );
+        const baseName = matches?.[1] ??
+          this.chapterNavigation.getButtonLabel(cloneParam.index);
+
+        const currentCopyCount = this.getCurrentNumberOfCopyLabels(baseName);
+
+        const copyCounter = (currentCopyCount === 0) ?
+          '' :
+          ` (${currentCopyCount + 1})`;
+
+        const newLabel = `${baseName} ${this.dictionary.get('l10n.labelCopy')}${copyCounter}`;
+
         // Create copy of chapter
         const newId = this.chapterNavigation.handleAddChapter(
           {
@@ -340,10 +382,7 @@ export default class Portfolio {
           this.changeHierarchy(this.chapterList.getValue().length - 1, 1);
         }
 
-        this.chapterNavigation.handleLabelEdited(
-          newId,
-          `${this.chapterNavigation.getButtonLabel(newId)} ${this.dictionary.get('l10n.labelCopy')}`
-        );
+        this.chapterNavigation.handleLabelEdited(newId, newLabel);
 
         if (typeof clonedChapterId === 'undefined') {
           clonedChapterId = newId + moveOffset;

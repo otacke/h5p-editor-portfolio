@@ -79,6 +79,19 @@ export default class Util {
       event.target.count = 0;
     }, Util.DOUBLE_CLICK_TIME);
   }
+
+  /**
+   * Escape text for regular expression.
+   * @param {string} text Text to escape symbols in.
+   * @returns {string} Text with escaped symbols.
+   */
+  static escapeForRegularExpression(text) {
+    if (typeof text !== 'string') {
+      return '';
+    }
+
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+  }
 }
 
 /** @constant {number} Double click time */
