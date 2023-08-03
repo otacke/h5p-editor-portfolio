@@ -1189,7 +1189,7 @@ export default class Portfolio {
         this.contentTitle = titleInput.value;
 
         titleInput.addEventListener('keydown', (event) => {
-          if (event.code === 'Enter') {
+          if (event.code === 'Enter' || event.code === 'Tab') {
             this.contentTitle = titleInput.value;
             this.setChapterNavigationTitle(titleInput.value);
           }
