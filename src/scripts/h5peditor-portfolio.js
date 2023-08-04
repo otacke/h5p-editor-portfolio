@@ -53,132 +53,10 @@ export default class Portfolio {
     this.chaptersPending = this.params?.chapters?.length;
     this.allChildrenDone = false;
 
-    // jQuery and $container required by H5P
-    this.$container = H5P.jQuery('<div>', { class: 'h5peditor-portfolio' });
-
-    // Build DOM
-    this.chaptersDOM = document.createElement('div');
-    this.chaptersDOM.classList.add('h5peditor-portfolio-chapters');
-
     // Instantiate original field (or create your own and call setValue)
     this.fieldInstance = new H5PEditor.widgets[this.field.type](
       this.parent, this.field, this.params, this.setValue
     );
-    this.fieldInstance.appendTo(H5P.jQuery(this.chaptersDOM));
-
-    // List widget holding the chapters
-    this.chapterList = this.fieldInstance.children.find((child) => {
-      return child?.getName() === 'chapters';
-    });
-
-    this.mainDOM = document.createElement('div');
-    this.mainDOM.classList.add('h5peditor-portfolio-main');
-
-    const toolbarDOM = document.createElement('div');
-    toolbarDOM.classList.add('h5peditor-portfolio-toolbar');
-
-    this.toolBar = new Toolbar(
-      {
-        dictionary: this.dictionary
-      },
-      {
-        onClickButtonPreview: (active) => {
-          this.togglePreview({ active: active });
-        },
-        onClickButtonExport: (active) => {
-          this.toggleExportDialog(active);
-        },
-        onClickButtonDeleteHidden: () => {
-          this.handleDeleteHiddenDialog();
-        }
-      }
-    );
-
-    this.toolBar.enableButton('preview');
-    this.toolBar.enableButton('export');
-
-    toolbarDOM.appendChild(this.toolBar.getDOM());
-    this.mainDOM.appendChild(toolbarDOM);
-
-    const contentDOM = document.createElement('div');
-    contentDOM.classList.add('h5peditor-portfolio-content');
-
-    this.chapterNavigation = new ChapterNavigation(
-      {
-        dictionary: this.dictionary,
-        title: this.parent?.metadata?.title || 'Portfolio',
-        chapterList: this.chapterList,
-        hierarchyLevelMax: Chapter.MAX_LEVEL
-      },
-      {
-        onGetChapterTitle: (id) => {
-          return this.getChapterTitle(id);
-        },
-        onGetButtonCapabilities: ((id) => {
-          return this.getButtonCapabilities(id);
-        }),
-        onAddChapter: (id, options) => {
-          this.addChapter(id, options);
-        },
-        onShowChapter: (id) => {
-          this.showChapter(id);
-        },
-        onMoveChapter: (id, offset, options = {}) => {
-          return this.moveChapter(id, offset, options);
-        },
-        onChangeHierarchy: (id, offset) => {
-          this.changeHierarchy(id, offset);
-        },
-        onCloneChapter: (id, options) => {
-          this.cloneChapter(id, options);
-        },
-        onDeleteChapter: (id) => {
-          this.deleteChapter(id);
-        }
-      }
-    );
-    contentDOM.appendChild(this.chapterNavigation.getDOM());
-    contentDOM.appendChild(this.chaptersDOM);
-
-    this.previewOverlay = new PreviewOverlay({
-      dictionary: this.dictionary
-    });
-    this.mainDOM.appendChild(this.previewOverlay.getDOM());
-
-    this.chapterChooser = new ChapterChooser(
-      {
-        dictionary: this.dictionary
-      }, {
-        onExportStarted: () => {
-          this.showExportSpinner();
-        },
-        onExportProgress: (params) => {
-          this.setSpinnerProgress(params);
-        },
-        onExportEnded: () => {
-          this.toolBar.forceButton('export', false); // Will close dialog
-        }
-      }
-    );
-    this.mainDOM.appendChild(this.chapterChooser.getDOM());
-
-    Readspeaker.attach(contentDOM);
-
-    this.mainDOM.appendChild(contentDOM);
-
-    this.spinner = new Spinner();
-    this.mainDOM.appendChild(this.spinner.getDOM());
-
-    // Dialog to ask whether to delete all hidden contents
-    this.deleteHiddenDialog = new H5P.ConfirmationDialog({
-      headerText: this.dictionary.get('l10n.deleteHiddenDialogHeader'),
-      dialogText: this.dictionary.get('l10n.deleteHiddenDialogText'),
-      cancelText: this.dictionary.get('l10n.deleteDialogCancel'),
-      confirmText: this.dictionary.get('l10n.deleteDialogConfirm')
-    });
-    this.deleteHiddenDialog.appendTo(document.body);
-
-    this.$container.get(0).appendChild(this.mainDOM);
 
     // Relay changes
     if (this.fieldInstance.changes) {
@@ -186,6 +64,8 @@ export default class Portfolio {
         this.handleFieldChange();
       });
     }
+
+    this.buildDOM();
 
     // Errors (or add your own)
     this.$errors = this.$container.find('.h5p-errors');
@@ -231,26 +111,135 @@ export default class Portfolio {
   }
 
   /**
-   * Get chapter DOMs.
-   * @returns {HTMLElement[]} DOMs of chapters in list widget.
+   * Build DOM.
    */
-  getChapterDOMs() {
-    return this.fieldInstance.$content.get(0)
-      .querySelectorAll('.h5p-li > .field-name-chapter > .content') || [];
-  }
+  buildDOM() {
+    // jQuery and $container required by H5P
+    this.$container = H5P.jQuery('<div>', { class: 'h5peditor-portfolio' });
 
-  /**
-   * Get new hierarchy level.
-   * @returns {string|null} New hierarchy level.
-   */
-  getNewHierarchy() {
-    const newHierarchy = this.params.chapters
-      .reduce((newHierarchy, chapter) => {
-        const topLevel = (chapter.chapterHierarchy || '0').split('-')[0];
-        return Math.max(parseInt(topLevel), newHierarchy);
-      }, 0);
+    // Chapters
+    this.chaptersDOM = document.createElement('div');
+    this.chaptersDOM.classList.add('h5peditor-portfolio-chapters');
+    this.fieldInstance.appendTo(H5P.jQuery(this.chaptersDOM));
 
-    return newHierarchy ? (newHierarchy + 1).toString() : null;
+    // List widget holding the chapters
+    this.chapterList = this.fieldInstance.children.find((child) => {
+      return child?.getName() === 'chapters';
+    });
+
+    // Main DOM: Toolbar, Content, PreviewOverlay and Spinner
+    this.mainDOM = document.createElement('div');
+    this.mainDOM.classList.add('h5peditor-portfolio-main');
+
+    // Toolbar
+    const toolbarDOM = document.createElement('div');
+    toolbarDOM.classList.add('h5peditor-portfolio-toolbar');
+
+    this.toolBar = new Toolbar(
+      {
+        dictionary: this.dictionary
+      },
+      {
+        onClickButtonPreview: (active) => {
+          this.togglePreview({ active: active });
+        },
+        onClickButtonExport: (active) => {
+          this.toggleExportDialog(active);
+        },
+        onClickButtonDeleteHidden: () => {
+          this.handleDeleteHiddenDialog();
+        }
+      }
+    );
+
+    this.toolBar.enableButton('preview');
+    this.toolBar.enableButton('export');
+
+    toolbarDOM.append(this.toolBar.getDOM());
+    this.mainDOM.append(toolbarDOM);
+
+    // Content: ChapterNavigation and Chapter settings form
+    const contentDOM = document.createElement('div');
+    contentDOM.classList.add('h5peditor-portfolio-content');
+
+    this.chapterNavigation = new ChapterNavigation(
+      {
+        dictionary: this.dictionary,
+        title: this.parent?.metadata?.title || 'Portfolio',
+        chapterList: this.chapterList,
+        hierarchyLevelMax: Chapter.MAX_LEVEL
+      },
+      {
+        onGetChapterTitle: (id) => {
+          return this.getChapterTitle(id);
+        },
+        onGetButtonCapabilities: ((id) => {
+          return this.getButtonCapabilities(id);
+        }),
+        onAddChapter: (id, options) => {
+          this.addChapter(id, options);
+        },
+        onShowChapter: (id) => {
+          this.showChapter(id);
+        },
+        onMoveChapter: (id, offset, options = {}) => {
+          return this.moveChapter(id, offset, options);
+        },
+        onChangeHierarchy: (id, offset) => {
+          this.changeHierarchy(id, offset);
+        },
+        onCloneChapter: (id, options) => {
+          this.cloneChapter(id, options);
+        },
+        onDeleteChapter: (id) => {
+          this.deleteChapter(id);
+        }
+      }
+    );
+    contentDOM.append(this.chapterNavigation.getDOM());
+    contentDOM.append(this.chaptersDOM);
+
+    this.previewOverlay = new PreviewOverlay({
+      dictionary: this.dictionary
+    });
+    this.mainDOM.append(this.previewOverlay.getDOM());
+
+    // ChapterChooser
+    this.chapterChooser = new ChapterChooser(
+      {
+        dictionary: this.dictionary
+      }, {
+        onExportStarted: () => {
+          this.showExportSpinner();
+        },
+        onExportProgress: (params) => {
+          this.setSpinnerProgress(params);
+        },
+        onExportEnded: () => {
+          this.toolBar.forceButton('export', false); // Will close dialog
+        }
+      }
+    );
+    this.mainDOM.append(this.chapterChooser.getDOM());
+
+    Readspeaker.attach(contentDOM);
+
+    this.mainDOM.append(contentDOM);
+
+    // Spinner
+    this.spinner = new Spinner();
+    this.mainDOM.appendChild(this.spinner.getDOM());
+
+    // Dialog to ask whether to delete all hidden contents
+    this.deleteHiddenDialog = new H5P.ConfirmationDialog({
+      headerText: this.dictionary.get('l10n.deleteHiddenDialogHeader'),
+      dialogText: this.dictionary.get('l10n.deleteHiddenDialogText'),
+      cancelText: this.dictionary.get('l10n.deleteDialogCancel'),
+      confirmText: this.dictionary.get('l10n.deleteDialogConfirm')
+    });
+    this.deleteHiddenDialog.appendTo(document.body);
+
+    this.$container.get(0).appendChild(this.mainDOM);
   }
 
   /**
@@ -260,39 +249,6 @@ export default class Portfolio {
     this.params = this.fieldInstance.params;
     this.changes.forEach((change) => {
       change(this.params);
-    });
-  }
-
-  /**
-   * Update hierarchies.
-   */
-  updateHierarchies() {
-    /*
-     * Computes hierarchy based on position and hierarchy which is used as a
-     * placeholder only, so only its length is relevant.
-     */
-    const hierarchyDepth = this.params.chapters.reduce((length, chapter) => {
-      return Math.max(length, chapter.chapterHierarchy.split('-').length);
-    }, 1);
-
-    const currentHierarchy = new Array(hierarchyDepth).fill(1);
-    let previousDepth = 0;
-
-    this.params.chapters.forEach((chapter) => {
-      const depth = chapter.chapterHierarchy.split('-').length;
-      if (depth === previousDepth) {
-        currentHierarchy[depth - 1]++;
-      }
-      else if (depth < previousDepth) {
-        currentHierarchy[depth - 1]++;
-        for (let i = depth; i < currentHierarchy.length; i++) {
-          currentHierarchy[i] = 1;
-        }
-      }
-
-      previousDepth = depth;
-
-      chapter.chapterHierarchy = currentHierarchy.slice(0, depth).join('-');
     });
   }
 
@@ -321,29 +277,6 @@ export default class Portfolio {
       'H5PEditor.PortfolioPlaceholder:deleteHidden',
       { contentId: H5PEditor.contentId || 1 }
     );
-  }
-
-  /**
-   * Handle placeholders done instantiating.
-   * @param {string} id Subcontent id.
-   */
-  handleChapterDone(id) {
-    if (!this.chaptersDone.includes(id)) {
-      this.chaptersDone.push(id);
-
-      this.chaptersPending--;
-      if (this.chaptersPending === 0) {
-        this.handleAllChildrenDone();
-      }
-    }
-  }
-
-  /**
-   * Handle all children instantiated.
-   */
-  handleAllChildrenDone() {
-    this.allChildrenDone = true;
-    this.toolBar.enableButton('deleteHidden');
   }
 
   /**

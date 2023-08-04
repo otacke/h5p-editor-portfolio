@@ -61,6 +61,29 @@ export default class Initialization {
   }
 
   /**
+   * Handle placeholders done instantiating.
+   * @param {string} id Subcontent id.
+   */
+  handleChapterDone(id) {
+    if (!this.chaptersDone.includes(id)) {
+      this.chaptersDone.push(id);
+
+      this.chaptersPending--;
+      if (this.chaptersPending === 0) {
+        this.handleAllChildrenDone();
+      }
+    }
+  }
+
+  /**
+   * Handle all children instantiated.
+   */
+  handleAllChildrenDone() {
+    this.allChildrenDone = true;
+    this.toolBar.enableButton('deleteHidden');
+  }
+
+  /**
    * Listen to activating/deactiveting header/footer.
    */
   listenToHeaderFooter() {

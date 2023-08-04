@@ -6,6 +6,62 @@ import Util from '@services/util';
  */
 export default class Chapter {
   /**
+   * Get chapter DOMs.
+   * @returns {HTMLElement[]} DOMs of chapters in list widget.
+   */
+  getChapterDOMs() {
+    return this.fieldInstance.$content.get(0)
+      .querySelectorAll('.h5p-li > .field-name-chapter > .content') || [];
+  }
+
+  /**
+   * Get new hierarchy level.
+   * @returns {string|null} New hierarchy level.
+   */
+  getNewHierarchy() {
+    const newHierarchy = this.params.chapters
+      .reduce((newHierarchy, chapter) => {
+        const topLevel = (chapter.chapterHierarchy || '0').split('-')[0];
+        return Math.max(parseInt(topLevel), newHierarchy);
+      }, 0);
+
+    return newHierarchy ? (newHierarchy + 1).toString() : null;
+  }
+
+  /**
+   * Update hierarchies.
+   */
+  updateHierarchies() {
+    /*
+     * Computes hierarchy based on position and hierarchy which is used as a
+     * placeholder only, so only its length is relevant.
+     */
+    const hierarchyDepth = this.params.chapters.reduce((length, chapter) => {
+      return Math.max(length, chapter.chapterHierarchy.split('-').length);
+    }, 1);
+
+    const currentHierarchy = new Array(hierarchyDepth).fill(1);
+    let previousDepth = 0;
+
+    this.params.chapters.forEach((chapter) => {
+      const depth = chapter.chapterHierarchy.split('-').length;
+      if (depth === previousDepth) {
+        currentHierarchy[depth - 1]++;
+      }
+      else if (depth < previousDepth) {
+        currentHierarchy[depth - 1]++;
+        for (let i = depth; i < currentHierarchy.length; i++) {
+          currentHierarchy[i] = 1;
+        }
+      }
+
+      previousDepth = depth;
+
+      chapter.chapterHierarchy = currentHierarchy.slice(0, depth).join('-');
+    });
+  }
+
+  /**
    * Handle adding new chapter.
    * @param {number} id Id of item that was added.
    * @param {object} [options] Options.
