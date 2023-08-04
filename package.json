@@ -1,6 +1,6 @@
 {
   "name": "h5peditor-portfolio",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Editor for H5P.Portfolio",
   "private": true,
   "scripts": {
@@ -19,6 +19,7 @@
   ],
   "author": "Oliver Tacke",
   "license": "MIT",
+  "type": "module",
   "devDependencies": {
     "@babel/cli": "^7.22.9",
     "@babel/core": "^7.22.9",
@@ -46,5 +47,5 @@
     "jspdf": "^2.5.1",
     "jszip": "^3.10.1"
   },
-  "browserslist": "> 0.5%, last 2 versions, Firefox ESR, not dead"
+  "browserslist": "> 0.5%, last 3 versions, Firefox ESR, not dead"
 }

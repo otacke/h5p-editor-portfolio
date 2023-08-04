@@ -1,22 +1,27 @@
-const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
+import { dirname, resolve as _resolve, join } from 'path';
+import { fileURLToPath } from 'url';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import TerserPlugin from 'terser-webpack-plugin'; // Provided by webpack
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const mode = process.argv.includes('--mode=production') ?
-  'production' : 'development';
+  'production' :
+  'development';
 const libraryName = process.env.npm_package_name;
 
-module.exports = {
+export default {
   mode: mode,
   resolve: {
     alias: {
-      '@assets': path.resolve(__dirname, 'src/assets'),
-      '@components': path.resolve(__dirname, 'src/scripts/components'),
-      '@mixins': path.resolve(__dirname, 'src/scripts/mixins'),
-      '@root': path.resolve(__dirname, '.'),
-      '@scripts': path.resolve(__dirname, 'src/scripts'),
-      '@services': path.resolve(__dirname, 'src/scripts/services'),
-      '@styles': path.resolve(__dirname, 'src/styles')
+      '@assets': _resolve(__dirname, 'src/assets'),
+      '@components': _resolve(__dirname, 'src/scripts/components'),
+      '@mixins': _resolve(__dirname, 'src/scripts/mixins'),
+      '@root': _resolve(__dirname, '.'),
+      '@scripts': _resolve(__dirname, 'src/scripts'),
+      '@services': _resolve(__dirname, 'src/scripts/services'),
+      '@styles': _resolve(__dirname, 'src/styles')
     }
   },
   optimization: {
@@ -77,7 +82,7 @@ module.exports = {
   },
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, 'dist'),
+    path: _resolve(__dirname, 'dist'),
     clean: true
   },
   target: ['browserslist'],
@@ -107,12 +112,12 @@ module.exports = {
       },
       {
         test: /\.(svg|png|jpg|gif)$/,
-        include: path.join(__dirname, 'src/assets'),
+        include: join(__dirname, 'src/assets'),
         type: 'asset/resource'
       },
       {
         test: /\.(woff|woff2|eot|ttf)$/,
-        include: path.join(__dirname, 'src/fonts'),
+        include: join(__dirname, 'src/fonts'),
         type: 'asset/resource'
       }
     ]
