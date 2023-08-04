@@ -310,13 +310,10 @@ export default class Chapter {
       return false; // Out of bounds
     }
 
+    // Moving an element of hierarchy !== 1 to the top is not allowed
     if (
-      indexSource === 0 &&
-      (
-        this.params.chapters[1].chapterHierarchy.split('-').length !== 1 ||
-        this.params.chapters[indexSource].chapterHierarchy.split('-').length
-          !== 1
-      )
+      indexTarget === 0 &&
+      this.params.chapters[indexSource].chapterHierarchy.split('-').length !== 1
     ) {
       if (!options.silent) {
         Readspeaker.read([
@@ -324,8 +321,14 @@ export default class Chapter {
           this.dictionary.get('a11y.firstChapterHierarchyFixed')
         ]);
       }
-      return false; // Position 0 must keep hierarchy 1
+      return false; // Cannot put hierarchy !== 1 to the top
     }
+
+    /*
+     * We do not need to cover indexSource === 0, because all children will
+     * be collapsed and moved with the source, so the target will always be
+     * of the same hierarchy as the source (=1)
+     */
 
     // Move item parameters in list widget
     this.chapterList.moveItem(indexSource, indexTarget);
