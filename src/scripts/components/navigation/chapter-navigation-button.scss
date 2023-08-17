@@ -77,6 +77,11 @@
     transition: visibility 0s linear 0.1s, opacity 0.1s linear;
     width: 1.9rem;
 
+    &.disabled {
+      color: #ffffff;
+      background-color: rgba(128, 128, 128, .95);
+    }
+
     &.focus {
       visibility: visible;
     }
@@ -92,6 +97,8 @@
       font-size: 1.1rem;
     }
   }
+
+  .submenu-
 
   &:focus {
     background-color: rgba(23, 104, 196, 0.05);

@@ -290,11 +290,31 @@ export default class ChapterNavigationButton {
   }
 
   /**
+   * Disable submenu.
+   */
+  disableSubMenu() {
+    this.isSubMenuDisabled = true;
+    this.menu.classList.add('disabled');
+  }
+
+  /**
+   * Enable submenu.
+   */
+  enableSubMenu() {
+    this.isSubMenuDisabled = false;
+    this.menu.classList.remove('disabled');
+  }
+
+  /**
    * Show sub menu.
    * @param {SubMenu} subMenu Sub menu.
    * @param {boolean} keyboardUsed True, if was called using keyboard.
    */
   showSubMenu(subMenu, keyboardUsed = false) {
+    if (this.isSubMenuDisabled) {
+      return;
+    }
+
     // Register button with subMenu
     subMenu.setParent(this);
 

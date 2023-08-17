@@ -57,7 +57,22 @@ export default class ChapterNavigation {
 
     for (let id = 0; id < this.params.chapterList.getValue().length; id++) {
       this.addButton(id);
+      this.buttons[id].disableSubMenu();
     }
+
+    // Track content form being loaded
+    this.params.chapterList.forEachChild((group, index) => {
+      const libraryFieldIndex = group.field?.fields?.findIndex((field) => {
+        return field.name === 'content';
+      });
+
+      // Only allow subment actions once loaded
+      if (libraryFieldIndex !== -1) {
+        group.children?.[libraryFieldIndex]?.changes?.push(() => {
+          this.buttons[index].enableSubMenu();
+        });
+      }
+    });
 
     this.subMenu = new SubMenu(
       {
@@ -420,12 +435,12 @@ export default class ChapterNavigation {
       return;
     }
 
-    const list = this.getChapterGroup(id);
-    if (!list) {
+    const group = this.getChapterGroup(id);
+    if (!group) {
       return;
     }
 
-    const inputField = list.$content.get(0)
+    const inputField = group.$content.get(0)
       .querySelectorAll('input.h5peditor-text')[1];
 
     // Will update title field and metadata title and store value
