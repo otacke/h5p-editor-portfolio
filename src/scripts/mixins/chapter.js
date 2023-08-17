@@ -85,23 +85,26 @@ export default class Chapter {
   }
 
   /**
-   * Get current number of copies of a label.
+   * Get next free copy label number.
    * @param {string} baseLabel Base label.
-   * @returns {number} Number of copies of a label
+   * @returns {number} Next number for a copy label.
    */
-  getCurrentNumberOfCopyLabels(baseLabel) {
+  getNextCopyLabelNumber(baseLabel) {
     const allLabels = this.chapterNavigation.getButtonLabels();
+
+    baseLabel = Util.escapeForRegularExpression(baseLabel);
 
     const copyString = Util.escapeForRegularExpression(
       this.dictionary.get('l10n.labelCopy')
     );
 
-    const regexp = new RegExp(`${baseLabel} ${copyString}((d+))?`);
+    const regexp = new RegExp(`^${baseLabel} ${copyString}( \\((\\d+)\\))?$`);
+
+    const min = allLabels.filter((label) => regexp.test(label)).length + 1;
 
     return allLabels
-      .map((label) => regexp.test(label))
-      .filter((state) => state === true)
-      .length;
+      .map((label) => parseInt(regexp.exec(label)?.[2] ?? '0'))
+      .reduce((result, number) => Math.max(result, number + 1), min);
   }
 
   /**
@@ -156,18 +159,18 @@ export default class Chapter {
         const copyString = Util.escapeForRegularExpression(
           this.dictionary.get('l10n.labelCopy')
         );
-        const regexp = new RegExp(`(.+) ${copyString}()((d+))?`);
+        const regexp = new RegExp(`^(.+) ${copyString}( \\(\\d+)\\)?$`);
+
         const matches = this.chapterNavigation.getButtonLabel(cloneParam.index).match(
           regexp
         );
         const baseName = matches?.[1] ??
           this.chapterNavigation.getButtonLabel(cloneParam.index);
 
-        const currentCopyCount = this.getCurrentNumberOfCopyLabels(baseName);
-
-        const copyCounter = (currentCopyCount === 0) ?
+        const nextCopyLabelNumber = this.getNextCopyLabelNumber(baseName);
+        const copyCounter = (nextCopyLabelNumber < 2) ?
           '' :
-          ` (${currentCopyCount + 1})`;
+          ` (${nextCopyLabelNumber})`;
 
         const newLabel = `${baseName} ${this.dictionary.get('l10n.labelCopy')}${copyCounter}`;
 
