@@ -86,25 +86,56 @@ export default class Chapter {
 
   /**
    * Get next free copy label number.
-   * @param {string} baseLabel Base label.
+   * @param {string} baseName Base name of label.
    * @returns {number} Next number for a copy label.
    */
-  getNextCopyLabelNumber(baseLabel) {
+  getNextCopyLabelNumber(baseName) {
     const allLabels = this.chapterNavigation.getButtonLabels();
 
-    baseLabel = Util.escapeForRegularExpression(baseLabel);
+    baseName = Util.escapeForRegularExpression(baseName);
 
     const copyString = Util.escapeForRegularExpression(
       this.dictionary.get('l10n.labelCopy')
     );
 
-    const regexp = new RegExp(`^${baseLabel} ${copyString}( \\((\\d+)\\))?$`);
-
-    const min = allLabels.filter((label) => regexp.test(label)).length + 1;
+    /*
+     * Expected schema is "Any chapter label (Copy) (x)"
+     * Matching group 1 is "(Copy)"
+     * Matching group 3 is "x"
+     */
+    const regexp = new RegExp(
+      `^${baseName} (${copyString})( \\(((\\d+))\\))?$`
+    );
 
     return allLabels
-      .map((label) => parseInt(regexp.exec(label)?.[2] ?? '0'))
-      .reduce((result, number) => Math.max(result, number + 1), min);
+      .map((label) => {
+        const parsed = regexp.exec(label);
+        return parseInt(
+          parsed?.[3] ?? // With number
+            (parsed?.[1] ? '1' : '0') // With copystring or only baseName
+        );
+      })
+      .reduce((result, number) => Math.max(result, number + 1), 1);
+  }
+
+  /**
+   * Get chapter base name (for copying).
+   * @param {string} label Chapter label.
+   * @returns {string} Chapter base name.
+   */
+  getChapterBaseName(label) {
+    const copyString = Util.escapeForRegularExpression(
+      this.dictionary.get('l10n.labelCopy')
+    );
+
+    /*
+     * "Any chapter label" => "Any chapter label"
+     * "Any chapter label (Copy)" => "Any chapter label"
+     * "Any chapter label (Copy) (x)" => "Any chapter label"
+     */
+    const regexp = new RegExp(`^(.+) ${copyString}( \\(\\d+\\))?$`);
+
+    return label.match(regexp)?.[1] ?? label;
   }
 
   /**
@@ -153,26 +184,19 @@ export default class Chapter {
         }
 
         /*
-          * Determine current number of copies (presumably) of a label and add
-          * counter to label. // TODO: move to some util class
-          */
-        const copyString = Util.escapeForRegularExpression(
-          this.dictionary.get('l10n.labelCopy')
+         * Add "(Copy)" and potentially "(x)" for multiple copies to label name.
+         * "(x)" will be omitted for x === 1, otherwise largest current x + 1
+         */
+        const baseName = this.getChapterBaseName(
+          this.chapterNavigation.getButtonLabel(cloneParam.index)
         );
-        const regexp = new RegExp(`^(.+) ${copyString}( \\(\\d+)\\)?$`);
-
-        const matches = this.chapterNavigation.getButtonLabel(cloneParam.index).match(
-          regexp
-        );
-        const baseName = matches?.[1] ??
-          this.chapterNavigation.getButtonLabel(cloneParam.index);
 
         const nextCopyLabelNumber = this.getNextCopyLabelNumber(baseName);
         const copyCounter = (nextCopyLabelNumber < 2) ?
           '' :
           ` (${nextCopyLabelNumber})`;
 
-        const newLabel = `${baseName} ${this.dictionary.get('l10n.labelCopy')}${copyCounter}`;
+        const newLabel = `${baseName} ${this.dictionary.get('l10n.labelCopy')} ${copyCounter}`;
 
         // Replace subcontent ids in instance params
         const newInstanceParams = Util.replaceSubContentIDs(
