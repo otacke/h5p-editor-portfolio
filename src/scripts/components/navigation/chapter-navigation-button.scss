@@ -98,12 +98,6 @@
     }
   }
 
-  .submenu-
-
-  &:focus {
-    background-color: rgba(23, 104, 196, 0.05);
-  }
-
   &.is-dragging {
     .h5peditor-portfolio-chapter-button-menu {
       background-color: transparent;
@@ -140,6 +134,12 @@
         }
       }
     }
+  }
+
+  .submenu-
+
+  &:focus {
+    background-color: rgba(23, 104, 196, 0.05);
   }
 
   &:focus &:active {
