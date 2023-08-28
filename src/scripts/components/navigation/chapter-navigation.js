@@ -324,10 +324,17 @@ export default class ChapterNavigation {
 
   /**
    * Get button labels.
+   * @param {number} [level] Optional level to retrieve only.
    * @returns {string[]} Button labels.
    */
-  getButtonLabels() {
-    return this.buttons.map((button) => button.getLabel() ?? '');
+  getButtonLabels(level) {
+    return this.buttons
+      .filter((button) => {
+        return typeof level !== 'number' ?
+          true :
+          button.getHierarchieLevel() === level;
+      })
+      .map((button) => button.getLabel() ?? '');
   }
 
   /**

@@ -87,11 +87,11 @@ export default class Chapter {
   /**
    * Get next free copy label number.
    * @param {string} baseName Base name of label.
+   * @param {number} [level] Hierarchy level to count labels for or all labels.
    * @returns {number} Next number for a copy label.
    */
-  getNextCopyLabelNumber(baseName) {
-    const allLabels = this.chapterNavigation.getButtonLabels();
-
+  getNextCopyLabelNumber(baseName, level) {
+    const chosenLabels = this.chapterNavigation.getButtonLabels(level);
     baseName = Util.escapeForRegularExpression(baseName);
 
     const copyString = Util.escapeForRegularExpression(
@@ -107,7 +107,7 @@ export default class Chapter {
       `^${baseName} (${copyString})( \\(((\\d+))\\))?$`
     );
 
-    return allLabels
+    return chosenLabels
       .map((label) => {
         const parsed = regexp.exec(label);
         return parseInt(
@@ -191,7 +191,10 @@ export default class Chapter {
           this.chapterNavigation.getButtonLabel(cloneParam.index)
         );
 
-        const nextCopyLabelNumber = this.getNextCopyLabelNumber(baseName);
+        const nextCopyLabelNumber = this.getNextCopyLabelNumber(
+          baseName, cloneParam.level
+        );
+
         const copyCounter = (nextCopyLabelNumber < 2) ?
           '' :
           ` (${nextCopyLabelNumber})`;
