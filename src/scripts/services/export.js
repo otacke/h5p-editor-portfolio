@@ -48,6 +48,10 @@ export default class Export {
       const imageSize = pdf.getImageProperties(image);
       const imageRatio = imageSize.width / imageSize.height;
 
+      if (imageSize.height === 1 && imageSize.width === 1) {
+        return; // Empty image, e.g. no content set
+      }
+
       // Determine image size at full width
       let imageSizeScaled = {
         width: Export.PAGE_WIDTH_MAX_MM,
@@ -115,6 +119,10 @@ export default class Export {
 
       const image = await Export.getImage(params.imageBlobs[i].blob);
       const imageRatio = image.naturalWidth / image.naturalHeight;
+
+      if (image.naturalWidth === 1 && image.naturalHeight === 1) {
+        continue; // Empty image, e.g. no content set
+      }
 
       // Determine image size at full width
       let imageSizeScaled = {
