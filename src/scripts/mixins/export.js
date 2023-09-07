@@ -50,7 +50,9 @@ export default class Export {
    * Show export spinner.
    */
   showExportSpinner() {
-    this.spinner.setMessage(this.dictionary.get('l10n.generatingExport'));
+    this.spinner.setMessage(
+      `${this.dictionary.get('l10n.generatingExport')}. ${this.dictionary.get('l10n.pleaseKeepTabActive')}`
+    );
     this.spinner.setProgress(' ');
     this.spinner.show();
   }
