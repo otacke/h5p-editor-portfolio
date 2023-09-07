@@ -215,8 +215,36 @@ export default class Portfolio {
         onExportProgress: (params) => {
           this.setSpinnerProgress(params);
         },
-        onExportEnded: () => {
-          this.toolBar.forceButton('export', false); // Will close dialog
+        onExportEnded: (errorMessage) => {
+          if (errorMessage) {
+            // Dialog to ask whether to delete all hidden contents
+            const exportFailedDialog = new H5P.ConfirmationDialog({
+              headerText: this.dictionary.get('l10n.exportFailedDialogHeader'),
+              dialogText: errorMessage,
+              confirmText: this.dictionary.get('l10n.ok'),
+              hideCancel: true,
+              classes: ['h5p-export-failed-confirmation-dialog']
+            });
+
+            const handleConfirmed = () => {
+              window.requestAnimationFrame(() => {
+                this.toolBar.forceButton('export', false); // Will close dialog
+              });
+            };
+
+            exportFailedDialog.on('confirmed', () => {
+              handleConfirmed();
+            });
+            exportFailedDialog.on('canceled', () => {
+              handleConfirmed();
+            });
+
+            exportFailedDialog.appendTo(document.body);
+            exportFailedDialog.show();
+          }
+          else {
+            this.toolBar.forceButton('export', false); // Will close dialog
+          }
         }
       }
     );

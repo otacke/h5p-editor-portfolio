@@ -299,34 +299,40 @@ export default class ChapterChooser {
           ?.placeholderDOMs || [];
 
         let screenshot;
+        let errorMessage;
 
         for (let i = 0; i < doms.length; i++) {
+          if (errorMessage) {
+            break;
+          }
+
           let retries = ChapterChooser.MAX_RETRIES_PER_SHOT;
 
-          while (retries !== 0) {
+          while (retries > 0) {
             try {
               screenshot = await Screenshot.takeScreenshot(
                 { element: doms[i], enforceImage: enforceImage }
               );
-              retries = 0;
+              retries = -1;
+              errorMessage = undefined;
             }
             catch (error) {
               if (retries === ChapterChooser.MAX_RETRIES_PER_SHOT) {
-                const message = [
+                errorMessage = [
                   this.params.dictionary.get('l10n.cannotExportSomeContent'),
-                  this.params.dictionary.get('l10n.tryAgainTimes')
-                    .replace(/@retries/, ChapterChooser.MAX_RETRIES_PER_SHOT),
                   this.params.dictionary.get('l10n.pleaseKeepTabActive')
                 ].join(' ');
 
-                console.warn(message);
+                console.warn(errorMessage);
                 console.warn(error);
               }
               retries = retries - 1;
             }
 
-            if (retries !== 0) {
-              await new Promise((resolve) => setTimeout(resolve, ChapterChooser.RETRY_TIMEOUT_MS));
+            if (retries > 0) {
+              await new Promise((resolve) => {
+                setTimeout(resolve, ChapterChooser.RETRY_TIMEOUT_MS);
+              });
             }
           }
 
@@ -337,7 +343,7 @@ export default class ChapterChooser {
           screenshots.push(screenshot);
         }
 
-        resolve(screenshots);
+        resolve([screenshots, errorMessage]);
       }, 500); // Animation time + buffer for resize
     });
   }
@@ -352,6 +358,8 @@ export default class ChapterChooser {
     }
 
     this.callbacks.onExportStarted();
+
+    let exportErrorMessage = null;
 
     window.setTimeout(async () => {
       // Retrieve information for chosen chapters
@@ -416,10 +424,15 @@ export default class ChapterChooser {
         });
 
         // Get screenshots
-        const screenshots = await this.getScreenshots(
+        const [screenshots, errorMessage] = await this.getScreenshots(
           chosenChapters[i].index,
           type !== 'images' // Enforce pixel for pdf/docx
         );
+
+        if (errorMessage) {
+          exportErrorMessage = errorMessage;
+          break;
+        }
 
         if (!screenshots.length) {
           continue;
@@ -433,6 +446,11 @@ export default class ChapterChooser {
             blob: screenshots[j]
           });
         }
+      }
+
+      if (exportErrorMessage) {
+        this.callbacks.onExportEnded(exportErrorMessage);
+        return;
       }
 
       this.callbacks.onExportProgress({
@@ -467,7 +485,7 @@ export default class ChapterChooser {
 ChapterChooser.FILENAME_PREFIX = 'H5P.Portfolio-Export';
 
 /** @constant {number} MAX_RETRIES_PER_SHOT Number of max retries to take a screenshot. */
-ChapterChooser.MAX_RETRIES_PER_SHOT = 5;
+ChapterChooser.MAX_RETRIES_PER_SHOT = 3;
 
 /** @constant {number} RETRY_TIMEOUT_MS Retry timeout for screenshot. */
-ChapterChooser.RETRY_TIMEOUT_MS = 5000;
+ChapterChooser.RETRY_TIMEOUT_MS = 2500;
