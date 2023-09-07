@@ -206,7 +206,8 @@ export default class Initialization {
    */
   fillDictionary() {
     // Convert H5PEditor language strings into object.
-    const plainTranslations = H5PEditor.language['H5PEditor.Portfolio'].libraryStrings || {};
+    const plainTranslations =
+      H5PEditor.language['H5PEditor.Portfolio'].libraryStrings || {};
     const translations = {};
 
     for (const key in plainTranslations) {

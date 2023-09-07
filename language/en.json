@@ -32,7 +32,7 @@
     "l10n.selectAll": "Select all chapters",
     "l10n.unselectAll": "Unselect all chapters",
     "l10n.creatingExportFile": "Creating export file",
-    "l10n.pleaseKeepTabOpen": "Please keep the current tab active ...",
+    "l10n.pleaseKeepTabActive": "Please keep the current tab active ...",
     "l10n.noPreviewPossible": "No preview possible",
     "l10n.coverPage": "Cover page",
     "l10n.portfolioTitle": "Portfolio title",
