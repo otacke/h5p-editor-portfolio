@@ -32,6 +32,8 @@
     "l10n.selectAll": "Pasirinkti visus skyrius",
     "l10n.unselectAll": "Atžymėti visus skyrius",
     "l10n.creatingExportFile": "Kuriamas eksporto failas",
+    "l10n.cannotExportSomeContent": "Cannot export some content. Please check your output!",
+    "l10n.tryAgainTimes": "Will try @retries times in total.",
     "l10n.pleaseKeepTabActive": "Please keep the current tab active ...",
     "l10n.noPreviewPossible": "Peržiūra negalima",
     "l10n.coverPage": "Cover page",

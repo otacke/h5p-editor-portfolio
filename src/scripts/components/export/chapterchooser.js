@@ -298,10 +298,37 @@ export default class ChapterChooser {
         const doms = this.instance.getChaptersInformation(chapterId)
           ?.placeholderDOMs || [];
 
+        let screenshot;
+
         for (let i = 0; i < doms.length; i++) {
-          const screenshot = await Screenshot.takeScreenshot(
-            { element: doms[i], enforceImage: enforceImage }
-          );
+          let retries = ChapterChooser.MAX_RETRIES_PER_SHOT;
+
+          while (retries !== 0) {
+            try {
+              screenshot = await Screenshot.takeScreenshot(
+                { element: doms[i], enforceImage: enforceImage }
+              );
+              retries = 0;
+            }
+            catch (error) {
+              if (retries === ChapterChooser.MAX_RETRIES_PER_SHOT) {
+                const message = [
+                  this.params.dictionary.get('l10n.cannotExportSomeContent'),
+                  this.params.dictionary.get('l10n.tryAgainTimes')
+                    .replace(/@retries/, ChapterChooser.MAX_RETRIES_PER_SHOT),
+                  this.params.dictionary.get('l10n.pleaseKeepTabActive')
+                ].join(' ');
+
+                console.warn(message);
+                console.warn(error);
+              }
+              retries = retries - 1;
+            }
+
+            if (retries !== 0) {
+              await new Promise((resolve) => setTimeout(resolve, ChapterChooser.RETRY_TIMEOUT_MS));
+            }
+          }
 
           if (!screenshot) {
             continue; // Probably empty chapter
@@ -436,5 +463,11 @@ export default class ChapterChooser {
   }
 }
 
-/** @constant {string} Export file name prefix. */
+/** @constant {string} FILENAME_PREFIX Export file name prefix. */
 ChapterChooser.FILENAME_PREFIX = 'H5P.Portfolio-Export';
+
+/** @constant {number} MAX_RETRIES_PER_SHOT Number of max retries to take a screenshot. */
+ChapterChooser.MAX_RETRIES_PER_SHOT = 5;
+
+/** @constant {number} RETRY_TIMEOUT_MS Retry timeout for screenshot. */
+ChapterChooser.RETRY_TIMEOUT_MS = 5000;

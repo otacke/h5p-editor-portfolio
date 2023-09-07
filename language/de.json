@@ -32,6 +32,8 @@
     "l10n.selectAll": "Alles auswählen",
     "l10n.unselectAll": "Alles abwählen",
     "l10n.creatingExportFile": "Erzeuge Exportdatei",
+    "l10n.cannotExportSomeContent": "Kann einen Inhalt nicht exportieren. Bitte überprüfe das Ergebnis!",
+    "l10n.tryAgainTimes": "Werde @retries Versuche unternehmen.",
     "l10n.pleaseKeepTabActive": "Bitte halte den aktuellen Tab aktiv ...",
     "l10n.noPreviewPossible": "Keine Vorschau möglich",
     "l10n.coverPage": "Titelseite",

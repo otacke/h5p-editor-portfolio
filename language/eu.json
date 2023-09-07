@@ -32,6 +32,8 @@
     "l10n.unselectAll": "Unselect all chapters",
     "l10n.selectAll": "Select all chapters",
     "l10n.creatingExportFile": "Esportazio fitxategia sortzen",
+    "l10n.cannotExportSomeContent": "Cannot export some content. Please check your output!",
+    "l10n.tryAgainTimes": "Will try @retries times in total.",
     "l10n.pleaseKeepTabActive": "Please keep the current tab active ...",
     "l10n.noPreviewPossible": "Ezin da aurreikusi",
     "l10n.coverPage": "Viršelis",

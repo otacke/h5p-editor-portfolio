@@ -32,6 +32,8 @@
     "l10n.selectAll": "Seleccionar todos os capítulos",
     "l10n.unselectAll": "Desmarcar todos os capítulos",
     "l10n.creatingExportFile": "Creando ficheiro de exportación",
+    "l10n.cannotExportSomeContent": "Cannot export some content. Please check your output!",
+    "l10n.tryAgainTimes": "Will try @retries times in total.",
     "l10n.pleaseKeepTabActive": "Please keep the current tab active ...",
     "l10n.noPreviewPossible": "Non é posible unha vista previa",
     "l10n.coverPage": "Páxina de Cuberta",
