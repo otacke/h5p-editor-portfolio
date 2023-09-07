@@ -55,7 +55,20 @@ export default class PreviewOverlay {
       return;
     }
 
+    this.setTop(''); // Remove potentially previously set top value
     this.preview.attachInstance(instance);
+  }
+
+  /**
+   * Set DOM top value.
+   * @param {string} value Top value.
+   */
+  setTop(value) {
+    if (typeof value !== 'string') {
+      return;
+    }
+
+    this.dom.style.top = value;
   }
 
   /**

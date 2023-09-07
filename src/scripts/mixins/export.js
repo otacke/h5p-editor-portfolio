@@ -26,6 +26,14 @@ export default class Export {
       instance: this.previewInstance
     });
     this.chapterChooser.show();
+
+    // Try to ensure rendering above actual viewport.
+    window.requestAnimationFrame(() => {
+      const rect = this.previewOverlay.getDOM().getBoundingClientRect();
+      if (rect.top + rect.height > 0) {
+        this.previewOverlay.setTop(`${-rect.height - screen.height}px`);
+      }
+    });
   }
 
   /**
