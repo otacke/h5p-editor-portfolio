@@ -7,7 +7,7 @@
   box-sizing: border-box;
   font-size: 0.75rem;
   position: absolute;
-  z-index: 2;
+  z-index: 11; // Needs to be larger than z-index of placeholder
 
   &.display-none {
     display: none;
