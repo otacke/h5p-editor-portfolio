@@ -138,7 +138,7 @@ export default class Util {
         return Util.replaceSubContentIDs(param);
       });
     }
-    else if (typeof params === 'object') {
+    else if (typeof params === 'object' && params !== null) {
       if (params.library && params.subContentId) {
         params.subContentId = H5P.createUUID();
       }
