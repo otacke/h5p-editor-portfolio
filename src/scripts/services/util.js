@@ -168,6 +168,17 @@ export default class Util {
 
     return text;
   }
+
+  /**
+   * Wait for a number of milliseconds.
+   * @param {number} ms Milliseconds to wait.
+   * @returns {Promise} Promise that resolves after ms milliseconds.
+   */
+  static async wait(ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
 }
 
 /** @constant {number} Double click time */

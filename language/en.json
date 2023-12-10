@@ -28,6 +28,7 @@
     "l10n.exportImages": "Export PNG",
     "l10n.exportPDF": "Export PDF",
     "l10n.exportDOCX": "Export DOCX",
+    "l10n.abort": "Abort",
     "l10n.chapterTitle": "Chapter title",
     "l10n.selectAll": "Select all chapters",
     "l10n.unselectAll": "Unselect all chapters",

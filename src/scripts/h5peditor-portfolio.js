@@ -205,6 +205,8 @@ export default class Portfolio {
     this.mainDOM.append(this.previewOverlay.getDOM());
 
     // ChapterChooser
+    this.spinnerAbortController = new AbortController();
+
     this.chapterChooser = new ChapterChooser(
       {
         dictionary: this.dictionary
@@ -245,6 +247,8 @@ export default class Portfolio {
           else {
             this.toolBar.forceButton('export', false); // Will close dialog
           }
+
+          this.resetAbortController();
         }
       }
     );
@@ -255,8 +259,20 @@ export default class Portfolio {
     this.mainDOM.append(contentDOM);
 
     // Spinner
-    this.spinner = new Spinner();
+    this.spinner = new Spinner(
+      {
+        dictionary: this.dictionary,
+        hasAbortButton: true
+      },
+      {
+        onAborted: () => {
+          this.spinnerAbortController.abort();
+        }
+      }
+    );
     this.mainDOM.appendChild(this.spinner.getDOM());
+
+    this.resetAbortController();
 
     // Dialog to ask whether to delete all hidden contents
     this.deleteHiddenDialog = new H5P.ConfirmationDialog({
@@ -268,6 +284,14 @@ export default class Portfolio {
     this.deleteHiddenDialog.appendTo(document.body);
 
     this.$container.get(0).appendChild(this.mainDOM);
+  }
+
+  /**
+   * Reset abort controller.
+   */
+  resetAbortController() {
+    this.spinnerAbortController = new AbortController();
+    this.chapterChooser.setAbortController(this.spinnerAbortController);
   }
 
   /**

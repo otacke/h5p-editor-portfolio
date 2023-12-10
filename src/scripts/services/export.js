@@ -12,8 +12,17 @@ export default class Export {
    * @param {object} [params] Parameters.
    * @param {object[]} params.imageBlobs Imageblob data.
    * @param {string} params.filename Filename for export.
+   * @param {AbortSignal} [abortSignal] Abort signal.
    */
-  static exportPDF(params = {}) {
+  static exportPDF(params = {}, abortSignal) {
+    if (abortSignal.aborted) {
+      return;
+    }
+
+    abortSignal.addEventListener('abort', () => {
+      return;
+    });
+
     if (!Array.isArray(params.imageBlobs)) {
       return;
     }
@@ -95,6 +104,10 @@ export default class Export {
       remainingHeightMM -= 10; // gap between images
     });
 
+    if (abortSignal.aborted) {
+      return;
+    }
+
     pdf.save(params.filename);
   }
 
@@ -102,9 +115,19 @@ export default class Export {
    * Create ZIP blob.
    * @param {object} [params] Parameters.
    * @param {object[]} params.imageBlobs Imageblob data.
+   * @param {string} params.filename Filename for export.
+   * @param {AbortSignal} [abortSignal] Abort signal.
    * @returns {Blob} ZIP file blob.
    */
-  static async createDOCX(params = {}) {
+  static async createDOCX(params = {}, abortSignal) {
+    if (abortSignal.aborted) {
+      return;
+    }
+
+    abortSignal.addEventListener('abort', () => {
+      return;
+    });
+
     const sectionChildren = [];
 
     for (let i = 0; i < params.imageBlobs.length; i++) {
@@ -174,6 +197,10 @@ export default class Export {
       }]
     });
 
+    if (abortSignal.aborted) {
+      return;
+    }
+
     return await Packer.toBlob(doc).then((blob) => {
       return blob;
     });
@@ -182,10 +209,21 @@ export default class Export {
   /**
    * Create ZIP blob.
    * @param {object[]} data File data.
+   * @param {string} data[].name Filename.
+   * @param {Blob} data[].blob Blob.
+   * @param {AbortSignal} [abortSignal] Abort signal.
    * @returns {Blob} ZIP file blob.
    */
-  static async createZip(data = []) {
+  static async createZip(data = [], abortSignal) {
     return await new Promise((resolve) => {
+      if (abortSignal.aborted) {
+        resolve(null);
+      }
+
+      abortSignal.addEventListener('abort', () => {
+        resolve(null);
+      });
+
       if (!Array.isArray(data)) {
         resolve(null);
       }

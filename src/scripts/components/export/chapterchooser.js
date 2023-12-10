@@ -8,6 +8,7 @@ export default class ChapterChooser {
   /**
    * @class
    * @param {object} [params] Parameters.
+   * @param {object} params.dictionary Dictionary.
    * @param {object} [callbacks] Callbacks.
    * @param {function} [callbacks.onExportStarted] Callback export started.
    * @param {function} [callbacks.onExportProgress] Callback export progress.
@@ -21,6 +22,8 @@ export default class ChapterChooser {
       onExportProgress: () => {},
       onExportEnded: () => {}
     }, callbacks);
+
+    this.abortController = new AbortController(); // Dummy controller
 
     // Keep track of checkboxes.
     this.checkboxes = [];
@@ -101,7 +104,7 @@ export default class ChapterChooser {
     this.buttonExportImages.innerText =
       this.params.dictionary.get('l10n.exportImages');
     this.buttonExportImages.addEventListener('click', () => {
-      this.handleExport('images');
+      this.handleExport('images', this.abortController.signal);
     });
     buttonsWrapper.appendChild(this.buttonExportImages);
 
@@ -112,7 +115,7 @@ export default class ChapterChooser {
     this.buttonExportPDF.innerText =
       this.params.dictionary.get('l10n.exportPDF');
     this.buttonExportPDF.addEventListener('click', () => {
-      this.handleExport('pdf');
+      this.handleExport('pdf', this.abortController.signal);
     });
     buttonsWrapper.appendChild(this.buttonExportPDF);
 
@@ -123,7 +126,7 @@ export default class ChapterChooser {
     this.buttonExportDOCX.innerText =
       this.params.dictionary.get('l10n.exportDOCX');
     this.buttonExportDOCX.addEventListener('click', () => {
-      this.handleExport('docx');
+      this.handleExport('docx', this.abortController.signal);
     });
     buttonsWrapper.appendChild(this.buttonExportDOCX);
 
@@ -137,6 +140,14 @@ export default class ChapterChooser {
    */
   getDOM() {
     return this.dom;
+  }
+
+  /**
+   * Set abort controller.
+   * @param {AbortController} abortController Abort controller.s
+   */
+  setAbortController(abortController) {
+    this.abortController = abortController;
   }
 
   /**
@@ -261,9 +272,18 @@ export default class ChapterChooser {
   /**
    * Get cover.
    * @param {boolean} enforceImage If true, enforce image in return.
+   * @param {AbortSignal} abortSignal Abort signal.
    * @returns {Blob} Screenshot.
    */
-  async getCover(enforceImage) {
+  async getCover(enforceImage, abortSignal) {
+    if (abortSignal.aborted) {
+      return;
+    }
+
+    abortSignal.addEventListener('abort', () => {
+      return;
+    });
+
     const dom = this.instance.getCoverDOM();
 
     // Hide read button
@@ -287,9 +307,18 @@ export default class ChapterChooser {
    * Get screenshots of chapter.
    * @param {number} chapterId Chapter's id.
    * @param {boolean} enforceImage If true, enforce image in return.
+   * @param {AbortSignal} abortSignal Abort signal.
    * @returns {Blob[]} Screenshots.
    */
-  async getScreenshots(chapterId, enforceImage) {
+  async getScreenshots(chapterId, enforceImage, abortSignal) {
+    if (abortSignal.aborted) {
+      return [];
+    }
+
+    abortSignal.addEventListener('abort', () => {
+      return [];
+    });
+
     return await new Promise((resolve) => {
       this.instance.moveTo({ id: chapterId });
 
@@ -351,8 +380,9 @@ export default class ChapterChooser {
   /**
    * Handle export.
    * @param {string} type Type of export.
+   * @param {AbortSignal} abortSignal Abort signal.
    */
-  async handleExport(type) {
+  async handleExport(type, abortSignal) {
     if (typeof type !== 'string') {
       return;
     }
@@ -361,7 +391,17 @@ export default class ChapterChooser {
 
     let exportErrorMessage = null;
 
-    window.setTimeout(async () => {
+    const performExport = async () => {
+      if (abortSignal.aborted) {
+        this.callbacks.onExportEnded();
+        return;
+      }
+
+      abortSignal.addEventListener('abort', () => {
+        this.callbacks.onExportEnded();
+        return;
+      });
+
       // Retrieve information for chosen chapters
       const chapterInfo = this.instance.getChaptersInformation();
       const chosenChapters = this.checkboxes.reduce((checked, current, index) => {
@@ -396,7 +436,7 @@ export default class ChapterChooser {
           text: this.params.dictionary.get('l10n.processingCover')
         });
 
-        const coverBlob = await this.getCover(type !== 'images');
+        const coverBlob = await this.getCover(type !== 'images', abortSignal);
         if (coverBlob) {
           // Sanitize name for file output
           const name = this.params.dictionary.get('l10n.coverPage')
@@ -426,7 +466,8 @@ export default class ChapterChooser {
         // Get screenshots
         const [screenshots, errorMessage] = await this.getScreenshots(
           chosenChapters[i].index,
-          type !== 'images' // Enforce pixel for pdf/docx
+          type !== 'images', // Enforce pixel for pdf/docx
+          abortSignal
         );
 
         if (errorMessage) {
@@ -434,7 +475,7 @@ export default class ChapterChooser {
           break;
         }
 
-        if (!screenshots.length) {
+        if (!screenshots?.length) {
           continue;
         }
 
@@ -459,7 +500,7 @@ export default class ChapterChooser {
 
       if (type === 'images') {
         Export.offerDownload({
-          blob: await Export.createZip(imageBlobs),
+          blob: await Export.createZip(imageBlobs, abortSignal),
           filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.zip`
         });
       }
@@ -467,17 +508,20 @@ export default class ChapterChooser {
         Export.exportPDF({
           imageBlobs: imageBlobs,
           filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.pdf`
-        });
+        }, abortSignal);
       }
       else if (type === 'docx') {
         Export.offerDownload({
-          blob: await Export.createDOCX({ imageBlobs: imageBlobs }),
+          blob: await Export.createDOCX({ imageBlobs: imageBlobs }, abortSignal),
           filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.docx`
         });
       }
 
       this.callbacks.onExportEnded();
-    }, 0);
+    };
+
+    await Util.wait(5);
+    await performExport();
   }
 }
 
