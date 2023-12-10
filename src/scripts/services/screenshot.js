@@ -8,9 +8,18 @@ export default class Screenshot {
    * @param {HTMLElement} [params.element] Element to
    *   take screenshot from.
    * @param {boolean} [params.enforceImage] If true, always return some image.
-   * @returns {Blob} Image blob.
+   * @param {AbortSignal} [abortSignal] Abort signal.
+   * @returns {Blob|null} Image blob.
    */
-  static async takeScreenshot(params = {}) {
+  static async takeScreenshot(params = {}, abortSignal = null) {
+    if (abortSignal.aborted) {
+      return null;
+    }
+
+    abortSignal.addEventListener('abort', () => {
+      return null;
+    });
+
     if (!params.element) {
       params.element = document.body; // Could have been null
     }

@@ -293,7 +293,8 @@ export default class ChapterChooser {
     }
 
     const coverBlob = await Screenshot.takeScreenshot(
-      { element: dom, enforceImage: enforceImage }
+      { element: dom, enforceImage: enforceImage },
+      abortSignal
     );
 
     if (button) {
@@ -331,22 +332,30 @@ export default class ChapterChooser {
         let errorMessage;
 
         for (let i = 0; i < doms.length; i++) {
+          if (abortSignal.aborted) {
+            resolve([[]]);
+          }
+
           if (errorMessage) {
             break;
           }
 
           let retries = ChapterChooser.MAX_RETRIES_PER_SHOT;
 
-          while (retries > 0) {
+          while (retries > 0 && !abortSignal.aborted) {
             try {
               screenshot = await Screenshot.takeScreenshot(
-                { element: doms[i], enforceImage: enforceImage }
+                { element: doms[i], enforceImage: enforceImage },
+                this.abortController.signal
               );
               retries = -1;
               errorMessage = undefined;
             }
             catch (error) {
-              if (retries === ChapterChooser.MAX_RETRIES_PER_SHOT) {
+              if (
+                retries === ChapterChooser.MAX_RETRIES_PER_SHOT &&
+                !abortSignal.aborted
+              ) {
                 errorMessage = [
                   this.params.dictionary.get('l10n.cannotExportSomeContent'),
                   this.params.dictionary.get('l10n.pleaseKeepTabActive')
@@ -359,9 +368,7 @@ export default class ChapterChooser {
             }
 
             if (retries > 0) {
-              await new Promise((resolve) => {
-                setTimeout(resolve, ChapterChooser.RETRY_TIMEOUT_MS);
-              });
+              await Util.wait(ChapterChooser.RETRY_TIMEOUT_MS);
             }
           }
 
@@ -498,23 +505,25 @@ export default class ChapterChooser {
         text: this.params.dictionary.get('l10n.creatingExportFile')
       });
 
-      if (type === 'images') {
-        Export.offerDownload({
-          blob: await Export.createZip(imageBlobs, abortSignal),
-          filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.zip`
-        });
-      }
-      else if (type === 'pdf') {
-        Export.exportPDF({
-          imageBlobs: imageBlobs,
-          filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.pdf`
-        }, abortSignal);
-      }
-      else if (type === 'docx') {
-        Export.offerDownload({
-          blob: await Export.createDOCX({ imageBlobs: imageBlobs }, abortSignal),
-          filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.docx`
-        });
+      if (!abortSignal.aborted) {
+        if (type === 'images') {
+          Export.offerDownload({
+            blob: await Export.createZip(imageBlobs, abortSignal),
+            filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.zip`
+          });
+        }
+        else if (type === 'pdf') {
+          Export.exportPDF({
+            imageBlobs: imageBlobs,
+            filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.pdf`
+          }, abortSignal);
+        }
+        else if (type === 'docx') {
+          Export.offerDownload({
+            blob: await Export.createDOCX({ imageBlobs: imageBlobs }, abortSignal),
+            filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.docx`
+          });
+        }
       }
 
       this.callbacks.onExportEnded();
