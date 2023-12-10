@@ -36,6 +36,10 @@ export default class Export {
     let hasPageImage = false;
 
     params.imageBlobs.forEach((entry, index) => {
+      if (abortSignal.aborted) {
+        return;
+      }
+
       if (index > 0 && (entry.title || remainingHeightMM <= 0)) {
         pdf.addPage();
         remainingHeightMM = Export.PAGE_HEIGHT_MAX_MM;
@@ -131,6 +135,10 @@ export default class Export {
     const sectionChildren = [];
 
     for (let i = 0; i < params.imageBlobs.length; i++) {
+      if (abortSignal.aborted) {
+        return;
+      }
+
       if (params.imageBlobs[i].title) {
         sectionChildren.push(new Paragraph({
           children: [new TextRun(params.imageBlobs[i].title)],
@@ -173,6 +181,10 @@ export default class Export {
         })],
         spacing: { after: convertMillimetersToTwip(Export.PAGE_MARGIN_MM) }
       }));
+    }
+
+    if (abortSignal.aborted) {
+      return;
     }
 
     // Create document
@@ -244,8 +256,16 @@ export default class Export {
 
       const zip = new JSZip();
       data.forEach((data) => {
+        if (abortSignal.aborted) {
+          resolve(null);
+        }
+
         zip.file(data.name, data.blob);
       });
+
+      if (abortSignal.aborted) {
+        resolve(null);
+      }
 
       zip.generateAsync({ type: 'blob' }).then((content) => {
         resolve(content);
