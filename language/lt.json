@@ -71,6 +71,7 @@
     "a11y.unselectAll": "Atžymėti visus skyrius.",
     "a11y.deleteHiddenActive": "Ištrinti paslėptą turinį",
     "a11y.deleteHiddenDisabled": "Ištrinkti paslėptą turinį. Šiuo metu neįmanoma.",
-    "a11y.deleteHiddenInactive": "Ištrinti paslėptą turinį"
+    "a11y.deleteHiddenInactive": "Ištrinti paslėptą turinį",
+    "a11y.toolbarLabel": "Global actions"
   }
 }

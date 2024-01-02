@@ -52,7 +52,6 @@ export default class ToolbarButton {
       });
     }
     this.button.setAttribute('aria-pressed', this.params.active);
-    this.button.setAttribute('tabindex', '0');
 
     if (this.params.active === true) {
       this.activate();
@@ -87,34 +86,6 @@ export default class ToolbarButton {
    */
   getDOM() {
     return this.button;
-  }
-
-  /**
-   * Show button.
-   */
-  show() {
-    this.button.classList.remove('toolbar-button-display-none');
-  }
-
-  /**
-   * Hide button.
-   */
-  hide() {
-    this.button.classList.add('toolbar-button-display-none');
-  }
-
-  /**
-   * Decloak button.
-   */
-  decloak() {
-    this.button.classList.remove('toolbar-button-cloak');
-  }
-
-  /**
-   * Cloak button.
-   */
-  cloak() {
-    this.button.classList.add('toolbar-button-cloak');
   }
 
   /**
@@ -245,13 +216,5 @@ export default class ToolbarButton {
    */
   isDisabled() {
     return this.disabled;
-  }
-
-  /**
-   * Determine whether button is cloaked.
-   * @returns {boolean} True, if button is cloaked, else false.
-   */
-  isCloaked() {
-    return this.button.classList.contains('toolbar-button-cloak');
   }
 }

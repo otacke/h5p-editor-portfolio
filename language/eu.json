@@ -71,6 +71,7 @@
     "a11y.unselectAll": "Deshautatu kapitulu guztiak.",
     "a11y.deleteHiddenActive": "Ezabatu ezkutuko edukiak",
     "a11y.deleteHiddenDisabled": "Ezabatu ezkutuko edukiak. Momentuz ez da posible.",
-    "a11y.deleteHiddenInactive": "Ezabatu ezkutuko edukiak"
+    "a11y.deleteHiddenInactive": "Ezabatu ezkutuko edukiak",
+    "a11y.toolbarLabel": "Global actions"
   }
 }

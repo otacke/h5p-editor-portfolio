@@ -24,9 +24,18 @@ export default class Toolbar {
     this.buttons = {};
 
     // Build DOM
-    this.toolBar = document.createElement('div');
-    this.toolBar.classList.add('toolbar-tool-bar');
+    this.dom = document.createElement('div');
+    this.dom.classList.add('toolbar-tool-bar');
+    this.dom.setAttribute('role', 'toolbar');
+    this.dom.setAttribute(
+      'aria-label', this.params.dictionary.get('a11y.toolbarLabel')
+    );
 
+    this.dom.addEventListener('keydown', (event) => {
+      this.handleKeydown(event);
+    });
+
+    // Preview button
     this.buttons.preview = new ToolbarButton(
       {
         a11y: {
@@ -47,8 +56,9 @@ export default class Toolbar {
         }
       }
     );
-    this.toolBar.appendChild(this.buttons.preview.getDOM());
+    this.dom.appendChild(this.buttons.preview.getDOM());
 
+    // Export button
     this.buttons.export = new ToolbarButton(
       {
         a11y: {
@@ -69,8 +79,9 @@ export default class Toolbar {
         }
       }
     );
-    this.toolBar.appendChild(this.buttons.export.getDOM());
+    this.dom.appendChild(this.buttons.export.getDOM());
 
+    // Delete hidden button
     this.buttons.deleteHidden = new ToolbarButton(
       {
         a11y: {
@@ -91,7 +102,13 @@ export default class Toolbar {
         }
       }
     );
-    this.toolBar.appendChild(this.buttons.deleteHidden.getDOM());
+    this.dom.appendChild(this.buttons.deleteHidden.getDOM());
+
+    // Make first button active one
+    Object.values(this.buttons).forEach((button, index) => {
+      button.setAttribute('tabindex', index === 0 ? '0' : '-1');
+    });
+    this.currentButtonIndex = 0;
   }
 
   /**
@@ -99,7 +116,7 @@ export default class Toolbar {
    * @returns {HTMLElement} DOM for this class.
    */
   getDOM() {
-    return this.toolBar;
+    return this.dom;
   }
 
   /**
@@ -168,62 +185,68 @@ export default class Toolbar {
   }
 
   /**
-   * Show button.
-   * @param {string} id Button id.
-   */
-  showButton(id = '') {
-    if (!this.buttons[id]) {
-      return; // Button not available
-    }
-
-    this.buttons[id].show();
-  }
-
-  /**
-   * Hide button.
-   * @param {string} id Button id.
-   */
-  hideButton(id = '') {
-    if (!this.buttons[id]) {
-      return; // Button not available
-    }
-
-    this.buttons[id].hide();
-  }
-
-  /**
-   * Decloak button.
-   * @param {string} id Button id.
-   */
-  decloakButton(id = '') {
-    if (!this.buttons[id]) {
-      return; // Button not available
-    }
-
-    this.buttons[id].decloak();
-  }
-
-  /**
-   * Cloak button.
-   * @param {string} id Button id.
-   */
-  cloakButton(id = '') {
-    if (!this.buttons[id]) {
-      return; // Button not available
-    }
-
-    this.buttons[id].cloak();
-  }
-
-  /**
    * Focus a button.
    * @param {string} id Button id.
    */
-  focus(id = '') {
-    if (!this.buttons[id] || this.buttons[id].isCloaked()) {
+  focusButton(id = '') {
+    if (!this.buttons[id]) {
       return; // Button not available
     }
 
     this.buttons[id].focus();
+  }
+
+  /**
+   * Focus whatever should get focus.
+   */
+  focus() {
+    Object.values(this.buttons)[this.currentButtonIndex]?.focus();
+  }
+
+  /**
+   * Move button focus.
+   * @param {number} offset Offset to move position by.
+   */
+  moveButtonFocus(offset) {
+    if (typeof offset !== 'number') {
+      return;
+    }
+    if (
+      this.currentButtonIndex + offset < 0 ||
+      this.currentButtonIndex + offset > Object.keys(this.buttons).length - 1
+    ) {
+      return; // Don't cycle
+    }
+    Object.values(this.buttons)[this.currentButtonIndex]
+      .setAttribute('tabindex', '-1');
+    this.currentButtonIndex = this.currentButtonIndex + offset;
+    const focusButton = Object.values(this.buttons)[this.currentButtonIndex];
+    focusButton.setAttribute('tabindex', '0');
+    focusButton.focus();
+  }
+
+  /**
+   * Handle key down.
+   * @param {KeyboardEvent} event Keyboard event.
+   */
+  handleKeydown(event) {
+    if (event.code === 'ArrowLeft' || event.code === 'ArrowUp') {
+      this.moveButtonFocus(-1);
+    }
+    else if (event.code === 'ArrowRight' || event.code === 'ArrowDown') {
+      this.moveButtonFocus(1);
+    }
+    else if (event.code === 'Home') {
+      this.moveButtonFocus(0 - this.currentButtonIndex);
+    }
+    else if (event.code === 'End') {
+      this.moveButtonFocus(
+        Object.keys(this.buttons).length - 1 - this.currentButtonIndex
+      );
+    }
+    else {
+      return;
+    }
+    event.preventDefault();
   }
 }

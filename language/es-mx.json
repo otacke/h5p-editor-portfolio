@@ -71,6 +71,7 @@
     "a11y.unselectAll": "Des-seleccionar todos los capítulos.",
     "a11y.deleteHiddenActive": "Eliminar contenidos ocultos",
     "a11y.deleteHiddenDisabled": "Eliminar contenidos ocultos. Actualmente no es posible.",
-    "a11y.deleteHiddenInactive": "Eliminar contenidos ocultos"
+    "a11y.deleteHiddenInactive": "Eliminar contenidos ocultos",
+    "a11y.toolbarLabel": "Global actions"
   }
 }

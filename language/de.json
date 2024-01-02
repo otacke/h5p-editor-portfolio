@@ -71,6 +71,7 @@
     "a11y.unselectAll": "Wähle alle Kapitel ab.",
     "a11y.deleteHiddenActive": "Lösche versteckte Inhalte",
     "a11y.deleteHiddenDisabled": "Lösche versteckte Inhalte. Derzeit nicht möglich.",
-    "a11y.deleteHiddenInactive": "Lösche versteckte Inhalte"
+    "a11y.deleteHiddenInactive": "Lösche versteckte Inhalte",
+    "a11y.toolbarLabel": "Globale Aktionen"
   }
 }

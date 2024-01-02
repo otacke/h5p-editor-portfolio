@@ -71,6 +71,7 @@
     "a11y.unselectAll": "Unselect all chapters.",
     "a11y.deleteHiddenActive": "Delete hidden contents",
     "a11y.deleteHiddenDisabled": "Delete hidden contents. Currently not possible.",
-    "a11y.deleteHiddenInactive": "Delete hidden contents"
+    "a11y.deleteHiddenInactive": "Delete hidden contents",
+    "a11y.toolbarLabel": "Global actions"
   }
 }

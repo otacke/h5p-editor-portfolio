@@ -29,6 +29,8 @@ $icon-button-delete-grey: url("@assets/button-delete-icon-grey.svg");
   }
 
   .toolbar-button {
+    background-image: $icon-button-preview-blue;
+
     &.toolbar-button-preview {
       background-image: $icon-button-preview-blue;
 
