@@ -1,4 +1,4 @@
-import Readspeaker from '@services/readspeaker';
+import Readspeaker from '@services/readspeaker.js';
 
 /**
  * Mixin containing methods for preview related stuff.
@@ -67,7 +67,8 @@ export default class Preview {
       .find((library) => library.split(' ')[0] === 'H5P.Portfolio');
 
     // Copy of params without certain contents in preview.
-    const contentParams = this.filterContentTypesNotPreviewable(this.parent.params);
+    const contentParams =
+      this.filterContentTypesNotPreviewable(this.parent.params);
     contentParams.behaviour.isPreview = true;
 
     this.previewInstance = H5P.newRunnable(
@@ -144,5 +145,5 @@ export default class Preview {
 
 /** @constant {string[]} Content types that cannot render preview */
 Preview.CONTENT_TYPES_WITHOUT_PREVIEW = [
-  'H5P.Timeline' // Seems to require some extra treatment when attaching
+  'H5P.Timeline' // Seems to require some extra treatment when attaching, cmp. https://github.com/h5p/h5p-timeline/pull/68
 ];

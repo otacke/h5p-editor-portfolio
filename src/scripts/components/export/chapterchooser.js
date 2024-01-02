@@ -1,6 +1,6 @@
-import Export from '@services/export';
-import Screenshot from '@services/screenshot';
-import Util from '@services/util';
+import Export from '@services/export.js';
+import Screenshot from '@services/screenshot.js';
+import Util from '@services/util.js';
 import './chapterchooser.scss';
 
 /** Class for an activity indicator aka spinner */

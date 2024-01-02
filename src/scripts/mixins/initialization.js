@@ -202,7 +202,7 @@ export default class Initialization {
   }
 
   /**
-   * Fill this.dictionary.
+   * Fill dictionary.
    */
   fillDictionary() {
     // Convert H5PEditor language strings into object.

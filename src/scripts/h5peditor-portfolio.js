@@ -1,15 +1,20 @@
-import ChapterNavigation from '@components/navigation/chapter-navigation';
-import PreviewOverlay from '@components/preview/preview-overlay';
-import Util from '@services/util';
-import Dictionary from '@services/dictionary';
-import Readspeaker from '@services/readspeaker';
-import Chapter from '@mixins/chapter';
-import Export from '@mixins/export';
-import Initialization from '@mixins/initialization';
-import Preview from '@mixins/preview';
-import Toolbar from '@components/toolbar/toolbar';
-import Spinner from '@components/spinner/spinner';
-import ChapterChooser from '@components/export/chapterchooser';
+import ChapterChooser from '@components/export/chapterchooser.js';
+import ChapterNavigation from '@components/navigation/chapter-navigation.js';
+import PreviewOverlay from '@components/preview/preview-overlay.js';
+import Spinner from '@components/spinner/spinner.js';
+import Toolbar from '@components/toolbar/toolbar.js';
+
+import Dictionary from '@services/dictionary.js';
+import Readspeaker from '@services/readspeaker.js';
+import Util from '@services/util.js';
+
+import Chapter from '@mixins/chapter.js';
+import { MAX_LEVEL } from '@mixins/chapter.js';
+import ChapterActions from '@mixins/chapter-actions.js';
+import Export from '@mixins/export.js';
+import Initialization from '@mixins/initialization.js';
+import Preview from '@mixins/preview.js';
+
 import H5PLibrary from '@root/library.json';
 
 /** Class for Portfolio H5P widget */
@@ -24,7 +29,7 @@ export default class Portfolio {
    */
   constructor(parent, field, params, setValue) {
     Util.addMixins(
-      Portfolio, [Chapter, Export, Initialization, Preview]
+      Portfolio, [Chapter, ChapterActions, Export, Initialization, Preview]
     );
 
     this.parent = parent;
@@ -167,7 +172,7 @@ export default class Portfolio {
         dictionary: this.dictionary,
         title: this.parent?.metadata?.title || 'Portfolio',
         chapterList: this.chapterList,
-        hierarchyLevelMax: Chapter.MAX_LEVEL
+        hierarchyLevelMax: MAX_LEVEL
       },
       {
         onGetChapterTitle: (id) => {

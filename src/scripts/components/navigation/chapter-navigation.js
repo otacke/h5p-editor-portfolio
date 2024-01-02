@@ -1,8 +1,8 @@
 import './chapter-navigation.scss';
-import Util from '@services/util';
+import Util from '@services/util.js';
 import ChapterNavigationButton from './chapter-navigation-button.js';
 import SubMenu from './sub-menu.js';
-import Readspeaker from '@services/readspeaker';
+import Readspeaker from '@services/readspeaker.js';
 
 export default class ChapterNavigation {
   constructor(params = {}, callbacks = {}) {

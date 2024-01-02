@@ -1,5 +1,5 @@
 import './chapter-navigation-button.scss';
-import Util from '@services/util';
+import Util from '@services/util.js';
 import SubMenu from './sub-menu.js';
 
 export default class ChapterNavigationButton {

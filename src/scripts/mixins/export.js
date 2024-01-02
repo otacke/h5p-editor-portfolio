@@ -1,4 +1,4 @@
-import Readspeaker from '@services/readspeaker';
+import Readspeaker from '@services/readspeaker.js';
 
 /**
  * Mixin containing methods for export related stuff.
@@ -8,6 +8,10 @@ export default class Export {
    * Open screenshot dialog.
    */
   async openExportDialog() {
+    /*
+     * Your IDE may complain here, but it's fine: `this` refers to the
+     * Portfolio class that is using this mixin.
+     */
     this.createPreviewInstance(true);
     if (!this.previewInstance) {
       return;

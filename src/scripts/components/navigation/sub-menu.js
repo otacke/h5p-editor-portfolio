@@ -1,5 +1,5 @@
 import './sub-menu.scss';
-import Util from '@services/util';
+import Util from '@services/util.js';
 
 export default class SubMenu extends H5P.EventDispatcher {
   constructor(params = {}) {
