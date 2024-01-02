@@ -93,7 +93,8 @@ export default class ChapterActions {
           '' :
           ` (${nextCopyLabelNumber})`;
 
-        const newLabel = `${baseName} ${this.dictionary.get('l10n.labelCopy')} ${copyCounter}`;
+        const newLabel =
+          `${baseName} ${this.dictionary.get('l10n.labelCopy')} ${copyCounter}`;
 
         // Replace subcontent ids in instance params
         const newInstanceParams = Util.replaceSubContentIDs(
@@ -124,7 +125,7 @@ export default class ChapterActions {
         }
 
         // Move to appropriate position
-        // TODO: Clean up, so moveChapter works with abs(moveOffset) > 1
+        // Beware, moveChapter only works for an offset of -1 or 1!!!
         for (let count = 0; count < Math.abs(moveOffset); count++) {
           this.moveChapter(
             newId + count * Math.sign(moveOffset),
@@ -257,7 +258,7 @@ export default class ChapterActions {
     // Move item parameters in list widget
     this.chapterList.moveItem(indexSource, indexTarget);
 
-    // TODO: Beware, this only works for an offset of -1 or 1!!!
+    // Beware, this only works for an offset of -1 or 1!!!
     if (options.updateNavigationButtons !== false) {
       this.chapterNavigation.swapButtons({
         button1: this.chapterNavigation.getButton(indexSource),
