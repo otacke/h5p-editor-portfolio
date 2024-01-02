@@ -38,7 +38,9 @@ export default class ChapterNavigationButton {
     // Build DOM
     this.dom = document.createElement('button');
     this.dom.classList.add('h5peditor-portfolio-chapter-button');
-    this.dom.classList.add(`h5peditor-portfolio-chapter-button-level-${this.params.hierarchyLevel}`);
+    this.dom.classList.add(
+      `h5peditor-portfolio-chapter-button-level-${this.params.hierarchyLevel}`
+    );
     this.dom.setAttribute('draggable', true);
     this.dom.setAttribute('role', 'menuitem');
     this.dom.setAttribute('tabindex', '-1');
@@ -67,7 +69,9 @@ export default class ChapterNavigationButton {
     // Menu
     this.menu = document.createElement('button');
     this.menu.classList.add('h5peditor-portfolio-chapter-button-menu');
-    this.menu.setAttribute('aria-label', this.params.dictionary.get('a11y.openSubmenu'));
+    this.menu.setAttribute(
+      'aria-label', this.params.dictionary.get('a11y.openSubmenu')
+    );
     this.menu.addEventListener('click', (event) => {
       this.handleClickMenu(event);
     });
@@ -75,7 +79,9 @@ export default class ChapterNavigationButton {
 
     // Placeholder to show when dragging
     this.dragPlaceholder = document.createElement('div');
-    this.dragPlaceholder.classList.add('h5peditor-portfolio-chapter-button-placeholder');
+    this.dragPlaceholder.classList.add(
+      'h5peditor-portfolio-chapter-button-placeholder'
+    );
 
     // These listeners prevent Firefox from showing draggable animation
     this.dragPlaceholder.addEventListener('dragover', (event) => {
@@ -184,7 +190,7 @@ export default class ChapterNavigationButton {
    * Show button.
    */
   show() {
-    this.dom.classList.remove('no-display');
+    this.dom.classList.remove('display-none');
     this.shown = true;
   }
 
@@ -192,7 +198,7 @@ export default class ChapterNavigationButton {
    * Hide button.
    */
   hide() {
-    this.dom.classList.add('no-display');
+    this.dom.classList.add('display-none');
     this.shown = false;
   }
 
@@ -324,7 +330,9 @@ export default class ChapterNavigationButton {
     setTimeout(() => {
       const rect = this.dom.getBoundingClientRect();
 
-      this.menu.setAttribute('aria-label', this.params.dictionary.get('a11y.closeSubmenu'));
+      this.menu.setAttribute(
+        'aria-label', this.params.dictionary.get('a11y.closeSubmenu')
+      );
       this.menu.classList.add('active');
       subMenu.show({
         keyboardUsed: keyboardUsed,
@@ -337,7 +345,9 @@ export default class ChapterNavigationButton {
 
       subMenu.once('hidden', (event) => {
         this.menu.classList.remove('active');
-        this.menu.setAttribute('aria-label', this.params.dictionary.get('a11y.openSubmenu'));
+        this.menu.setAttribute(
+          'aria-label', this.params.dictionary.get('a11y.openSubmenu')
+        );
         if (!event?.data?.keepFocus) {
           this.dom.focus();
         }
@@ -365,7 +375,9 @@ export default class ChapterNavigationButton {
    * Attach drag placeholder.
    */
   attachDragPlaceholder() {
-    this.dom.parentNode.insertBefore(this.dragPlaceholder, this.dom.nextSibling);
+    this.dom.parentNode.insertBefore(
+      this.dragPlaceholder, this.dom.nextSibling
+    );
   }
 
   /**

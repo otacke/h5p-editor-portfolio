@@ -30,6 +30,7 @@ export default class ChapterNavigation {
     this.dom.setAttribute('role', 'menu');
     this.dom.setAttribute('tabindex', '-1');
 
+    // Title
     const title = document.createElement('div');
     title.classList.add('h5peditor-portfolio-chapter-navigation-maintitle');
     this.titleText = document.createElement('h2');
@@ -38,11 +39,13 @@ export default class ChapterNavigation {
     this.setTitle(this.params.title);
     this.dom.appendChild(title);
 
+    // Button separator
     this.buttonSeparator = document.createElement('div');
     this.buttonSeparator.classList
       .add('h5peditor-portfolio-chapter-button-separator');
     this.dom.appendChild(this.buttonSeparator);
 
+    // Add button
     this.buttonAdd = document.createElement('button');
     this.buttonAdd.classList.add('h5peditor-portfolio-chapter-button-add');
     this.buttonAdd.setAttribute(
@@ -74,6 +77,7 @@ export default class ChapterNavigation {
       }
     });
 
+    // Submenu
     this.subMenu = new SubMenu(
       {
         dictionary: this.params.dictionary,
@@ -168,7 +172,7 @@ export default class ChapterNavigation {
    * @returns {number} Id of button or -1 if not found.
    */
   getButtonId(button) {
-    return this.buttons.findIndex((but) => but === button);
+    return this.buttons.findIndex((buttonFound) => buttonFound === button);
   }
 
   /**
@@ -543,20 +547,22 @@ export default class ChapterNavigation {
     this.dropzoneElement = button;
     this.dragIndexTarget = this.getButtonId(button);
 
-    if (this.draggedElement && this.dropzoneElement && this.draggedElement !== this.dropzoneElement) {
+    if (
+      this.draggedElement &&
+      this.dropzoneElement &&
+      this.draggedElement !== this.dropzoneElement
+    ) {
       const id1 = this.getButtonId(this.draggedElement);
       const id2 = this.getButtonId(this.dropzoneElement);
       if (id1 < 0 || id2 < 0) {
         return;
       }
 
-      // Swap dragged draggable and draggable that's dragged to if not identical
-      if (this.dropzoneElement && this.draggedElement && this.draggedElement !== this.dropzoneElement) {
-        this.swapButtons({
-          button1: this.draggedElement,
-          button2: this.dropzoneElement
-        });
-      }
+      // Swap dragged draggable and draggable that's dragged to
+      this.swapButtons({
+        button1: this.draggedElement,
+        button2: this.dropzoneElement
+      });
     }
   }
 
@@ -629,7 +635,9 @@ export default class ChapterNavigation {
         this.buttons.splice(this.dragIndexSource, 0, button);
       }
       else {
-        for (let index = 0; index < this.draggedChildrenIndices.length; index++) {
+        for (
+          let index = 0; index < this.draggedChildrenIndices.length; index++
+        ) {
           const position = this.dragIndexSource +
             ((moveOffset > 0) ? 0 : index + 1);
 
