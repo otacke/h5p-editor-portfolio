@@ -28,7 +28,7 @@
     "l10n.exportImages": "Exportar PNG",
     "l10n.exportPDF": "Exportar PDF",
     "l10n.exportDOCX": "Exportar DOCX",
-    "l10n.abort": "Abort",
+    "l10n.abort": "Abortar",
     "l10n.chapterTitle": "Título del capítulo",
     "l10n.selectAll": "Seleccionar todos los capítulos",
     "l10n.unselectAll": "Des-seleccionar todos los capítulos",
@@ -72,6 +72,6 @@
     "a11y.deleteHiddenActive": "Eliminar contenidos ocultos",
     "a11y.deleteHiddenDisabled": "Eliminar contenidos ocultos. Actualmente no es posible.",
     "a11y.deleteHiddenInactive": "Eliminar contenidos ocultos",
-    "a11y.toolbarLabel": "Global actions"
+    "a11y.toolbarLabel": "Acciones globales"
   }
 }
