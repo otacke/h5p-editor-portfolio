@@ -145,5 +145,5 @@ export default class Preview {
 
 /** @constant {string[]} Content types that cannot render preview */
 Preview.CONTENT_TYPES_WITHOUT_PREVIEW = [
-  'H5P.Timeline' // Seems to require some extra treatment when attaching, cmp. https://github.com/h5p/h5p-timeline/pull/68
+  'H5P.Timeline' // Requires some extra treatment when attaching, cmp. https://github.com/h5p/h5p-timeline/pull/68
 ];

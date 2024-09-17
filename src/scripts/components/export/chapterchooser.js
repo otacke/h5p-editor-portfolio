@@ -3,6 +3,21 @@ import Screenshot from '@services/screenshot.js';
 import Util from '@services/util.js';
 import './chapterchooser.scss';
 
+/** @constant {number} ANIMATION_TIME_BUFFER_MS Time for animation plus buffer. */
+const ANIMATION_TIME_BUFFER_MS = 500;
+
+/** @constant {string} FILENAME_PREFIX Export file name prefix. */
+const FILENAME_PREFIX = 'H5P.Portfolio-Export';
+
+/** @constant {number} MAX_RETRIES_PER_SHOT Number of max retries to take a screenshot. */
+const MAX_RETRIES_PER_SHOT = 3;
+
+/** @constant {number} RETRY_TIMEOUT_MS Retry timeout for screenshot. */
+const RETRY_TIMEOUT_MS = 2500;
+
+/** @constant {number} SLEEP_FIVE_MS Sleep time for five ms. */
+const SLEEP_FIVE_MS = 5;
+
 /** Class for an activity indicator aka spinner */
 export default class ChapterChooser {
   /**
@@ -340,10 +355,12 @@ export default class ChapterChooser {
             break;
           }
 
-          let retries = ChapterChooser.MAX_RETRIES_PER_SHOT;
+          let retries = MAX_RETRIES_PER_SHOT;
 
           while (retries > 0 && !abortSignal.aborted) {
             try {
+              // TODO: Add a better way to handle this
+              // eslint-disable-next-line no-await-in-loop
               screenshot = await Screenshot.takeScreenshot(
                 { element: doms[i], enforceImage: enforceImage },
                 this.abortController.signal
@@ -353,7 +370,7 @@ export default class ChapterChooser {
             }
             catch (error) {
               if (
-                retries === ChapterChooser.MAX_RETRIES_PER_SHOT &&
+                retries === MAX_RETRIES_PER_SHOT &&
                 !abortSignal.aborted
               ) {
                 errorMessage = [
@@ -368,7 +385,9 @@ export default class ChapterChooser {
             }
 
             if (retries > 0) {
-              await Util.wait(ChapterChooser.RETRY_TIMEOUT_MS);
+              // TODO: Add a better way to handle this
+              // eslint-disable-next-line no-await-in-loop
+              await Util.wait(RETRY_TIMEOUT_MS);
             }
           }
 
@@ -380,7 +399,7 @@ export default class ChapterChooser {
         }
 
         resolve([screenshots, errorMessage]);
-      }, 500); // Animation time + buffer for resize
+      }, ANIMATION_TIME_BUFFER_MS); // Animation time + buffer for resize
     });
   }
 
@@ -464,18 +483,25 @@ export default class ChapterChooser {
         this.instance.toggleMenu();
       }
 
-      for (let i = 0; i < chosenChapters.length; i++) {
+      // Create an array to hold the promises for getting screenshots
+      const screenshotPromises = chosenChapters.map((chapter, i) => {
         this.callbacks.onExportProgress({
           number: i + 1,
           of: chosenChapters.length
         });
 
-        // Get screenshots
-        const [screenshots, errorMessage] = await this.getScreenshots(
-          chosenChapters[i].index,
+        return this.getScreenshots(
+          chapter.index,
           type !== 'images', // Enforce pixel for pdf/docx
           abortSignal
         );
+      });
+
+      // Wait for all the promises to resolve
+      const screenshotResults = await Promise.all(screenshotPromises);
+
+      for (let i = 0; i < screenshotResults.length; i++) {
+        const [screenshots, errorMessage] = screenshotResults[i];
 
         if (errorMessage) {
           exportErrorMessage = errorMessage;
@@ -509,19 +535,19 @@ export default class ChapterChooser {
         if (type === 'images') {
           Export.offerDownload({
             blob: await Export.createZip(imageBlobs, abortSignal),
-            filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.zip`
+            filename: `${FILENAME_PREFIX}-${Date.now()}.zip`
           });
         }
         else if (type === 'pdf') {
           Export.exportPDF({
             imageBlobs: imageBlobs,
-            filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.pdf`
+            filename: `${FILENAME_PREFIX}-${Date.now()}.pdf`
           }, abortSignal);
         }
         else if (type === 'docx') {
           Export.offerDownload({
             blob: await Export.createDOCX({ imageBlobs: imageBlobs }, abortSignal),
-            filename: `${ChapterChooser.FILENAME_PREFIX}-${Date.now()}.docx`
+            filename: `${FILENAME_PREFIX}-${Date.now()}.docx`
           });
         }
       }
@@ -529,16 +555,7 @@ export default class ChapterChooser {
       this.callbacks.onExportEnded();
     };
 
-    await Util.wait(5);
+    await Util.wait(SLEEP_FIVE_MS);
     await performExport();
   }
 }
-
-/** @constant {string} FILENAME_PREFIX Export file name prefix. */
-ChapterChooser.FILENAME_PREFIX = 'H5P.Portfolio-Export';
-
-/** @constant {number} MAX_RETRIES_PER_SHOT Number of max retries to take a screenshot. */
-ChapterChooser.MAX_RETRIES_PER_SHOT = 3;
-
-/** @constant {number} RETRY_TIMEOUT_MS Retry timeout for screenshot. */
-ChapterChooser.RETRY_TIMEOUT_MS = 2500;

@@ -197,7 +197,7 @@ export default class Chapter {
     );
 
     // Can only delete if the (new) first item remains on top level
-    capabilities['delete'] = (
+    capabilities.delete = (
       id !== 0 ||
       this.params.chapters[1]?.chapterHierarchy?.split('-')?.length === 1
     );

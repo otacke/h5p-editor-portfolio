@@ -5,6 +5,35 @@ import {
   convertMillimetersToTwip, PageOrientation
 } from 'docx';
 
+/** @constant {number} TOP_MARGIN_FACTOR Page margin factor. */
+const TOP_MARGIN_FACTOR = 1.5;
+
+/** @constant {number} PAGE_WIDTH_MM Page width in mm. */
+const PAGE_WIDTH_MM = 210; // 210 is DinA4 width in mm
+
+/** @constant {number} PAGE_HEIGHT_MM Page height in mm. */
+const PAGE_HEIGHT_MM = 297; // 297 is DinA4 height in mm
+
+/** @constant {number} PAGE_MARGIN_MM Default gap between elements in mm. */
+const PAGE_MARGIN_MM = 10; // Default gap between elements in mm
+
+/** @constant {number} PAGE_WIDTH_MAX_MM Max width in mm. */
+// eslint-disable-next-line no-magic-numbers
+const PAGE_WIDTH_MAX_MM = PAGE_WIDTH_MM - 2 * PAGE_MARGIN_MM;
+
+/** @constant {number} PAGE_HEIGHT_MAX_MM Max width in mm. */
+// eslint-disable-next-line no-magic-numbers
+const PAGE_HEIGHT_MAX_MM = PAGE_HEIGHT_MM - 2 * PAGE_MARGIN_MM;
+
+/** @constant {number} MM_EQUALS_PX Pixels that equal one mm */
+const MM_EQUALS_PX = 3.7795275591;
+
+/** @constant {number} IMAGE_GAP_MM Image gap in mm. */
+const IMAGE_GAP_MM = 10;
+
+/** @constant {number} URL_GENERATION_DELAY_MS URL generation delay in ms. */
+const URL_GENERATION_DELAY_MS = 150;
+
 export default class Export {
 
   /**
@@ -32,7 +61,7 @@ export default class Export {
 
     const pdf = new jsPDF();
 
-    let remainingHeightMM = Export.PAGE_HEIGHT_MAX_MM;
+    let remainingHeightMM = PAGE_HEIGHT_MAX_MM;
     let hasPageImage = false;
 
     params.imageBlobs.forEach((entry, index) => {
@@ -42,17 +71,13 @@ export default class Export {
 
       if (index > 0 && (entry.title || remainingHeightMM <= 0)) {
         pdf.addPage();
-        remainingHeightMM = Export.PAGE_HEIGHT_MAX_MM;
+        remainingHeightMM = PAGE_HEIGHT_MAX_MM;
       }
 
       if (entry.title) {
-        pdf.text(
-          entry.title || entry.name,
-          Export.PAGE_MARGIN_MM,
-          1.5 * Export.PAGE_MARGIN_MM
-        );
+        pdf.text(entry.title || entry.name, PAGE_MARGIN_MM, TOP_MARGIN_FACTOR * PAGE_MARGIN_MM);
         // Assuming text height = marginMM
-        remainingHeightMM -= Export.PAGE_MARGIN_MM;
+        remainingHeightMM -= PAGE_MARGIN_MM;
       }
 
       const image = document.createElement('img');
@@ -67,8 +92,8 @@ export default class Export {
 
       // Determine image size at full width
       let imageSizeScaled = {
-        width: Export.PAGE_WIDTH_MAX_MM,
-        height: Export.PAGE_WIDTH_MAX_MM / imageRatio
+        width: PAGE_WIDTH_MAX_MM,
+        height: PAGE_WIDTH_MAX_MM / imageRatio
       };
 
       // Handle not enough space for image
@@ -77,7 +102,7 @@ export default class Export {
         // Not first image, so use new page
         if (hasPageImage) {
           pdf.addPage();
-          remainingHeightMM = Export.PAGE_HEIGHT_MAX_MM;
+          remainingHeightMM = PAGE_HEIGHT_MAX_MM;
           hasPageImage = false;
 
           if (imageSizeScaled.height > remainingHeightMM) {
@@ -97,15 +122,15 @@ export default class Export {
 
       pdf.addImage(
         image, 'JPEG',
-        Export.PAGE_MARGIN_MM,
-        Export.PAGE_MARGIN_MM + Export.PAGE_HEIGHT_MAX_MM - remainingHeightMM,
+        PAGE_MARGIN_MM,
+        PAGE_MARGIN_MM + PAGE_HEIGHT_MAX_MM - remainingHeightMM,
         imageSizeScaled.width,
         imageSizeScaled.height
       );
       hasPageImage = true;
 
       remainingHeightMM -= imageSizeScaled.height;
-      remainingHeightMM -= 10; // gap between images
+      remainingHeightMM -= IMAGE_GAP_MM; // gap between images
     });
 
     if (abortSignal.aborted) {
@@ -133,6 +158,7 @@ export default class Export {
     });
 
     const sectionChildren = [];
+    const imagePromises = [];
 
     for (let i = 0; i < params.imageBlobs.length; i++) {
       if (abortSignal.aborted) {
@@ -144,11 +170,15 @@ export default class Export {
           children: [new TextRun(params.imageBlobs[i].title)],
           heading: HeadingLevel.HEADING_1,
           pageBreakBefore: true,
-          spacing: { after: convertMillimetersToTwip(Export.PAGE_MARGIN_MM) }
+          spacing: { after: convertMillimetersToTwip(PAGE_MARGIN_MM) }
         }));
       }
 
-      const image = await Export.getImage(params.imageBlobs[i].blob);
+      imagePromises.push(Export.getImage(params.imageBlobs[i].blob));
+    }
+
+    for (let i = 0; i < images.length; i++) {
+      const image = images[i];
       const imageRatio = image.naturalWidth / image.naturalHeight;
 
       if (image.naturalWidth === 1 && image.naturalHeight === 1) {
@@ -157,17 +187,17 @@ export default class Export {
 
       // Determine image size at full width
       let imageSizeScaled = {
-        width: Export.PAGE_WIDTH_MAX_MM * Export.MM_EQUALS_PX,
-        height: Export.PAGE_WIDTH_MAX_MM * Export.MM_EQUALS_PX / imageRatio
+        width: PAGE_WIDTH_MAX_MM * MM_EQUALS_PX,
+        height: PAGE_WIDTH_MAX_MM * MM_EQUALS_PX / imageRatio
       };
 
       // Handle not enough space for image
       if (
-        imageSizeScaled.height > Export.PAGE_HEIGHT_MAX_MM * Export.MM_EQUALS_PX
+        imageSizeScaled.height > PAGE_HEIGHT_MAX_MM * MM_EQUALS_PX
       ) {
         imageSizeScaled = {
-          width: Export.PAGE_HEIGHT_MAX_MM * Export.MM_EQUALS_PX * imageRatio,
-          height: Export.PAGE_HEIGHT_MAX_MM * Export.MM_EQUALS_PX
+          width: PAGE_HEIGHT_MAX_MM * MM_EQUALS_PX * imageRatio,
+          height: PAGE_HEIGHT_MAX_MM * MM_EQUALS_PX
         };
       }
 
@@ -179,7 +209,7 @@ export default class Export {
             height: imageSizeScaled.height
           }
         })],
-        spacing: { after: convertMillimetersToTwip(Export.PAGE_MARGIN_MM) }
+        spacing: { after: convertMillimetersToTwip(PAGE_MARGIN_MM) }
       }));
     }
 
@@ -194,14 +224,14 @@ export default class Export {
           page: {
             size: {
               orientation: PageOrientation.PORTRAIT,
-              height: convertMillimetersToTwip(Export.PAGE_HEIGHT_MM),
-              width: convertMillimetersToTwip(Export.PAGE_WIDTH_MM)
+              height: convertMillimetersToTwip(PAGE_HEIGHT_MM),
+              width: convertMillimetersToTwip(PAGE_WIDTH_MM)
             },
             margin: {
-              top: convertMillimetersToTwip(Export.PAGE_MARGIN_MM),
-              right: convertMillimetersToTwip(Export.PAGE_MARGIN_MM),
-              bottom: convertMillimetersToTwip(Export.PAGE_MARGIN_MM),
-              left: convertMillimetersToTwip(Export.PAGE_MARGIN_MM)
+              top: convertMillimetersToTwip(PAGE_MARGIN_MM),
+              right: convertMillimetersToTwip(PAGE_MARGIN_MM),
+              bottom: convertMillimetersToTwip(PAGE_MARGIN_MM),
+              left: convertMillimetersToTwip(PAGE_MARGIN_MM)
             },
           },
         },
@@ -315,28 +345,10 @@ export default class Export {
       setTimeout(() => {
         URL.revokeObjectURL(url);
         a.removeEventListener('click', clickHandler);
-      }, 150);
+      }, URL_GENERATION_DELAY_MS);
     };
     a.addEventListener('click', clickHandler, false);
 
     a.click();
   }
 }
-
-/** @constant {number} Page width in mm. */
-Export.PAGE_WIDTH_MM = 210; // 210 is DinA4 width in mm
-
-/** @constant {number} Page height in mm. */
-Export.PAGE_HEIGHT_MM = 297; // 297 is DinA4 height in mm
-
-/** @constant {number} Default gap between elements in mm. */
-Export.PAGE_MARGIN_MM = 10; // Default gap between elements in mm
-
-/** @constant {number} Max width in mm. */
-Export.PAGE_WIDTH_MAX_MM = Export.PAGE_WIDTH_MM - 2 * Export.PAGE_MARGIN_MM;
-
-/** @constant {number} Max width in mm. */
-Export.PAGE_HEIGHT_MAX_MM = Export.PAGE_HEIGHT_MM - 2 * Export.PAGE_MARGIN_MM;
-
-/** @constant {number} Pixels that equal one mm */
-Export.MM_EQUALS_PX = 3.7795275591;

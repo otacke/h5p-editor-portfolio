@@ -89,6 +89,7 @@ export default class ChapterActions {
           baseName, cloneParam.level
         );
 
+        // eslint-disable-next-line no-magic-numbers
         const copyCounter = (nextCopyLabelNumber < 2) ?
           '' :
           ` (${nextCopyLabelNumber})`;

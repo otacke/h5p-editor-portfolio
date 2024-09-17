@@ -1,6 +1,10 @@
 /**
  * Mixin containing methods for initialization related stuff.
  */
+
+/** @constant {number} TOGGLE_DELAY_MS Delay after toggling. */
+const TOGGLE_DELAY_MS = 100;
+
 export default class Initialization {
   /**
    * Sanitize chapters.
@@ -187,13 +191,13 @@ export default class Initialization {
           title.setAttribute('aria-expanded', 'false');
           window.setTimeout(() => {
             group.classList.remove('expanded');
-          }, 100);
+          }, TOGGLE_DELAY_MS);
         }
         else {
           title.setAttribute('aria-expanded', 'true');
           window.setTimeout(() => {
             group.classList.add('expanded');
-          }, 100);
+          }, TOGGLE_DELAY_MS);
         }
       };
 

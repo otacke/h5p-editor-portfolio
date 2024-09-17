@@ -1,5 +1,8 @@
 import './readspeaker.scss';
 
+/** @constant {number} READSPEAKER_DELAY_MS Delay for readspeaker. */
+const READSPEAKER_DELAY_MS = 100;
+
 /**
  * Allow to read vie readspeaker.
  */
@@ -53,7 +56,7 @@ export default class Readspeaker {
     setTimeout(() => {
       Readspeaker.textRead = null;
       Readspeaker.container.innerText = '';
-    }, 100);
+    }, READSPEAKER_DELAY_MS);
   }
 }
 

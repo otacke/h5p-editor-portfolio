@@ -107,6 +107,7 @@ export default class Util {
       if (event.target.count === 1) {
         callbackSingle?.();
       }
+      // eslint-disable-next-line no-magic-numbers
       if (event.target.count === 2) {
         callbackDouble?.();
       }
