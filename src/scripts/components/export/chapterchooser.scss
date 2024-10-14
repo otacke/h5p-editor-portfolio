@@ -1,4 +1,4 @@
-@import "@styles/h5p-editor-portfolio-main";
+@use "@styles/main";
 
 .chapter-chooser-overlay {
   background-color: #fff;
@@ -75,7 +75,7 @@
         margin-top: 0.5rem;
 
         .chapter-chooser-export-button {
-          background: $color-primary;
+          background: main.$color-primary;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
@@ -85,7 +85,7 @@
           }
 
           &:hover {
-            background: $color-primary-90;
+            background: main.$color-primary-90;
           }
 
           &[disabled="disabled"] {

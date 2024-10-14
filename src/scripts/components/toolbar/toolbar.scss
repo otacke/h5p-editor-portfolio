@@ -1,4 +1,4 @@
-@import "@styles/h5p-editor-portfolio-main";
+@use "@styles/main";
 
 $icon-button-preview-blue: url("@assets/button-preview-icon-blue.svg");
 $icon-button-preview-white: url("@assets/button-preview-icon-white.svg");
@@ -12,7 +12,7 @@ $icon-button-delete-grey: url("@assets/button-delete-icon-grey.svg");
 
 .toolbar-tool-bar {
   align-items: center;
-  box-shadow: 10px 10px 30px $color-shadow-light;
+  box-shadow: 10px 10px 30px main.$color-shadow-light;
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
@@ -22,7 +22,7 @@ $icon-button-delete-grey: url("@assets/button-delete-icon-grey.svg");
   width: 100%;
 
   .toolbar-page-announcer {
-    color: $color-joubelui-button;
+    color: main.$color-joubelui-button;
     font-weight: bold;
     text-align: center;
     width: 100%;
@@ -40,10 +40,10 @@ $icon-button-delete-grey: url("@assets/button-delete-icon-grey.svg");
 
       &.toolbar-button-active {
         background-image: $icon-button-preview-white;
-        background-color: $color-primary;
+        background-color: main.$color-primary;
 
         &:hover {
-          background-color: $color-primary-90;
+          background-color: main.$color-primary-90;
         }
       }
     }
@@ -57,10 +57,10 @@ $icon-button-delete-grey: url("@assets/button-delete-icon-grey.svg");
 
       &.toolbar-button-active {
         background-image: $icon-button-export-white;
-        background-color: $color-primary;
+        background-color: main.$color-primary;
 
         &:hover {
-          background-color: $color-primary-90;
+          background-color: main.$color-primary-90;
         }
       }
     }
@@ -74,10 +74,10 @@ $icon-button-delete-grey: url("@assets/button-delete-icon-grey.svg");
 
       &.toolbar-button-active {
         background-image: $icon-button-delete-white;
-        background-color: $color-primary;
+        background-color: main.$color-primary;
 
         &:hover {
-          background-color: $color-primary-90;
+          background-color: main.$color-primary-90;
         }
       }
     }
