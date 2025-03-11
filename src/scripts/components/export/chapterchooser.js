@@ -483,22 +483,38 @@ export default class ChapterChooser {
         this.instance.toggleMenu();
       }
 
-      // Create an array to hold the promises for getting screenshots
-      const screenshotPromises = chosenChapters.map((chapter, i) => {
-        this.callbacks.onExportProgress({
-          number: i + 1,
-          of: chosenChapters.length
-        });
+      const exportScreenshots = async (chosenChapters, type, abortSignal) => {
+        const screenshotResults = [];
 
-        return this.getScreenshots(
-          chapter.index,
-          type !== 'images', // Enforce pixel for pdf/docx
-          abortSignal
-        );
-      });
+        const processChapter = async (index) => {
+          if (index >= chosenChapters.length) {
+            return;
+          }
 
-      // Wait for all the promises to resolve
-      const screenshotResults = await Promise.all(screenshotPromises);
+          this.callbacks.onExportProgress({
+            number: index + 1,
+            of: chosenChapters.length
+          });
+
+          const result = await this.getScreenshots(
+            chosenChapters[index].index,
+            type !== 'images', // Enforce pixel for pdf/docx
+            abortSignal
+          );
+
+          screenshotResults.push(result);
+
+          // Process the next chapter
+          await processChapter(index + 1);
+        };
+
+        // Start processing from the first chapter
+        await processChapter(0);
+
+        return screenshotResults; // Return all results after processing
+      };
+
+      const screenshotResults = await exportScreenshots(chosenChapters, type, abortSignal);
 
       for (let i = 0; i < screenshotResults.length; i++) {
         const [screenshots, errorMessage] = screenshotResults[i];
