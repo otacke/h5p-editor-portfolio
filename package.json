@@ -41,7 +41,7 @@
     "docx": "^9.2.0",
     "he": "^1.2.0",
     "html2canvas": "^1.4.1",
-    "jspdf": "^3.0.0",
+    "jspdf": "^3.0.1",
     "jszip": "^3.10.1"
   },
   "browserslist": "> 0.5%, last 3 versions, Firefox ESR, not dead"
