@@ -49,17 +49,17 @@
     {
       "machineName": "H5P.Portfolio",
       "majorVersion": 0,
-      "minorVersion": 9
+      "minorVersion": 10
     },
     {
       "machineName": "H5P.PortfolioChapter",
       "majorVersion": 0,
-      "minorVersion": 9
+      "minorVersion": 10
     },
     {
       "machineName": "H5P.PortfolioPlaceholder",
       "majorVersion": 0,
-      "minorVersion": 9
+      "minorVersion": 10
     }
   ]
 }
