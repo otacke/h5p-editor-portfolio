@@ -60,12 +60,12 @@ export default class ChapterActions {
             return [...toClone, {
               index: index,
               level: currentHierarchy.split('-').length,
-              isSubchapter: isSubChapter
+              isSubchapter: isSubChapter,
             }];
           }
 
           return toClone;
-        }, []
+        }, [],
       );
 
       const moveOffset = -chapterParams.length + id + cloneParams.length;
@@ -82,11 +82,11 @@ export default class ChapterActions {
          * "(x)" will be omitted for x === 1, otherwise largest current x + 1
          */
         const baseName = this.getChapterBaseName(
-          this.chapterNavigation.getButtonLabel(cloneParam.index)
+          this.chapterNavigation.getButtonLabel(cloneParam.index),
         );
 
         const nextCopyLabelNumber = this.getNextCopyLabelNumber(
-          baseName, cloneParam.level
+          baseName, cloneParam.level,
         );
 
         // eslint-disable-next-line no-magic-numbers
@@ -99,15 +99,15 @@ export default class ChapterActions {
 
         // Replace subcontent ids in instance params
         const newInstanceParams = Util.replaceSubContentIDs(
-          { ...chapterParams[cloneParam.index] }
+          { ...chapterParams[cloneParam.index] },
         );
 
         // Create copy of chapter
         const newId = this.chapterNavigation.handleAddChapter(
           {
             instanceParams: newInstanceParams,
-            doNotShow: true
-          }
+            doNotShow: true,
+          },
         );
 
         if (!newId) {
@@ -131,7 +131,7 @@ export default class ChapterActions {
           this.moveChapter(
             newId + count * Math.sign(moveOffset),
             Math.sign(moveOffset),
-            { doNotShow: true, silent: true, doNotSave: true }
+            { doNotShow: true, silent: true, doNotSave: true },
           );
         }
       });
@@ -159,7 +159,7 @@ export default class ChapterActions {
     else if (this.params.chapters.length === 1) {
       Readspeaker.read([
         this.dictionary.get('a11y.notPossible'),
-        this.dictionary.get('a11y.cannotDeleteOnlyItem')
+        this.dictionary.get('a11y.cannotDeleteOnlyItem'),
       ]);
       return; // Can't delete the one and only chapter
     }
@@ -169,7 +169,7 @@ export default class ChapterActions {
     ) {
       Readspeaker.read([
         this.dictionary.get('a11y.notPossible'),
-        this.dictionary.get('a11y.firstChapterHierarchyFixed')
+        this.dictionary.get('a11y.firstChapterHierarchyFixed'),
       ]);
       return; // Position 0 must keep hierarchy 1
     }
@@ -218,7 +218,7 @@ export default class ChapterActions {
       if (!options.silent) {
         Readspeaker.read([
           this.dictionary.get('a11y.notPossible'),
-          this.dictionary.get('a11y.positionMinReached')
+          this.dictionary.get('a11y.positionMinReached'),
         ]);
       }
 
@@ -229,7 +229,7 @@ export default class ChapterActions {
       if (!options.silent) {
         Readspeaker.read([
           this.dictionary.get('a11y.notPossible'),
-          this.dictionary.get('a11y.positionMaxReached')
+          this.dictionary.get('a11y.positionMaxReached'),
         ]);
       }
 
@@ -244,7 +244,7 @@ export default class ChapterActions {
       if (!options.silent) {
         Readspeaker.read([
           this.dictionary.get('a11y.notPossible'),
-          this.dictionary.get('a11y.firstChapterHierarchyFixed')
+          this.dictionary.get('a11y.firstChapterHierarchyFixed'),
         ]);
       }
       return false; // Cannot put hierarchy !== 1 to the top
@@ -264,7 +264,7 @@ export default class ChapterActions {
       this.chapterNavigation.swapButtons({
         button1: this.chapterNavigation.getButton(indexSource),
         button2: this.chapterNavigation.getButton(indexTarget),
-        skipPlaceholder: true
+        skipPlaceholder: true,
       });
     }
 
@@ -302,7 +302,7 @@ export default class ChapterActions {
       if (!options.silent) {
         Readspeaker.read([
           this.dictionary.get('a11y.notPossible'),
-          this.dictionary.get('a11y.firstChapterHierarchyFixed')
+          this.dictionary.get('a11y.firstChapterHierarchyFixed'),
         ]);
       }
 
@@ -316,7 +316,7 @@ export default class ChapterActions {
       if (!options.silent) {
         Readspeaker.read([
           this.dictionary.get('a11y.notPossible'),
-          this.dictionary.get('a11y.hierarchyMinReached').replace(/@level/g, 1)
+          this.dictionary.get('a11y.hierarchyMinReached').replace(/@level/g, 1),
         ]);
       }
 
@@ -326,7 +326,7 @@ export default class ChapterActions {
       if (!options.silent) {
         Readspeaker.read([
           this.dictionary.get('a11y.notPossible'),
-          this.dictionary.get('a11y.hierarchyMaxReached').replace(/@level/g, 1)
+          this.dictionary.get('a11y.hierarchyMaxReached').replace(/@level/g, 1),
         ]);
       }
 
@@ -345,7 +345,7 @@ export default class ChapterActions {
     if (oldLength < newLength) {
       hierarchyPlaceholder = [
         ...this.params.chapters[index].chapterHierarchy.split('-'),
-        Array(newLength - oldLength).fill('0')
+        Array(newLength - oldLength).fill('0'),
       ];
     }
     else {
@@ -363,8 +363,8 @@ export default class ChapterActions {
       Readspeaker.read(
         this.dictionary.get(
           'a11y.hierarchyChangedTo').replace(/@level/g,
-          newLength
-        )
+          newLength,
+        ),
       );
     }
 

@@ -18,7 +18,7 @@ export default class Toolbar {
     this.callbacks = Util.extend({
       onClickButtonPreview: (() => {}),
       onClickButtonExport: (() => {}),
-      onClickButtonDeleteHidden: (() => {})
+      onClickButtonDeleteHidden: (() => {}),
     }, callbacks);
 
     this.buttons = {};
@@ -28,7 +28,7 @@ export default class Toolbar {
     this.dom.classList.add('toolbar-tool-bar');
     this.dom.setAttribute('role', 'toolbar');
     this.dom.setAttribute(
-      'aria-label', this.params.dictionary.get('a11y.toolbarLabel')
+      'aria-label', this.params.dictionary.get('a11y.toolbarLabel'),
     );
 
     this.dom.addEventListener('keydown', (event) => {
@@ -45,16 +45,16 @@ export default class Toolbar {
         },
         classes: [
           'toolbar-button',
-          'toolbar-button-preview'
+          'toolbar-button-preview',
         ],
         disabled: true,
-        type: 'toggle'
+        type: 'toggle',
       },
       {
         onClick: (event, params = {}) => {
           this.callbacks.onClickButtonPreview(params.active);
-        }
-      }
+        },
+      },
     );
     this.dom.appendChild(this.buttons.preview.getDOM());
 
@@ -68,16 +68,16 @@ export default class Toolbar {
         },
         classes: [
           'toolbar-button',
-          'toolbar-button-export'
+          'toolbar-button-export',
         ],
         disabled: true,
-        type: 'toggle'
+        type: 'toggle',
       },
       {
         onClick: (event, params = {}) => {
           this.callbacks.onClickButtonExport(params.active);
-        }
-      }
+        },
+      },
     );
     this.dom.appendChild(this.buttons.export.getDOM());
 
@@ -91,16 +91,16 @@ export default class Toolbar {
         },
         classes: [
           'toolbar-button',
-          'toolbar-button-delete-hidden'
+          'toolbar-button-delete-hidden',
         ],
         disabled: true,
-        type: 'pulse'
+        type: 'pulse',
       },
       {
         onClick: () => {
           this.callbacks.onClickButtonDeleteHidden();
-        }
-      }
+        },
+      },
     );
     this.dom.appendChild(this.buttons.deleteHidden.getDOM());
 
@@ -241,7 +241,7 @@ export default class Toolbar {
     }
     else if (event.code === 'End') {
       this.moveButtonFocus(
-        Object.keys(this.buttons).length - 1 - this.currentButtonIndex
+        Object.keys(this.buttons).length - 1 - this.currentButtonIndex,
       );
     }
     else {

@@ -35,7 +35,7 @@ export default class ChapterChooser {
     this.callbacks = Util.extend({
       onExportStarted: () => {},
       onExportProgress: () => {},
-      onExportEnded: () => {}
+      onExportEnded: () => {},
     }, callbacks);
 
     this.abortController = new AbortController(); // Dummy controller
@@ -75,17 +75,17 @@ export default class ChapterChooser {
     this.toggleAll.setAttribute('type', 'checkbox');
     this.toggleAll.setAttribute('id', 'chapter-chooser-checkbox-toggle-all');
     this.toggleAll.setAttribute(
-      'aria-label', this.params.dictionary.get('a11y.selectAll')
+      'aria-label', this.params.dictionary.get('a11y.selectAll'),
     );
     this.toggleAll.addEventListener('change', () => {
       if (this.toggleAll.checked) {
         this.toggleAll.setAttribute(
-          'aria-label', this.params.dictionary.get('a11y.unselectAll')
+          'aria-label', this.params.dictionary.get('a11y.unselectAll'),
         );
       }
       else {
         this.toggleAll.setAttribute(
-          'aria-label', this.params.dictionary.get('a11y.selectAll')
+          'aria-label', this.params.dictionary.get('a11y.selectAll'),
         );
       }
 
@@ -188,7 +188,7 @@ export default class ChapterChooser {
     if (this.instance.params.showCoverPage) {
       const fakeChapterParams = {
         hierarchy: '0',
-        title: this.params.dictionary.get('l10n.coverPage')
+        title: this.params.dictionary.get('l10n.coverPage'),
       };
 
       const { li, checkbox } = this.buildListItem(fakeChapterParams, 0);
@@ -201,7 +201,7 @@ export default class ChapterChooser {
 
     this.instance.getChaptersInformation().forEach((chapter, index) => {
       const { li, checkbox } = this.buildListItem(
-        chapter, index + chapterIndexOffset
+        chapter, index + chapterIndexOffset,
       );
 
       this.checkboxes.push(checkbox);
@@ -309,7 +309,7 @@ export default class ChapterChooser {
 
     const coverBlob = await Screenshot.takeScreenshot(
       { element: dom, enforceImage: enforceImage },
-      abortSignal
+      abortSignal,
     );
 
     if (button) {
@@ -363,7 +363,7 @@ export default class ChapterChooser {
               // eslint-disable-next-line no-await-in-loop
               screenshot = await Screenshot.takeScreenshot(
                 { element: doms[i], enforceImage: enforceImage },
-                this.abortController.signal
+                this.abortController.signal,
               );
               retries = -1;
               errorMessage = undefined;
@@ -375,7 +375,7 @@ export default class ChapterChooser {
               ) {
                 errorMessage = [
                   this.params.dictionary.get('l10n.cannotExportSomeContent'),
-                  this.params.dictionary.get('l10n.pleaseKeepTabActive')
+                  this.params.dictionary.get('l10n.pleaseKeepTabActive'),
                 ].join(' ');
 
                 console.warn(errorMessage);
@@ -448,7 +448,7 @@ export default class ChapterChooser {
         const chosen = {
           index: chapterIndex,
           hierarchy: chapterInfo[chapterIndex].hierarchy,
-          title: chapterInfo[chapterIndex].title
+          title: chapterInfo[chapterIndex].title,
         };
         return [...checked, chosen];
       }, []);
@@ -459,7 +459,7 @@ export default class ChapterChooser {
         this.instance.params.showCoverPage && this.checkboxes[0].checked
       ) {
         this.callbacks.onExportProgress({
-          text: this.params.dictionary.get('l10n.processingCover')
+          text: this.params.dictionary.get('l10n.processingCover'),
         });
 
         const coverBlob = await this.getCover(type !== 'images', abortSignal);
@@ -472,7 +472,7 @@ export default class ChapterChooser {
           imageBlobs.push({
             title: null,
             name: `${name}.${coverBlob.type.split('/')[1]}`,
-            blob: coverBlob
+            blob: coverBlob,
           });
         }
       }
@@ -493,13 +493,13 @@ export default class ChapterChooser {
 
           this.callbacks.onExportProgress({
             number: index + 1,
-            of: chosenChapters.length
+            of: chosenChapters.length,
           });
 
           const result = await this.getScreenshots(
             chosenChapters[index].index,
             type !== 'images', // Enforce pixel for pdf/docx
-            abortSignal
+            abortSignal,
           );
 
           screenshotResults.push(result);
@@ -533,7 +533,7 @@ export default class ChapterChooser {
           imageBlobs.push({
             title: (j === 0) ? chosenChapters[i].title : null,
             name: `${chosenChapters[i].hierarchy}_${j}.${screenshots[j].type.split('/')[1]}`,
-            blob: screenshots[j]
+            blob: screenshots[j],
           });
         }
       }
@@ -544,26 +544,26 @@ export default class ChapterChooser {
       }
 
       this.callbacks.onExportProgress({
-        text: this.params.dictionary.get('l10n.creatingExportFile')
+        text: this.params.dictionary.get('l10n.creatingExportFile'),
       });
 
       if (!abortSignal.aborted) {
         if (type === 'images') {
           Export.offerDownload({
             blob: await Export.createZip(imageBlobs, abortSignal),
-            filename: `${FILENAME_PREFIX}-${Date.now()}.zip`
+            filename: `${FILENAME_PREFIX}-${Date.now()}.zip`,
           });
         }
         else if (type === 'pdf') {
           Export.exportPDF({
             imageBlobs: imageBlobs,
-            filename: `${FILENAME_PREFIX}-${Date.now()}.pdf`
+            filename: `${FILENAME_PREFIX}-${Date.now()}.pdf`,
           }, abortSignal);
         }
         else if (type === 'docx') {
           Export.offerDownload({
             blob: await Export.createDOCX({ imageBlobs: imageBlobs }, abortSignal),
-            filename: `${FILENAME_PREFIX}-${Date.now()}.docx`
+            filename: `${FILENAME_PREFIX}-${Date.now()}.docx`,
           });
         }
       }

@@ -74,12 +74,12 @@ export default class Preview {
     this.previewInstance = H5P.newRunnable(
       {
         library: libraryUberName,
-        params: contentParams
+        params: contentParams,
       },
       H5PEditor.contentId || 1,
       undefined,
       undefined,
-      { metadata: { title: this.contentTitle } }
+      { metadata: { title: this.contentTitle } },
     );
 
     if (!this.previewInstance) {
@@ -122,8 +122,8 @@ export default class Preview {
                 text: `<p align="center">${machineName.split('.')[1]}</p>\
                   <p align="center">\
                     ${this.dictionary.get('l10n.noPreviewPossible')}\
-                  </p>`
-              }
+                  </p>`,
+              },
             };
           }
 
@@ -145,5 +145,5 @@ export default class Preview {
 
 /** @constant {string[]} Content types that cannot render preview */
 Preview.CONTENT_TYPES_WITHOUT_PREVIEW = [
-  'H5P.Timeline' // Requires some extra treatment when attaching, cmp. https://github.com/h5p/h5p-timeline/pull/68
+  'H5P.Timeline', // Requires some extra treatment when attaching, cmp. https://github.com/h5p/h5p-timeline/pull/68
 ];

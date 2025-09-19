@@ -6,7 +6,7 @@ export default class ChapterNavigationButton {
   constructor(params = {}, callbacks = {}) {
     this.params = Util.extend({
       hierarchyLevel: 1,
-      hierarchyLevelMax: 4
+      hierarchyLevelMax: 4,
     }, params);
 
     this.callbacks = Util.extend({
@@ -27,7 +27,7 @@ export default class ChapterNavigationButton {
       onDelete: (() => {}),
       onEdit: (() => {}),
       onTabNext: (() => {}),
-      onTabPrevious: (() => {})
+      onTabPrevious: (() => {}),
     }, callbacks);
 
     this.handleLabelEdited = this.handleLabelEdited.bind(this);
@@ -39,7 +39,7 @@ export default class ChapterNavigationButton {
     this.dom = document.createElement('button');
     this.dom.classList.add('h5peditor-portfolio-chapter-button');
     this.dom.classList.add(
-      `h5peditor-portfolio-chapter-button-level-${this.params.hierarchyLevel}`
+      `h5peditor-portfolio-chapter-button-level-${this.params.hierarchyLevel}`,
     );
     this.dom.setAttribute('draggable', true);
     this.dom.setAttribute('role', 'menuitem');
@@ -56,7 +56,7 @@ export default class ChapterNavigationButton {
         },
         () => {
           this.handleDoubleClick(event);
-        }
+        },
       );
     });
 
@@ -70,7 +70,7 @@ export default class ChapterNavigationButton {
     this.menu = document.createElement('button');
     this.menu.classList.add('h5peditor-portfolio-chapter-button-menu');
     this.menu.setAttribute(
-      'aria-label', this.params.dictionary.get('a11y.openSubmenu')
+      'aria-label', this.params.dictionary.get('a11y.openSubmenu'),
     );
     this.menu.addEventListener('click', (event) => {
       this.handleClickMenu(event);
@@ -80,7 +80,7 @@ export default class ChapterNavigationButton {
     // Placeholder to show when dragging
     this.dragPlaceholder = document.createElement('div');
     this.dragPlaceholder.classList.add(
-      'h5peditor-portfolio-chapter-button-placeholder'
+      'h5peditor-portfolio-chapter-button-placeholder',
     );
 
     // These listeners prevent Firefox from showing draggable animation
@@ -331,7 +331,7 @@ export default class ChapterNavigationButton {
       const rect = this.dom.getBoundingClientRect();
 
       this.menu.setAttribute(
-        'aria-label', this.params.dictionary.get('a11y.closeSubmenu')
+        'aria-label', this.params.dictionary.get('a11y.closeSubmenu'),
       );
       this.menu.classList.add('active');
       subMenu.show({
@@ -340,13 +340,13 @@ export default class ChapterNavigationButton {
           width: `${rect.width}px`,
           left: `calc(${rect.left}px + ${rect.width}px - 1.5rem)`,
           top: `calc(${this.dom.offsetTop}px + ${rect.height}px - 1.5rem)`,
-        }
+        },
       });
 
       subMenu.once('hidden', (event) => {
         this.menu.classList.remove('active');
         this.menu.setAttribute(
-          'aria-label', this.params.dictionary.get('a11y.openSubmenu')
+          'aria-label', this.params.dictionary.get('a11y.openSubmenu'),
         );
         if (!event?.data?.keepFocus) {
           this.dom.focus();
@@ -376,7 +376,7 @@ export default class ChapterNavigationButton {
    */
   attachDragPlaceholder() {
     this.dom.parentNode.insertBefore(
-      this.dragPlaceholder, this.dom.nextSibling
+      this.dragPlaceholder, this.dom.nextSibling,
     );
   }
 
@@ -415,7 +415,7 @@ export default class ChapterNavigationButton {
       top: this.buttonStyle.getPropertyValue('border-top').split(' ')[0],
       right: this.buttonStyle.getPropertyValue('border-right').split(' ')[0],
       bottom: this.buttonStyle.getPropertyValue('border-bottom').split(' ')[0],
-      left: this.buttonStyle.getPropertyValue('border-left').split(' ')[0]
+      left: this.buttonStyle.getPropertyValue('border-left').split(' ')[0],
     };
 
     if (typeof params.width === 'number') {
@@ -503,7 +503,7 @@ export default class ChapterNavigationButton {
       // Used in dragstart for Firefox workaround
       this.pointerPosition = {
         x: event.clientX,
-        y: event.clientY
+        y: event.clientY,
       };
     }
 
@@ -529,7 +529,7 @@ export default class ChapterNavigationButton {
     event.dataTransfer.setDragImage(
       this.dom,
       this.pointerPosition.x - this.dom.getBoundingClientRect().left,
-      this.pointerPosition.y - this.dom.getBoundingClientRect().top
+      this.pointerPosition.y - this.dom.getBoundingClientRect().top,
     );
 
     // Will hide browser's draggable copy as well without timeout

@@ -8,7 +8,7 @@ export default class ChapterNavigation {
   constructor(params = {}, callbacks = {}) {
     this.params = Util.extend({
       title: '',
-      hierarchyLevelMax: 4
+      hierarchyLevelMax: 4,
     }, params);
 
     this.callbacks = Util.extend({
@@ -19,7 +19,7 @@ export default class ChapterNavigation {
       onMoveChapter: (() => {}),
       onChangeHierarchy: (() => {}),
       onCloneChapter: (() => {}),
-      onDeleteChapter: (() => {})
+      onDeleteChapter: (() => {}),
     }, callbacks);
 
     this.buttons = [];
@@ -49,7 +49,7 @@ export default class ChapterNavigation {
     this.buttonAdd = document.createElement('button');
     this.buttonAdd.classList.add('h5peditor-portfolio-chapter-button-add');
     this.buttonAdd.setAttribute(
-      'aria-label', this.params.dictionary.get('l10n.addChapter')
+      'aria-label', this.params.dictionary.get('l10n.addChapter'),
     );
     this.buttonAdd.innerText = '+';
     this.buttonAdd.addEventListener('click', () => {
@@ -88,7 +88,7 @@ export default class ChapterNavigation {
             onClick: ((target) => {
               this.editButtonLabel(this.getButtonId(target));
             }),
-            keepFocus: true
+            keepFocus: true,
           },
           {
             id: 'move-up',
@@ -96,7 +96,7 @@ export default class ChapterNavigation {
             onClick: ((target) => {
               this.callbacks.onMoveChapter(this.getButtonId(target), -1);
             }),
-            keepFocus: true
+            keepFocus: true,
           },
           {
             id: 'move-down',
@@ -104,37 +104,37 @@ export default class ChapterNavigation {
             onClick: ((target) => {
               this.callbacks.onMoveChapter(this.getButtonId(target), +1);
             }),
-            keepFocus: true
+            keepFocus: true,
           },
           {
             id: 'hierarchy-up',
             label: this.params.dictionary.get('l10n.hierarchyUp'),
             onClick: ((target) => {
               this.callbacks.onChangeHierarchy(this.getButtonId(target), -1);
-            })
+            }),
           },
           {
             id: 'hierarchy-down',
             label: this.params.dictionary.get('l10n.hierarchyDown'),
             onClick: ((target) => {
               this.callbacks.onChangeHierarchy(this.getButtonId(target), 1);
-            })
+            }),
           },
           {
             id: 'clone',
             label: this.params.dictionary.get('l10n.clone'),
             onClick: ((target) => {
               this.callbacks.onCloneChapter(this.getButtonId(target));
-            })
+            }),
           },
           {
             id: 'clone-plus-subchapters',
             label: this.params.dictionary.get('l10n.cloneWithSubchapters'),
             onClick: ((target) => {
               this.callbacks.onCloneChapter(
-                this.getButtonId(target), { subchapters: true }
+                this.getButtonId(target), { subchapters: true },
               );
-            })
+            }),
           },
           {
             id: 'delete',
@@ -142,10 +142,10 @@ export default class ChapterNavigation {
             onClick: ((target) => {
               this.handleSubMenuDeleted(target);
             }),
-            keepFocus: true
-          }
-        ]
-      }
+            keepFocus: true,
+          },
+        ],
+      },
     );
     this.dom.appendChild(this.subMenu.getDOM());
 
@@ -153,7 +153,7 @@ export default class ChapterNavigation {
       headerText: this.params.dictionary.get('l10n.deleteDialogHeader'),
       dialogText: this.params.dictionary.get('l10n.deleteDialogText'),
       cancelText: this.params.dictionary.get('l10n.deleteDialogCancel'),
-      confirmText: this.params.dictionary.get('l10n.deleteDialogConfirm')
+      confirmText: this.params.dictionary.get('l10n.deleteDialogConfirm'),
     });
     this.deleteDialog.appendTo(document.body);
   }
@@ -228,7 +228,7 @@ export default class ChapterNavigation {
         title: this.callbacks.onGetChapterTitle(id),
         chapterGroup: this.getChapterGroup(id),
         hierarchyLevel: chapters[id]?.chapterHierarchy?.split('-').length || 1,
-        hierarchyLevelMax: this.params.hierarchyLevelMax
+        hierarchyLevelMax: this.params.hierarchyLevelMax,
       },
       {
         onShowChapter: ((target) => {
@@ -281,8 +281,8 @@ export default class ChapterNavigation {
         }),
         onTabPrevious: ((button) => {
           this.tabTo(button, -1, { loop: true });
-        })
-      }
+        }),
+      },
     );
 
     const buttonWrapper = document.createElement('li');
@@ -291,7 +291,7 @@ export default class ChapterNavigation {
 
     this.dom.insertBefore(
       buttonWrapper,
-      this.buttonSeparator
+      this.buttonSeparator,
     );
   }
 
@@ -350,7 +350,7 @@ export default class ChapterNavigation {
       button.update({
         title: this.callbacks.onGetChapterTitle(index),
         hierarchyLevel: chapters[index]
-          .chapterHierarchy.split('-').length
+          .chapterHierarchy.split('-').length,
       });
     });
   }
@@ -398,7 +398,7 @@ export default class ChapterNavigation {
     if (this.buttons.length === 1) {
       Readspeaker.read([
         this.params.dictionary.get('a11y.notPossible'),
-        this.params.dictionary.get('a11y.cannotDeleteOnlyItem')
+        this.params.dictionary.get('a11y.cannotDeleteOnlyItem'),
       ]);
       return;
     }
@@ -409,7 +409,7 @@ export default class ChapterNavigation {
     ) {
       Readspeaker.read([
         this.params.dictionary.get('a11y.notPossible'),
-        this.params.dictionary.get('a11y.firstChapterHierarchyFixed')
+        this.params.dictionary.get('a11y.firstChapterHierarchyFixed'),
       ]);
       return; // Position 0 must keep hierarchy 1
     }
@@ -561,7 +561,7 @@ export default class ChapterNavigation {
       // Swap dragged draggable and draggable that's dragged to
       this.swapButtons({
         button1: this.draggedElement,
-        button2: this.dropzoneElement
+        button2: this.dropzoneElement,
       });
     }
   }
@@ -577,7 +577,7 @@ export default class ChapterNavigation {
     // Swap visuals
     Util.swapDOMElements(
       params.button1.getDOM(),
-      params.button2.getDOM()
+      params.button2.getDOM(),
     );
 
     const id1 = this.getButtonId(params.button1);
@@ -616,7 +616,7 @@ export default class ChapterNavigation {
       const wasMoved = this.callbacks.onMoveChapter(
         this.dragIndexSource,
         moveOffset,
-        { updateNavigationButtons: false }
+        { updateNavigationButtons: false },
       );
 
       if (!wasMoved) {
@@ -644,7 +644,7 @@ export default class ChapterNavigation {
           this.callbacks.onMoveChapter(
             position,
             moveOffset,
-            { updateNavigationButtons: false }
+            { updateNavigationButtons: false },
           );
         }
 

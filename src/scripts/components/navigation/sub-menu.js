@@ -6,7 +6,7 @@ export default class SubMenu extends H5P.EventDispatcher {
     super();
 
     this.params = Util.extend({
-      options: []
+      options: [],
     }, params);
 
     this.options = {};

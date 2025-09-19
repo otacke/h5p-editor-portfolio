@@ -71,7 +71,7 @@ export default class Chapter {
     baseName = Util.escapeForRegularExpression(baseName);
 
     const copyString = Util.escapeForRegularExpression(
-      this.dictionary.get('l10n.labelCopy')
+      this.dictionary.get('l10n.labelCopy'),
     );
 
     /*
@@ -80,7 +80,7 @@ export default class Chapter {
      * Matching group 3 is "x"
      */
     const regexp = new RegExp(
-      `^${baseName} (${copyString})( \\(((\\d+))\\))?$`
+      `^${baseName} (${copyString})( \\(((\\d+))\\))?$`,
     );
 
     return chosenLabels
@@ -88,7 +88,7 @@ export default class Chapter {
         const parsed = regexp.exec(label);
         return parseInt(
           parsed?.[3] ?? // With number
-            (parsed?.[1] ? '1' : '0') // With copystring or only baseName
+            (parsed?.[1] ? '1' : '0'), // With copystring or only baseName
         );
       })
       .reduce((result, number) => Math.max(result, number + 1), 1);
@@ -101,7 +101,7 @@ export default class Chapter {
    */
   getChapterBaseName(label) {
     const copyString = Util.escapeForRegularExpression(
-      this.dictionary.get('l10n.labelCopy')
+      this.dictionary.get('l10n.labelCopy'),
     );
 
     /*
@@ -123,7 +123,7 @@ export default class Chapter {
 
     for (let i = 0; i < chapterDOMs.length; i++) {
       chapterDOMs[i].classList.toggle(
-        'active', i === this.chapterDOMsOrder[id]
+        'active', i === this.chapterDOMsOrder[id],
       );
 
       /*
@@ -133,7 +133,7 @@ export default class Chapter {
       const listItem = chapterDOMs[i].closest('li');
       if (listItem) {
         listItem.classList.toggle(
-          'display-none', i !== this.chapterDOMsOrder[id]
+          'display-none', i !== this.chapterDOMsOrder[id],
         );
       }
     }

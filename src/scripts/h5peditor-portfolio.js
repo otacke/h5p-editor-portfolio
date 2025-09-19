@@ -29,13 +29,13 @@ export default class Portfolio {
    */
   constructor(parent, field, params, setValue) {
     Util.addMixins(
-      Portfolio, [Chapter, ChapterActions, Export, Initialization, Preview]
+      Portfolio, [Chapter, ChapterActions, Export, Initialization, Preview],
     );
 
     this.parent = parent;
     this.field = field;
     this.params = Util.extend({
-      chapters: []
+      chapters: [],
     }, params);
     this.setValue = setValue;
 
@@ -60,7 +60,7 @@ export default class Portfolio {
 
     // Instantiate original field (or create your own and call setValue)
     this.fieldInstance = new H5PEditor.widgets[this.field.type](
-      this.parent, this.field, this.params, this.setValue
+      this.parent, this.field, this.params, this.setValue,
     );
 
     // Relay changes
@@ -142,7 +142,7 @@ export default class Portfolio {
 
     this.toolBar = new Toolbar(
       {
-        dictionary: this.dictionary
+        dictionary: this.dictionary,
       },
       {
         onClickButtonPreview: (active) => {
@@ -153,8 +153,8 @@ export default class Portfolio {
         },
         onClickButtonDeleteHidden: () => {
           this.handleDeleteHiddenDialog();
-        }
-      }
+        },
+      },
     );
 
     this.toolBar.enableButton('preview');
@@ -172,7 +172,7 @@ export default class Portfolio {
         dictionary: this.dictionary,
         title: this.parent?.metadata?.title || 'Portfolio',
         chapterList: this.chapterList,
-        hierarchyLevelMax: MAX_LEVEL
+        hierarchyLevelMax: MAX_LEVEL,
       },
       {
         onGetChapterTitle: (id) => {
@@ -198,14 +198,14 @@ export default class Portfolio {
         },
         onDeleteChapter: (id) => {
           this.deleteChapter(id);
-        }
-      }
+        },
+      },
     );
     contentDOM.append(this.chapterNavigation.getDOM());
     contentDOM.append(this.chaptersDOM);
 
     this.previewOverlay = new PreviewOverlay({
-      dictionary: this.dictionary
+      dictionary: this.dictionary,
     });
     this.mainDOM.append(this.previewOverlay.getDOM());
 
@@ -214,7 +214,7 @@ export default class Portfolio {
 
     this.chapterChooser = new ChapterChooser(
       {
-        dictionary: this.dictionary
+        dictionary: this.dictionary,
       }, {
         onExportStarted: () => {
           this.showExportSpinner();
@@ -230,7 +230,7 @@ export default class Portfolio {
               dialogText: errorMessage,
               confirmText: this.dictionary.get('l10n.ok'),
               hideCancel: true,
-              classes: ['h5p-export-failed-confirmation-dialog']
+              classes: ['h5p-export-failed-confirmation-dialog'],
             });
 
             const handleConfirmed = () => {
@@ -254,8 +254,8 @@ export default class Portfolio {
           }
 
           this.resetAbortController();
-        }
-      }
+        },
+      },
     );
     this.mainDOM.append(this.chapterChooser.getDOM());
 
@@ -267,13 +267,13 @@ export default class Portfolio {
     this.spinner = new Spinner(
       {
         dictionary: this.dictionary,
-        hasAbortButton: true
+        hasAbortButton: true,
       },
       {
         onAborted: () => {
           this.spinnerAbortController.abort();
-        }
-      }
+        },
+      },
     );
     this.mainDOM.appendChild(this.spinner.getDOM());
 
@@ -284,7 +284,7 @@ export default class Portfolio {
       headerText: this.dictionary.get('l10n.deleteHiddenDialogHeader'),
       dialogText: this.dictionary.get('l10n.deleteHiddenDialogText'),
       cancelText: this.dictionary.get('l10n.deleteDialogCancel'),
-      confirmText: this.dictionary.get('l10n.deleteDialogConfirm')
+      confirmText: this.dictionary.get('l10n.deleteDialogConfirm'),
     });
     this.deleteHiddenDialog.appendTo(document.body);
 
@@ -332,7 +332,7 @@ export default class Portfolio {
   deleteHidden() {
     H5P.externalDispatcher.trigger(
       'H5PEditor.PortfolioPlaceholder:deleteHidden',
-      { contentId: H5PEditor.contentId || 1 }
+      { contentId: H5PEditor.contentId || 1 },
     );
   }
 

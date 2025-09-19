@@ -27,7 +27,7 @@ export default class Export {
     Readspeaker.read(this.dictionary.get('a11y.exportOpened'));
 
     this.chapterChooser.update({
-      instance: this.previewInstance
+      instance: this.previewInstance,
     });
     this.chapterChooser.show();
 
@@ -63,7 +63,7 @@ export default class Export {
    */
   showExportSpinner() {
     this.spinner.setMessage(
-      `${this.dictionary.get('l10n.generatingExport')}. ${this.dictionary.get('l10n.pleaseKeepTabActive')}`
+      `${this.dictionary.get('l10n.generatingExport')}. ${this.dictionary.get('l10n.pleaseKeepTabActive')}`,
     );
     this.spinner.setProgress(' ');
     this.spinner.show();

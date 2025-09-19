@@ -2,7 +2,7 @@ import JSZip from 'jszip';
 import { jsPDF } from 'jspdf';
 import {
   Document, Paragraph, TextRun, Packer, ImageRun, HeadingLevel,
-  convertMillimetersToTwip, PageOrientation
+  convertMillimetersToTwip, PageOrientation,
 } from 'docx';
 
 /** @constant {number} TOP_MARGIN_FACTOR Page margin factor. */
@@ -93,7 +93,7 @@ export default class Export {
       // Determine image size at full width
       let imageSizeScaled = {
         width: PAGE_WIDTH_MAX_MM,
-        height: PAGE_WIDTH_MAX_MM / imageRatio
+        height: PAGE_WIDTH_MAX_MM / imageRatio,
       };
 
       // Handle not enough space for image
@@ -108,14 +108,14 @@ export default class Export {
           if (imageSizeScaled.height > remainingHeightMM) {
             imageSizeScaled = {
               width: remainingHeightMM * imageRatio,
-              height: remainingHeightMM
+              height: remainingHeightMM,
             };
           }
         }
         else {
           imageSizeScaled = {
             width: remainingHeightMM * imageRatio,
-            height: remainingHeightMM
+            height: remainingHeightMM,
           };
         }
       }
@@ -125,7 +125,7 @@ export default class Export {
         PAGE_MARGIN_MM,
         PAGE_MARGIN_MM + PAGE_HEIGHT_MAX_MM - remainingHeightMM,
         imageSizeScaled.width,
-        imageSizeScaled.height
+        imageSizeScaled.height,
       );
       hasPageImage = true;
 
@@ -170,7 +170,7 @@ export default class Export {
           children: [new TextRun(params.imageBlobs[i].title)],
           heading: HeadingLevel.HEADING_1,
           pageBreakBefore: true,
-          spacing: { after: convertMillimetersToTwip(PAGE_MARGIN_MM) }
+          spacing: { after: convertMillimetersToTwip(PAGE_MARGIN_MM) },
         }));
       }
 
@@ -188,7 +188,7 @@ export default class Export {
       // Determine image size at full width
       let imageSizeScaled = {
         width: PAGE_WIDTH_MAX_MM * MM_EQUALS_PX,
-        height: PAGE_WIDTH_MAX_MM * MM_EQUALS_PX / imageRatio
+        height: PAGE_WIDTH_MAX_MM * MM_EQUALS_PX / imageRatio,
       };
 
       // Handle not enough space for image
@@ -197,7 +197,7 @@ export default class Export {
       ) {
         imageSizeScaled = {
           width: PAGE_HEIGHT_MAX_MM * MM_EQUALS_PX * imageRatio,
-          height: PAGE_HEIGHT_MAX_MM * MM_EQUALS_PX
+          height: PAGE_HEIGHT_MAX_MM * MM_EQUALS_PX,
         };
       }
 
@@ -206,10 +206,10 @@ export default class Export {
           data: params.imageBlobs[i].blob,
           transformation: {
             width: imageSizeScaled.width,
-            height: imageSizeScaled.height
-          }
+            height: imageSizeScaled.height,
+          },
         })],
-        spacing: { after: convertMillimetersToTwip(PAGE_MARGIN_MM) }
+        spacing: { after: convertMillimetersToTwip(PAGE_MARGIN_MM) },
       }));
     }
 
@@ -225,18 +225,18 @@ export default class Export {
             size: {
               orientation: PageOrientation.PORTRAIT,
               height: convertMillimetersToTwip(PAGE_HEIGHT_MM),
-              width: convertMillimetersToTwip(PAGE_WIDTH_MM)
+              width: convertMillimetersToTwip(PAGE_WIDTH_MM),
             },
             margin: {
               top: convertMillimetersToTwip(PAGE_MARGIN_MM),
               right: convertMillimetersToTwip(PAGE_MARGIN_MM),
               bottom: convertMillimetersToTwip(PAGE_MARGIN_MM),
-              left: convertMillimetersToTwip(PAGE_MARGIN_MM)
+              left: convertMillimetersToTwip(PAGE_MARGIN_MM),
             },
           },
         },
-        children: sectionChildren
-      }]
+        children: sectionChildren,
+      }],
     });
 
     if (abortSignal.aborted) {

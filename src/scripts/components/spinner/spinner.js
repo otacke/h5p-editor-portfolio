@@ -11,10 +11,10 @@ export default class Spinner {
    */
   constructor(params = {}, callbacks = {}) {
     params = Util.extend({
-      hasAbortButton: false
+      hasAbortButton: false,
     }, params);
     callbacks = Util.extend({
-      onAborted: () => {}
+      onAborted: () => {},
     }, callbacks);
 
     this.container = document.createElement('div');

@@ -57,7 +57,7 @@ export default class Initialization {
     if (!params.length) {
       params = [{
         id: 0,
-        chapterHierarchy: '1'
+        chapterHierarchy: '1',
       }];
     }
 
