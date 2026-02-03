@@ -714,8 +714,8 @@ export default class ChapterNavigation {
 
   /**
    * Get child buttons of a button.
-   * @param {index} parentIndex Index of button to get children of.
-   * @returns {index[]} Children button indices.
+   * @param {number} parentIndex Index of button to get children of.
+   * @returns {number[]} Children button indices.
    */
   getChildButtonIndices(parentIndex) {
     const hierarchyLevel = this.buttons[parentIndex].getHierarchieLevel();
