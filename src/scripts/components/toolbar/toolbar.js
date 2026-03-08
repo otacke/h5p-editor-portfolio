@@ -56,6 +56,7 @@ export default class Toolbar {
         },
       },
     );
+    H5P.Tooltip?.(this.buttons.preview.getDOM());
     this.dom.appendChild(this.buttons.preview.getDOM());
 
     // Export button
@@ -79,6 +80,7 @@ export default class Toolbar {
         },
       },
     );
+    H5P.Tooltip?.(this.buttons.export.getDOM());
     this.dom.appendChild(this.buttons.export.getDOM());
 
     // Delete hidden button
@@ -102,6 +104,7 @@ export default class Toolbar {
         },
       },
     );
+    H5P.Tooltip?.(this.buttons.deleteHidden.getDOM());
     this.dom.appendChild(this.buttons.deleteHidden.getDOM());
 
     // Make first button active one
