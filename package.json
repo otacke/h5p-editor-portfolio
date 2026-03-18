@@ -22,7 +22,7 @@
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "@babel/plugin-transform-destructuring": "^7.28.5",
-    "@babel/preset-env": "^7.29.0",
+    "@babel/preset-env": "^7.29.2",
     "babel-loader": "^10.1.1",
     "css-loader": "^7.1.4",
     "eslint-config-snordian-h5p": "github:otacke/eslint-config-snordian-h5p",
@@ -34,14 +34,14 @@
     "stylelint-config-recommended": "^18.0.0",
     "stylelint-config-recommended-scss": "^17.0.0",
     "webpack": "^5.105.4",
-    "webpack-cli": "^7.0.0"
+    "webpack-cli": "^7.0.2"
   },
   "dependencies": {
     "buffer": "^6.0.3",
     "docx": "^9.6.1",
     "he": "^1.2.0",
     "html2canvas": "^1.4.1",
-    "jspdf": "^4.2.0",
+    "jspdf": "^4.2.1",
     "jszip": "^3.10.1"
   },
   "browserslist": "> 0.5%, last 3 versions, Firefox ESR, not dead"
