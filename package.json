@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "buffer": "^6.0.3",
-    "docx": "^9.8.1",
+    "docx": "^9.9.0",
     "he": "^1.2.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
